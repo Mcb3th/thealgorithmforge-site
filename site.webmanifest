@@ -1,0 +1,21 @@
+{
+  "name": "The Algorithm Forge",
+  "short_name": "Algorithm Forge",
+  "description": "Social media management, content creation, and organic marketing for small businesses.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#202124",
+  "theme_color": "#202124",
+  "icons": [
+    {
+      "src": "assets/images/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
