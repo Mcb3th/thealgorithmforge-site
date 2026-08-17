@@ -1,0 +1,2230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>
+    Client Onboarding | The Algorithm Forge
+  </title>
+
+  <meta
+    name="description"
+    content="Start your client onboarding with The Algorithm Forge."
+  />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="css/onboarding.css"
+  />
+</head>
+
+
+<body>
+
+  <header class="onboarding-header">
+
+    <div class="onboarding-shell onboarding-header-inner">
+
+      <a
+        href="index.html"
+        class="onboarding-brand"
+        aria-label="The Algorithm Forge home"
+      >
+
+        <img
+          src="assets/images/af-logo.png"
+          alt=""
+          class="onboarding-logo"
+        />
+
+        <div class="onboarding-wordmark">
+
+          <span class="onboarding-the">
+            THE
+          </span>
+
+          <span class="onboarding-name">
+            <span class="accent">A</span>LGORITHM
+            <span class="accent">F</span>ORGE
+          </span>
+
+        </div>
+
+      </a>
+
+      <a
+        href="index.html"
+        class="onboarding-exit"
+      >
+        Exit Onboarding
+      </a>
+
+    </div>
+
+  </header>
+
+
+  <main class="onboarding-main">
+
+    <div class="onboarding-shell">
+
+      <section
+        class="onboarding-intro"
+        id="onboardingIntro"
+      >
+
+        <p class="eyebrow">
+          CLIENT ONBOARDING
+        </p>
+
+        <h1>
+          LET'S GET YOUR BUSINESS
+          <span>IN THE FORGE.</span>
+        </h1>
+
+        <p class="intro-copy">
+          Tell us about your business, audience, brand,
+          and goals so we can prepare your content
+          strategy and account setup.
+        </p>
+
+        <div class="intro-meta">
+
+          <span>
+            Takes about 10 minutes
+          </span>
+
+          <span>
+            No passwords required
+          </span>
+
+          <span>
+            Your information stays private
+          </span>
+
+        </div>
+
+        <button
+          class="btn onboarding-start"
+          id="startOnboarding"
+          type="button"
+        >
+          Start Onboarding
+        </button>
+
+      </section>
+
+
+      <section
+        class="onboarding-app"
+        id="onboardingApp"
+        hidden
+      >
+
+        <div class="progress-wrap">
+
+          <div class="progress-top">
+
+            <span
+              class="progress-label"
+              id="progressLabel"
+            >
+              Step 1 of 7
+            </span>
+
+            <span
+              class="progress-percent"
+              id="progressPercent"
+            >
+              14%
+            </span>
+
+          </div>
+
+          <div
+            class="progress-track"
+            aria-hidden="true"
+          >
+
+            <div
+              class="progress-bar"
+              id="progressBar"
+            ></div>
+
+          </div>
+
+          <ol
+            class="progress-steps"
+            id="progressSteps"
+          >
+
+            <li data-step-indicator="1">
+              Business
+            </li>
+
+            <li data-step-indicator="2">
+              Brand
+            </li>
+
+            <li data-step-indicator="3">
+              Social
+            </li>
+
+            <li data-step-indicator="4">
+              Goals
+            </li>
+
+            <li data-step-indicator="5">
+              Content
+            </li>
+
+            <li data-step-indicator="6">
+              Requirements
+            </li>
+
+            <li data-step-indicator="7">
+              Working Together
+            </li>
+
+          </ol>
+
+        </div>
+
+
+        <form
+          id="onboardingForm"
+          novalidate
+        >
+
+          <!-- =========================================
+               STEP 1
+               YOUR BUSINESS
+          ========================================== -->
+
+          <section
+            class="form-step active"
+            data-step="1"
+          >
+
+            <div class="step-heading">
+
+              <span class="step-number">
+                01
+              </span>
+
+              <div>
+
+                <p class="eyebrow">
+                  YOUR BUSINESS
+                </p>
+
+                <h2>
+                  First, tell us who we're working with.
+                </h2>
+
+                <p>
+                  The basics help us understand your
+                  business, your market, and what matters
+                  most to promote.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+              <label class="field">
+
+                <span>
+                  Business name *
+                </span>
+
+                <input
+                  type="text"
+                  name="business_name"
+                  id="business_name"
+                  autocomplete="organization"
+                  required
+                />
+
+              </label>
+
+
+              <label class="field">
+
+                <span>
+                  Your name *
+                </span>
+
+                <input
+                  type="text"
+                  name="contact_name"
+                  id="contact_name"
+                  autocomplete="name"
+                  required
+                />
+
+              </label>
+
+
+              <label class="field">
+
+                <span>
+                  Your role in the business *
+                </span>
+
+                <input
+                  type="text"
+                  name="contact_role"
+                  id="contact_role"
+                  placeholder="Owner, Manager, Realtor..."
+                  required
+                />
+
+              </label>
+
+
+              <label class="field">
+
+                <span>
+                  Best email address *
+                </span>
+
+                <input
+                  type="email"
+                  name="contact_email"
+                  id="contact_email"
+                  autocomplete="email"
+                  required
+                />
+
+              </label>
+
+
+              <label class="field">
+
+                <span>
+                  What's the best way for us to contact you? *
+                </span>
+
+                <select
+                  name="preferred_contact_method"
+                  id="preferred_contact_method"
+                  required
+                >
+
+                  <option value="">
+                    Choose one
+                  </option>
+
+                  <option value="email">
+                    Email
+                  </option>
+
+                  <option value="phone">
+                    Phone
+                  </option>
+
+                  <option value="text">
+                    Text
+                  </option>
+
+                  <option value="other">
+                    Other
+                  </option>
+
+                </select>
+
+              </label>
+
+
+              <label class="field">
+
+                <span id="contactPhoneLabel">
+                  Best phone number
+                </span>
+
+                <input
+                  type="tel"
+                  name="contact_phone"
+                  id="contact_phone"
+                  autocomplete="tel"
+                />
+
+              </label>
+
+
+              <label class="field">
+
+                <span>
+                  Business website
+                </span>
+
+                <input
+                  type="url"
+                  name="business_website"
+                  id="business_website"
+                  placeholder="https://"
+                />
+
+              </label>
+
+            </div>
+
+
+            <fieldset class="field-group">
+
+              <legend>
+                Where does your business operate? *
+              </legend>
+
+              <div class="choice-grid">
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="operating_scope"
+                    value="local"
+                    required
+                  />
+                  <span>
+                    Local / specific service area
+                  </span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="operating_scope"
+                    value="multiple_locations"
+                  />
+                  <span>
+                    Multiple locations
+                  </span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="operating_scope"
+                    value="nationwide"
+                  />
+                  <span>
+                    Nationwide
+                  </span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="operating_scope"
+                    value="online_only"
+                  />
+                  <span>
+                    Online only
+                  </span>
+                </label>
+
+              </div>
+
+            </fieldset>
+
+
+            <label
+              class="field conditional-field"
+              id="serviceAreaField"
+              hidden
+            >
+
+              <span>
+                What cities, regions, or service areas do you serve?
+              </span>
+
+              <input
+                type="text"
+                name="service_area"
+                id="service_area"
+              />
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                Tell us about your business and what you do. *
+              </span>
+
+              <textarea
+                name="business_description"
+                id="business_description"
+                rows="5"
+                placeholder="What do you do, what do you sell, and who do you serve?"
+                required
+              ></textarea>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                What products or services are most important for us to promote? *
+              </span>
+
+              <textarea
+                name="priority_products_services"
+                id="priority_products_services"
+                rows="4"
+                required
+              ></textarea>
+
+            </label>
+
+          </section>
+
+
+          <!-- =========================================
+               STEP 2
+               YOUR BRAND
+          ========================================== -->
+
+          <section
+            class="form-step"
+            data-step="2"
+            hidden
+          >
+
+            <div class="step-heading">
+
+              <span class="step-number">
+                02
+              </span>
+
+              <div>
+
+                <p class="eyebrow">
+                  YOUR BRAND
+                </p>
+
+                <h2>
+                  Help us understand how your business should sound.
+                </h2>
+
+              </div>
+
+            </div>
+
+
+            <label class="field">
+
+              <span>
+                Who is your ideal customer? *
+              </span>
+
+              <textarea
+                name="ideal_customer"
+                id="ideal_customer"
+                rows="4"
+                required
+              ></textarea>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                What makes your business different from your competitors? *
+              </span>
+
+              <textarea
+                name="differentiators"
+                id="differentiators"
+                rows="4"
+                required
+              ></textarea>
+
+            </label>
+
+
+            <fieldset class="field-group">
+
+              <legend>
+                How should your brand sound and feel on social media? *
+              </legend>
+
+              <div class="choice-grid multi-choice">
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_voice" value="professional" />
+                  <span>Professional</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_voice" value="friendly" />
+                  <span>Friendly</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_voice" value="conversational" />
+                  <span>Conversational</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_voice" value="fun_playful" />
+                  <span>Fun / playful</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_voice" value="bold" />
+                  <span>Bold</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_voice" value="educational" />
+                  <span>Educational</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_voice" value="premium_luxury" />
+                  <span>Premium / luxury</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_voice" value="approachable" />
+                  <span>Approachable</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_voice" value="straightforward" />
+                  <span>Straightforward</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_voice" value="energetic" />
+                  <span>Energetic</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_voice" value="other" />
+                  <span>Other</span>
+                </label>
+
+              </div>
+
+            </fieldset>
+
+
+            <label class="field">
+
+              <span>
+                Anything you'd like to add about your brand's personality or voice?
+              </span>
+
+              <textarea
+                name="brand_voice_notes"
+                id="brand_voice_notes"
+                rows="3"
+              ></textarea>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                Are there words, phrases, topics, jokes, or styles you'd especially like us to use?
+              </span>
+
+              <textarea
+                name="preferred_language"
+                id="preferred_language"
+                rows="3"
+              ></textarea>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                Are there words, phrases, topics, jokes, claims, or styles you'd like us to avoid?
+              </span>
+
+              <textarea
+                name="avoid_language"
+                id="avoid_language"
+                rows="3"
+              ></textarea>
+
+            </label>
+
+
+            <fieldset class="field-group">
+
+              <legend>
+                Do you have established brand guidelines or materials?
+              </legend>
+
+              <div class="choice-grid">
+
+                <label class="choice-card">
+                  <input type="radio" name="brand_guidelines_status" value="yes" />
+                  <span>Yes</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="brand_guidelines_status" value="some" />
+                  <span>Some</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="radio" name="brand_guidelines_status" value="no" />
+                  <span>No</span>
+                </label>
+
+              </div>
+
+            </fieldset>
+
+
+            <fieldset
+              class="field-group conditional-field"
+              id="brandMaterialsField"
+              hidden
+            >
+
+              <legend>
+                Which materials do you currently have?
+              </legend>
+
+              <div class="choice-grid multi-choice">
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_materials" value="logo" />
+                  <span>Logo</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_materials" value="brand_colors" />
+                  <span>Brand colors</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_materials" value="fonts" />
+                  <span>Fonts</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_materials" value="brand_guide" />
+                  <span>Brand guide</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_materials" value="templates" />
+                  <span>Templates</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_materials" value="photography" />
+                  <span>Photography</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_materials" value="graphics" />
+                  <span>Graphics</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="brand_materials" value="other" />
+                  <span>Other</span>
+                </label>
+
+              </div>
+
+            </fieldset>
+
+          </section>
+
+
+          <!-- =========================================
+               STEP 3
+               SOCIAL MEDIA
+          ========================================== -->
+
+          <section
+            class="form-step"
+            data-step="3"
+            hidden
+          >
+
+            <div class="step-heading">
+
+              <span class="step-number">
+                03
+              </span>
+
+              <div>
+
+                <p class="eyebrow">
+                  YOUR SOCIAL MEDIA
+                </p>
+
+                <h2>
+                  Show us where your business already lives online.
+                </h2>
+
+              </div>
+
+            </div>
+
+
+            <fieldset class="field-group">
+
+              <legend>
+                Which social platforms does your business currently use?
+              </legend>
+
+              <div class="choice-grid multi-choice">
+
+                <label class="choice-card">
+                  <input
+                    type="checkbox"
+                    name="existing_platforms"
+                    value="facebook"
+                  />
+                  <span>Facebook</span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="checkbox"
+                    name="existing_platforms"
+                    value="instagram"
+                  />
+                  <span>Instagram</span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="checkbox"
+                    name="existing_platforms"
+                    value="tiktok"
+                  />
+                  <span>TikTok</span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="checkbox"
+                    name="existing_platforms"
+                    value="none"
+                  />
+                  <span>None yet</span>
+                </label>
+
+              </div>
+
+            </fieldset>
+
+
+            <div
+              class="platform-url-fields"
+              id="platformUrlFields"
+            ></div>
+
+
+            <fieldset class="field-group">
+
+              <legend>
+                Which platforms would you like The Algorithm Forge to manage? *
+              </legend>
+
+              <div class="choice-grid multi-choice">
+
+                <label class="choice-card">
+                  <input
+                    type="checkbox"
+                    name="platforms_to_manage"
+                    value="facebook"
+                  />
+                  <span>Facebook</span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="checkbox"
+                    name="platforms_to_manage"
+                    value="instagram"
+                  />
+                  <span>Instagram</span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="checkbox"
+                    name="platforms_to_manage"
+                    value="tiktok"
+                  />
+                  <span>TikTok</span>
+                </label>
+
+              </div>
+
+            </fieldset>
+
+
+            <label class="field">
+
+              <span>
+                Who currently manages your social media?
+              </span>
+
+              <select
+                name="current_social_manager"
+                id="current_social_manager"
+              >
+
+                <option value="">
+                  Choose one
+                </option>
+
+                <option value="owner">
+                  I do
+                </option>
+
+                <option value="employee">
+                  An employee
+                </option>
+
+                <option value="agency">
+                  Another agency/freelancer
+                </option>
+
+                <option value="multiple">
+                  Multiple people
+                </option>
+
+                <option value="nobody">
+                  Nobody
+                </option>
+
+                <option value="other">
+                  Other
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <fieldset class="field-group">
+
+              <legend>
+                Have you previously worked with a social media manager or marketing agency?
+              </legend>
+
+              <div class="choice-grid">
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="previous_agency_experience"
+                    value="false"
+                  />
+                  <span>No</span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="previous_agency_experience"
+                    value="true"
+                  />
+                  <span>Yes</span>
+                </label>
+
+              </div>
+
+            </fieldset>
+
+
+            <label
+              class="field conditional-field"
+              id="previousAgencyNotesField"
+              hidden
+            >
+
+              <span>
+                Is there anything you particularly liked or disliked about that experience?
+              </span>
+
+              <textarea
+                name="previous_agency_notes"
+                id="previous_agency_notes"
+                rows="4"
+              ></textarea>
+
+            </label>
+
+
+            <div
+              class="conditional-field"
+              id="metaSetupFields"
+              hidden
+            >
+
+              <fieldset class="field-group">
+
+                <legend>
+                  Does your business currently have a Meta Business Portfolio?
+                </legend>
+
+                <div class="choice-grid">
+
+                  <label class="choice-card">
+                    <input
+                      type="radio"
+                      name="meta_business_portfolio_status"
+                      value="yes"
+                    />
+                    <span>Yes</span>
+                  </label>
+
+                  <label class="choice-card">
+                    <input
+                      type="radio"
+                      name="meta_business_portfolio_status"
+                      value="no"
+                    />
+                    <span>No</span>
+                  </label>
+
+                  <label class="choice-card">
+                    <input
+                      type="radio"
+                      name="meta_business_portfolio_status"
+                      value="not_sure"
+                    />
+                    <span>I'm not sure</span>
+                  </label>
+
+                </div>
+
+              </fieldset>
+
+
+              <label
+                class="field conditional-field"
+                id="metaPortfolioIdField"
+                hidden
+              >
+
+                <span>
+                  Business Portfolio ID, if you know it
+                </span>
+
+                <input
+                  type="text"
+                  name="meta_business_portfolio_id"
+                  id="meta_business_portfolio_id"
+                />
+
+              </label>
+
+            </div>
+
+
+            <div
+              class="conditional-field"
+              id="tiktokSetupFields"
+              hidden
+            >
+
+              <fieldset class="field-group">
+
+                <legend>
+                  Does your business currently use TikTok Business Center?
+                </legend>
+
+                <div class="choice-grid">
+
+                  <label class="choice-card">
+                    <input
+                      type="radio"
+                      name="tiktok_business_center_status"
+                      value="yes"
+                    />
+                    <span>Yes</span>
+                  </label>
+
+                  <label class="choice-card">
+                    <input
+                      type="radio"
+                      name="tiktok_business_center_status"
+                      value="no"
+                    />
+                    <span>No</span>
+                  </label>
+
+                  <label class="choice-card">
+                    <input
+                      type="radio"
+                      name="tiktok_business_center_status"
+                      value="not_sure"
+                    />
+                    <span>I'm not sure</span>
+                  </label>
+
+                </div>
+
+              </fieldset>
+
+            </div>
+
+          </section>
+                   <!-- =========================================
+               STEP 4
+               GOALS
+          ========================================== -->
+
+          <section
+            class="form-step"
+            data-step="4"
+            hidden
+          >
+
+            <div class="step-heading">
+
+              <span class="step-number">
+                04
+              </span>
+
+              <div>
+
+                <p class="eyebrow">
+                  YOUR GOALS
+                </p>
+
+                <h2>
+                  What should social media actually accomplish?
+                </h2>
+
+              </div>
+
+            </div>
+
+
+            <fieldset class="field-group">
+
+              <legend>
+                What would you most like social media to accomplish? *
+              </legend>
+
+              <p class="field-help">
+                Choose up to 3.
+              </p>
+
+              <div
+                class="choice-grid multi-choice"
+                id="goalChoices"
+              >
+
+                <label class="choice-card">
+                  <input type="checkbox" name="primary_goals" value="brand_awareness" />
+                  <span>Increase brand awareness</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="primary_goals" value="generate_leads" />
+                  <span>Generate leads / inquiries</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="primary_goals" value="increase_sales" />
+                  <span>Increase sales</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="primary_goals" value="website_traffic" />
+                  <span>Drive website traffic</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="primary_goals" value="promote_products_services" />
+                  <span>Promote products / services</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="primary_goals" value="promote_events_specials" />
+                  <span>Promote events / specials</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="primary_goals" value="build_community" />
+                  <span>Build an audience / community</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="primary_goals" value="educate_customers" />
+                  <span>Educate customers</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="primary_goals" value="showcase_results" />
+                  <span>Showcase work / results</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="primary_goals" value="stay_visible" />
+                  <span>Stay active and visible</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="primary_goals" value="improve_professionalism" />
+                  <span>Improve our social presence</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="primary_goals" value="other" />
+                  <span>Other</span>
+                </label>
+
+              </div>
+
+            </fieldset>
+
+
+            <label class="field">
+
+              <span>
+                Which ONE of those goals matters most right now? *
+              </span>
+
+              <select
+                name="primary_goal"
+                id="primary_goal"
+                required
+              >
+
+                <option value="">
+                  Select your primary goal
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                If we could make one meaningful improvement to your social media over the next 3–6 months, what would you want it to be? *
+              </span>
+
+              <textarea
+                name="desired_improvement"
+                id="desired_improvement"
+                rows="5"
+                required
+              ></textarea>
+
+            </label>
+
+          </section>
+
+
+          <!-- =========================================
+               STEP 5
+               CONTENT
+          ========================================== -->
+
+          <section
+            class="form-step"
+            data-step="5"
+            hidden
+          >
+
+            <div class="step-heading">
+
+              <span class="step-number">
+                05
+              </span>
+
+              <div>
+
+                <p class="eyebrow">
+                  YOUR CONTENT
+                </p>
+
+                <h2>
+                  Let's see what we have to work with.
+                </h2>
+
+              </div>
+
+            </div>
+
+
+            <fieldset class="field-group">
+
+              <legend>
+                What kinds of content are you interested in?
+              </legend>
+
+              <div class="choice-grid multi-choice">
+
+                <label class="choice-card">
+                  <input type="checkbox" name="content_preferences" value="photos" />
+                  <span>Photos</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="content_preferences" value="graphics" />
+                  <span>Graphics</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="content_preferences" value="carousels" />
+                  <span>Carousels</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="content_preferences" value="short_form_video" />
+                  <span>Short-form video</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="content_preferences" value="educational" />
+                  <span>Educational</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="content_preferences" value="promotional" />
+                  <span>Promotional</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="content_preferences" value="testimonials_reviews" />
+                  <span>Testimonials / reviews</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="content_preferences" value="behind_the_scenes" />
+                  <span>Behind-the-scenes</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="content_preferences" value="product_service_showcases" />
+                  <span>Product / service showcases</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="content_preferences" value="tips_advice" />
+                  <span>Tips / advice</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="content_preferences" value="before_after" />
+                  <span>Before & after</span>
+                </label>
+
+                <label class="choice-card">
+                  <input type="checkbox" name="content_preferences" value="open_to_recommendations" />
+                  <span>I'm open to recommendations</span>
+                </label>
+
+              </div>
+
+            </fieldset>
+
+
+            <label class="field">
+
+              <span>
+                How much usable photo/video content do you currently have? *
+              </span>
+
+              <select
+                name="media_inventory"
+                id="media_inventory"
+                required
+              >
+
+                <option value="">
+                  Choose one
+                </option>
+
+                <option value="plenty">
+                  Plenty
+                </option>
+
+                <option value="some">
+                  Some
+                </option>
+
+                <option value="very_little">
+                  Very little
+                </option>
+
+                <option value="none">
+                  None
+                </option>
+
+                <option value="not_sure">
+                  I'm not sure
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                Will you be able to regularly provide new photos/video footage? *
+              </span>
+
+              <select
+                name="media_supply_frequency"
+                id="media_supply_frequency"
+                required
+              >
+
+                <option value="">
+                  Choose one
+                </option>
+
+                <option value="yes">
+                  Yes
+                </option>
+
+                <option value="sometimes">
+                  Sometimes
+                </option>
+
+                <option value="rarely">
+                  Rarely
+                </option>
+
+                <option value="no">
+                  No
+                </option>
+
+                <option value="not_sure">
+                  Not sure
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                What specific things would you most like us to feature? *
+              </span>
+
+              <textarea
+                name="priority_features"
+                id="priority_features"
+                rows="5"
+                placeholder="Products, services, listings, employees, projects, menu items, events..."
+                required
+              ></textarea>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                Do you have customer testimonials or reviews we may potentially feature?
+              </span>
+
+              <select
+                name="testimonials_available"
+                id="testimonials_available"
+              >
+
+                <option value="">
+                  Choose one
+                </option>
+
+                <option value="yes">
+                  Yes
+                </option>
+
+                <option value="no">
+                  No
+                </option>
+
+                <option value="not_yet">
+                  Not yet
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <fieldset class="field-group">
+
+              <legend>
+                Do you have upcoming promotions, launches, events, seasonal offers, or important dates?
+              </legend>
+
+              <div class="choice-grid">
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="has_promotions"
+                    value="no"
+                  />
+                  <span>No</span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="has_promotions"
+                    value="yes"
+                  />
+                  <span>Yes</span>
+                </label>
+
+              </div>
+
+            </fieldset>
+
+
+            <label
+              class="field conditional-field"
+              id="promotionsField"
+              hidden
+            >
+
+              <span>
+                Tell us about them and include any relevant dates.
+              </span>
+
+              <textarea
+                name="upcoming_promotions"
+                id="upcoming_promotions"
+                rows="4"
+              ></textarea>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                Is there anything you specifically DON'T want featured?
+              </span>
+
+              <textarea
+                name="content_exclusions"
+                id="content_exclusions"
+                rows="4"
+              ></textarea>
+
+            </label>
+
+          </section>
+
+
+          <!-- =========================================
+               STEP 6
+               REQUIREMENTS
+          ========================================== -->
+
+          <section
+            class="form-step"
+            data-step="6"
+            hidden
+          >
+
+            <div class="step-heading">
+
+              <span class="step-number">
+                06
+              </span>
+
+              <div>
+
+                <p class="eyebrow">
+                  INSPIRATION & REQUIREMENTS
+                </p>
+
+                <h2>
+                  Give us a little context around your industry.
+                </h2>
+
+              </div>
+
+            </div>
+
+
+            <label class="field">
+
+              <span>
+                Are there competitors, businesses, or social accounts you'd like us to know about?
+              </span>
+
+              <textarea
+                name="competitor_inspiration"
+                id="competitor_inspiration"
+                rows="4"
+                placeholder="Names, usernames, or links are all fine."
+              ></textarea>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                What do you like or dislike about what they're doing?
+              </span>
+
+              <textarea
+                name="competitor_inspiration_notes"
+                id="competitor_inspiration_notes"
+                rows="4"
+              ></textarea>
+
+            </label>
+
+
+            <fieldset class="field-group">
+
+              <legend>
+                Are there legal, licensing, regulatory, compliance, or industry-specific requirements we need to follow? *
+              </legend>
+
+              <div class="choice-grid">
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="compliance_status"
+                    value="yes"
+                    required
+                  />
+                  <span>Yes</span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="compliance_status"
+                    value="no"
+                  />
+                  <span>No</span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="compliance_status"
+                    value="not_sure"
+                  />
+                  <span>I'm not sure</span>
+                </label>
+
+              </div>
+
+            </fieldset>
+
+
+            <label
+              class="field conditional-field"
+              id="complianceNotesField"
+              hidden
+            >
+
+              <span>
+                Please explain the requirements we need to know about.
+              </span>
+
+              <textarea
+                name="compliance_notes"
+                id="compliance_notes"
+                rows="5"
+              ></textarea>
+
+            </label>
+
+          </section>
+
+
+          <!-- =========================================
+               STEP 7
+               WORKING TOGETHER
+          ========================================== -->
+
+          <section
+            class="form-step"
+            data-step="7"
+            hidden
+          >
+
+            <div class="step-heading">
+
+              <span class="step-number">
+                07
+              </span>
+
+              <div>
+
+                <p class="eyebrow">
+                  WORKING TOGETHER
+                </p>
+
+                <h2>
+                  Last piece: how should we work together?
+                </h2>
+
+              </div>
+
+            </div>
+
+
+            <label class="field">
+
+              <span>
+                When someone sees your content, what action would you most like them to take? *
+              </span>
+
+              <select
+                name="primary_call_to_action"
+                id="primary_call_to_action"
+                required
+              >
+
+                <option value="">
+                  Choose one
+                </option>
+
+                <option value="call">
+                  Call
+                </option>
+
+                <option value="dm">
+                  Send a DM
+                </option>
+
+                <option value="website">
+                  Visit our website
+                </option>
+
+                <option value="request_quote">
+                  Request a quote
+                </option>
+
+                <option value="book_appointment">
+                  Book an appointment
+                </option>
+
+                <option value="visit_location">
+                  Visit our location
+                </option>
+
+                <option value="purchase">
+                  Purchase something
+                </option>
+
+                <option value="sign_up">
+                  Sign up / register
+                </option>
+
+                <option value="other">
+                  Other
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <label
+              class="field conditional-field"
+              id="ctaDestinationField"
+              hidden
+            >
+
+              <span>
+                Where should people go?
+              </span>
+
+              <input
+                type="text"
+                name="call_to_action_destination"
+                id="call_to_action_destination"
+              />
+
+            </label>
+
+
+            <fieldset class="field-group">
+
+              <legend>
+                Who should we contact for content questions and approvals?
+              </legend>
+
+              <div class="choice-grid">
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="approval_contact"
+                    value="primary"
+                    checked
+                  />
+                  <span>
+                    Same as primary contact
+                  </span>
+                </label>
+
+                <label class="choice-card">
+                  <input
+                    type="radio"
+                    name="approval_contact"
+                    value="other"
+                  />
+                  <span>
+                    Someone else
+                  </span>
+                </label>
+
+              </div>
+
+            </fieldset>
+
+
+            <div
+              class="form-grid conditional-field"
+              id="approvalContactFields"
+              hidden
+            >
+
+              <label class="field">
+
+                <span>
+                  Approval contact name
+                </span>
+
+                <input
+                  type="text"
+                  name="approval_contact_name"
+                  id="approval_contact_name"
+                />
+
+              </label>
+
+
+              <label class="field">
+
+                <span>
+                  Approval contact role
+                </span>
+
+                <input
+                  type="text"
+                  name="approval_contact_role"
+                  id="approval_contact_role"
+                />
+
+              </label>
+
+
+              <label class="field">
+
+                <span>
+                  Approval contact email
+                </span>
+
+                <input
+                  type="email"
+                  name="approval_contact_email"
+                  id="approval_contact_email"
+                />
+
+              </label>
+
+
+              <label class="field">
+
+                <span>
+                  Approval contact phone
+                </span>
+
+                <input
+                  type="tel"
+                  name="approval_contact_phone"
+                  id="approval_contact_phone"
+                />
+
+              </label>
+
+
+              <label class="field">
+
+                <span>
+                  Preferred contact method
+                </span>
+
+                <select
+                  name="approval_contact_method"
+                  id="approval_contact_method"
+                >
+
+                  <option value="">
+                    Choose one
+                  </option>
+
+                  <option value="email">
+                    Email
+                  </option>
+
+                  <option value="phone">
+                    Phone
+                  </option>
+
+                  <option value="text">
+                    Text
+                  </option>
+
+                  <option value="other">
+                    Other
+                  </option>
+
+                </select>
+
+              </label>
+
+            </div>
+
+
+            <label class="field">
+
+              <span>
+                How quickly can you typically review content awaiting approval? *
+              </span>
+
+              <select
+                name="approval_timing"
+                id="approval_timing"
+                required
+              >
+
+                <option value="">
+                  Choose one
+                </option>
+
+                <option value="same_day">
+                  Same day
+                </option>
+
+                <option value="within_24_hours">
+                  Within 24 hours
+                </option>
+
+                <option value="within_48_hours">
+                  Within 48 hours
+                </option>
+
+                <option value="within_3_business_days">
+                  Within 3 business days
+                </option>
+
+                <option value="longer_than_3_business_days">
+                  Longer than 3 business days
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                Which best describes your approval preference? *
+              </span>
+
+              <select
+                name="approval_preference"
+                id="approval_preference"
+                required
+              >
+
+                <option value="">
+                  Choose one
+                </option>
+
+                <option value="approve_everything">
+                  I want to approve everything before publication
+                </option>
+
+                <option value="routine_content_preapproved">
+                  Routine/pre-agreed content may be published without individual approval
+                </option>
+
+                <option value="discuss">
+                  I'm open to discussing the best approval process
+                </option>
+
+              </select>
+
+            </label>
+
+
+            <label
+              class="field conditional-field"
+              id="approvalRequirementsField"
+              hidden
+            >
+
+              <span>
+                Are there particular types of content that always require your approval?
+              </span>
+
+              <textarea
+                name="approval_requirements"
+                id="approval_requirements"
+                rows="4"
+              ></textarea>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                What else should we know before we start creating content for your business?
+              </span>
+
+              <textarea
+                name="additional_notes"
+                id="additional_notes"
+                rows="5"
+              ></textarea>
+
+            </label>
+
+          </section>
+
+
+          <!-- =========================================
+               REVIEW
+          ========================================== -->
+
+          <section
+            class="form-step review-step"
+            data-step="8"
+            id="reviewStep"
+            hidden
+          >
+
+            <div class="step-heading">
+
+              <span class="step-number">
+                ✓
+              </span>
+
+              <div>
+
+                <p class="eyebrow">
+                  REVIEW
+                </p>
+
+                <h2>
+                  One last look before we fire it into the Forge.
+                </h2>
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="review-content"
+              id="reviewContent"
+            ></div>
+
+
+            <div class="submission-note">
+
+              <strong>
+                Before you submit:
+              </strong>
+
+              <p>
+                You will not be asked for social media
+                passwords or payment information here.
+                Social account access is handled separately
+                after onboarding.
+              </p>
+
+            </div>
+
+          </section>
+
+
+          <!-- =========================================
+               NAVIGATION
+          ========================================== -->
+
+          <div
+            class="form-navigation"
+            id="formNavigation"
+          >
+
+            <button
+              class="btn btn-secondary"
+              id="backButton"
+              type="button"
+              disabled
+            >
+              Back
+            </button>
+
+            <button
+              class="btn"
+              id="nextButton"
+              type="button"
+            >
+              Continue
+            </button>
+
+            <button
+              class="btn submit-button"
+              id="submitButton"
+              type="submit"
+              hidden
+            >
+
+              <span class="submit-text">
+                Submit Onboarding
+              </span>
+
+              <span
+                class="submit-loader"
+                aria-hidden="true"
+              ></span>
+
+            </button>
+
+          </div>
+
+
+          <div
+            class="form-error-summary"
+            id="formErrorSummary"
+            role="alert"
+            aria-live="polite"
+            hidden
+          ></div>
+
+        </form>
+
+      </section>
+
+
+      <!-- =================================================
+           SUCCESS
+      ================================================== -->
+
+      <section
+        class="onboarding-success"
+        id="onboardingSuccess"
+        hidden
+      >
+
+        <p class="eyebrow">
+          ONBOARDING COMPLETE
+        </p>
+
+        <h2>
+          YOUR BUSINESS IS
+          <span>IN THE FORGE.</span>
+          🔥
+        </h2>
+
+        <p>
+          Thanks for completing your onboarding questionnaire.
+          We'll review everything you've shared and use it to
+          prepare your account for setup.
+        </p>
+
+        <div class="next-steps">
+
+          <div class="next-step complete">
+            <span>✓</span>
+            Onboarding questionnaire
+          </div>
+
+          <div class="next-step">
+            <span>→</span>
+            Social account access
+          </div>
+
+          <div class="next-step">
+            <span>→</span>
+            Brand & content assets
+          </div>
+
+          <div class="next-step">
+            <span>→</span>
+            Content planning
+          </div>
+
+          <div class="next-step">
+            <span>→</span>
+            Launch
+          </div>
+
+        </div>
+
+
+        <a
+          href="index.html"
+          class="btn"
+        >
+          Return to The Algorithm Forge
+        </a>
+
+      </section>
+
+    </div>
+
+  </main>
+
+
+  <script src="js/onboarding.js"></script>
+
+</body>
+
+</html> 
