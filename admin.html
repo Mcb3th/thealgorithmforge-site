@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>
+    Admin | The Algorithm Forge
+  </title>
+
+  <meta
+    name="description"
+    content="The Algorithm Forge internal client management dashboard."
+  />
+
+  <meta
+    name="robots"
+    content="noindex, nofollow"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="css/admin.css"
+  />
+
+</head>
+
+
+<body>
+
+  <!-- =====================================================
+       AUTH LOADING SCREEN
+  ====================================================== -->
+
+  <div
+    class="auth-loading"
+    id="authLoading"
+  >
+
+    <div class="auth-loading-inner">
+
+      <div class="loading-mark">
+        AF
+      </div>
+
+      <p>
+        Loading The Forge...
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       LOGIN
+  ====================================================== -->
+
+  <main
+    class="login-page"
+    id="loginPage"
+    hidden
+  >
+
+    <section class="login-panel">
+
+      <div class="login-brand">
+
+        <a
+          href="index.html"
+          class="brand-link"
+          aria-label="The Algorithm Forge home"
+        >
+
+          <img
+            src="assets/images/af-logo.png"
+            alt=""
+            class="login-logo"
+          />
+
+          <div class="login-wordmark">
+
+            <span class="login-the">
+              THE
+            </span>
+
+            <span class="login-name">
+              <span class="accent">A</span>LGORITHM
+              <span class="accent">F</span>ORGE
+            </span>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <div class="login-content">
+
+        <p class="eyebrow">
+          INTERNAL ACCESS
+        </p>
+
+        <h1>
+          ENTER THE
+          <span>FORGE.</span>
+        </h1>
+
+        <p class="login-description">
+          Sign in to access The Algorithm Forge
+          client management system.
+        </p>
+
+
+        <form
+          class="login-form"
+          id="loginForm"
+          novalidate
+        >
+
+          <label class="field">
+
+            <span>
+              Email address
+            </span>
+
+            <input
+              type="email"
+              name="email"
+              id="loginEmail"
+              autocomplete="email"
+              required
+            />
+
+          </label>
+
+
+          <label class="field">
+
+            <span>
+              Password
+            </span>
+
+            <div class="password-field">
+
+              <input
+                type="password"
+                name="password"
+                id="loginPassword"
+                autocomplete="current-password"
+                required
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                id="passwordToggle"
+                aria-label="Show password"
+              >
+                Show
+              </button>
+
+            </div>
+
+          </label>
+
+
+          <div
+            class="login-error"
+            id="loginError"
+            role="alert"
+            aria-live="polite"
+            hidden
+          ></div>
+
+
+          <button
+            type="submit"
+            class="btn login-button"
+            id="loginButton"
+          >
+
+            <span
+              class="login-button-text"
+              id="loginButtonText"
+            >
+              Sign In
+            </span>
+
+            <span
+              class="button-loader"
+              id="loginLoader"
+              aria-hidden="true"
+              hidden
+            ></span>
+
+          </button>
+
+        </form>
+
+
+        <p class="login-security">
+          Authorized personnel only.
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =====================================================
+       UNAUTHORIZED
+  ====================================================== -->
+
+  <main
+    class="unauthorized-page"
+    id="unauthorizedPage"
+    hidden
+  >
+
+    <section class="unauthorized-panel">
+
+      <div class="unauthorized-mark">
+        AF
+      </div>
+
+      <p class="eyebrow">
+        ACCESS DENIED
+      </p>
+
+      <h1>
+        NOT AUTHORIZED.
+      </h1>
+
+      <p>
+        This account is valid, but it does not have
+        permission to access The Algorithm Forge
+        administration system.
+      </p>
+
+      <button
+        type="button"
+        class="btn"
+        id="unauthorizedSignOut"
+      >
+        Sign Out
+      </button>
+
+    </section>
+
+  </main>
+
+
+  <!-- =====================================================
+       ADMIN DASHBOARD
+  ====================================================== -->
+
+  <div
+    class="admin-app"
+    id="adminApp"
+    hidden
+  >
+
+    <!-- ===================================================
+         SIDEBAR
+    ==================================================== -->
+
+    <aside class="admin-sidebar">
+
+      <div class="sidebar-brand">
+
+        <a
+          href="admin.html"
+          class="brand-link"
+          aria-label="The Algorithm Forge dashboard"
+        >
+
+          <img
+            src="assets/images/af-logo.png"
+            alt=""
+            class="sidebar-logo"
+          />
+
+          <div class="sidebar-wordmark">
+
+            <span class="sidebar-the">
+              THE
+            </span>
+
+            <span class="sidebar-name">
+              <span class="accent">A</span>LGORITHM
+              <span class="accent">F</span>ORGE
+            </span>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <nav
+        class="admin-nav"
+        aria-label="Admin navigation"
+      >
+
+        <button
+          type="button"
+          class="admin-nav-item active"
+          data-admin-view="dashboard"
+        >
+
+          <span class="nav-icon">
+            ◫
+          </span>
+
+          <span>
+            Dashboard
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="admin-nav-item"
+          data-admin-view="clients"
+        >
+
+          <span class="nav-icon">
+            ◉
+          </span>
+
+          <span>
+            Clients
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="admin-nav-item"
+          data-admin-view="tasks"
+        >
+
+          <span class="nav-icon">
+            ✓
+          </span>
+
+          <span>
+            Setup Tasks
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="admin-nav-item"
+          data-admin-view="content"
+        >
+
+          <span class="nav-icon">
+            ▤
+          </span>
+
+          <span>
+            Content
+          </span>
+
+        </button>
+
+      </nav>
+
+
+      <div class="sidebar-footer">
+
+        <div class="admin-user">
+
+          <div class="admin-avatar">
+            AF
+          </div>
+
+          <div class="admin-user-details">
+
+            <span class="admin-user-role">
+              Administrator
+            </span>
+
+            <span
+              class="admin-user-email"
+              id="adminUserEmail"
+            ></span>
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="sign-out-button"
+          id="signOutButton"
+        >
+          Sign Out
+        </button>
+
+      </div>
+
+    </aside>
+
+
+    <!-- ===================================================
+         MAIN DASHBOARD AREA
+    ==================================================== -->
+
+    <main class="admin-main">
+
+      <header class="admin-topbar">
+
+        <div>
+
+          <p class="eyebrow">
+            THE ALGORITHM FORGE
+          </p>
+
+          <h1 id="adminPageTitle">
+            DASHBOARD
+          </h1>
+
+        </div>
+
+
+        <div class="topbar-status">
+
+          <span class="status-dot"></span>
+
+          <span>
+            System Online
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <!-- =================================================
+           DASHBOARD VIEW
+      ================================================== -->
+
+      <section
+        class="admin-view active"
+        id="dashboardView"
+        data-view="dashboard"
+      >
+
+        <div class="dashboard-welcome">
+
+          <div>
+
+            <p class="eyebrow">
+              CLIENT MANAGEMENT
+            </p>
+
+            <h2>
+              WELCOME TO THE
+              <span>FORGE.</span>
+            </h2>
+
+            <p>
+              Your client management system is connected
+              and ready for business.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="dashboard-stats">
+
+          <article class="stat-card">
+
+            <span class="stat-label">
+              TOTAL CLIENTS
+            </span>
+
+            <strong
+              class="stat-number"
+              id="totalClients"
+            >
+              —
+            </strong>
+
+            <span class="stat-description">
+              All client accounts
+            </span>
+
+          </article>
+
+
+          <article class="stat-card">
+
+            <span class="stat-label">
+              ONBOARDING
+            </span>
+
+            <strong
+              class="stat-number"
+              id="onboardingClients"
+            >
+              —
+            </strong>
+
+            <span class="stat-description">
+              Currently onboarding
+            </span>
+
+          </article>
+
+
+          <article class="stat-card">
+
+            <span class="stat-label">
+              OPEN TASKS
+            </span>
+
+            <strong
+              class="stat-number"
+              id="openTasks"
+            >
+              —
+            </strong>
+
+            <span class="stat-description">
+              Setup items requiring attention
+            </span>
+
+          </article>
+
+
+          <article class="stat-card">
+
+            <span class="stat-label">
+              ACTIVE CLIENTS
+            </span>
+
+            <strong
+              class="stat-number"
+              id="activeClients"
+            >
+              —
+            </strong>
+
+            <span class="stat-description">
+              Active accounts
+            </span>
+
+          </article>
+
+        </div>
+
+
+        <section class="dashboard-section">
+
+          <div class="section-heading">
+
+            <div>
+
+              <p class="eyebrow">
+                RECENT ACTIVITY
+              </p>
+
+              <h2>
+                RECENT CLIENTS
+              </h2>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="text-button"
+              data-go-to-view="clients"
+            >
+              View All Clients →
+            </button>
+
+          </div>
+
+
+          <div
+            class="dashboard-placeholder"
+            id="recentClients"
+          >
+
+            <p>
+              Client data will appear here once the
+              dashboard data connection is enabled.
+            </p>
+
+          </div>
+
+        </section>
+
+      </section>
+
+
+      <!-- =================================================
+           CLIENTS VIEW
+      ================================================== -->
+
+      <section
+        class="admin-view"
+        id="clientsView"
+        data-view="clients"
+        hidden
+      >
+
+        <div class="view-heading">
+
+          <div>
+
+            <p class="eyebrow">
+              CLIENT MANAGEMENT
+            </p>
+
+            <h2>
+              CLIENTS
+            </h2>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="dashboard-placeholder"
+          id="clientsList"
+        >
+
+          <p>
+            Client records will appear here.
+          </p>
+
+        </div>
+
+      </section>
+
+
+    <!-- =================================================
+     SETUP TASKS VIEW
+================================================== -->
+
+<section
+  class="admin-view"
+  id="tasksView"
+  data-view="tasks"
+  hidden
+>
+
+  <div class="view-heading">
+
+    <div>
+
+      <p class="eyebrow">
+        ACCOUNT SETUP
+      </p>
+
+      <h2>
+        SETUP TASKS
+      </h2>
+
+    </div>
+
+
+    <div
+      class="tasks-summary"
+      id="tasksSummary"
+    >
+      —
+    </div>
+
+  </div>
+
+
+  <div
+    class="tasks-list"
+    id="tasksList"
+  >
+
+    <div class="tasks-state">
+
+      <div class="tasks-state-inner">
+
+        <p class="tasks-state-copy">
+          Setup tasks will appear here.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+     <!-- =================================================
+     CONTENT VIEW
+================================================== -->
+
+<section
+  class="admin-view"
+  id="contentView"
+  data-view="content"
+  hidden
+>
+
+  <div class="view-heading">
+
+    <div>
+
+      <p class="eyebrow">
+        CONTENT OPERATIONS
+      </p>
+
+      <h2>
+        CONTENT
+      </h2>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn content-new-button"
+      id="newContentButton"
+    >
+      + New Content
+    </button>
+
+  </div>
+
+
+  <!-- =================================================
+       CONTENT SUMMARY
+  ================================================== -->
+
+  <div class="content-stats">
+
+    <article class="content-stat-card">
+
+      <span class="content-stat-label">
+        TOTAL
+      </span>
+
+      <strong
+        class="content-stat-number"
+        id="contentTotal"
+      >
+        —
+      </strong>
+
+    </article>
+
+
+    <article class="content-stat-card">
+
+      <span class="content-stat-label">
+        DRAFTS
+      </span>
+
+      <strong
+        class="content-stat-number"
+        id="contentDrafts"
+      >
+        —
+      </strong>
+
+    </article>
+
+
+    <article class="content-stat-card">
+
+      <span class="content-stat-label">
+        AWAITING APPROVAL
+      </span>
+
+      <strong
+        class="content-stat-number"
+        id="contentAwaitingApproval"
+      >
+        —
+      </strong>
+
+    </article>
+
+
+    <article class="content-stat-card">
+
+      <span class="content-stat-label">
+        SCHEDULED
+      </span>
+
+      <strong
+        class="content-stat-number"
+        id="contentScheduled"
+      >
+        —
+      </strong>
+
+    </article>
+
+  </div>
+
+
+  <!-- =================================================
+       FILTERS
+  ================================================== -->
+
+  <div class="content-toolbar">
+
+    <div
+      class="content-filter-group"
+      id="contentStatusFilters"
+    >
+
+      <button
+        type="button"
+        class="content-filter active"
+        data-content-filter="all"
+      >
+        All
+      </button>
+
+      <button
+        type="button"
+        class="content-filter"
+        data-content-filter="draft"
+      >
+        Draft
+      </button>
+
+      <button
+        type="button"
+        class="content-filter"
+        data-content-filter="awaiting_approval"
+      >
+        Awaiting Approval
+      </button>
+
+      <button
+        type="button"
+        class="content-filter"
+        data-content-filter="approved"
+      >
+        Approved
+      </button>
+
+      <button
+        type="button"
+        class="content-filter"
+        data-content-filter="scheduled"
+      >
+        Scheduled
+      </button>
+
+      <button
+        type="button"
+        class="content-filter"
+        data-content-filter="posted"
+      >
+        Posted
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =================================================
+       CONTENT LIST
+  ================================================== -->
+
+  <div
+    class="content-list"
+    id="contentList"
+  >
+
+    <div class="content-state">
+
+      <div class="content-state-inner">
+
+        <p class="content-state-copy">
+          Content records will appear here.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- =================================================
+     CONTENT COMMAND CENTER
+================================================== -->
+
+<section
+  class="content-detail"
+  id="contentDetail"
+  hidden
+>
+
+  <!-- =================================================
+       BACK
+  ================================================== -->
+
+  <button
+    type="button"
+    class="client-detail-back"
+    id="contentDetailBack"
+  >
+    ← All Content
+  </button>
+
+
+  <!-- =================================================
+       LOADING
+  ================================================== -->
+
+  <div
+    class="content-detail-state"
+    id="contentDetailLoading"
+    hidden
+  >
+
+    <div class="content-loader"></div>
+
+    <p>
+      Loading content...
+    </p>
+
+  </div>
+
+
+  <!-- =================================================
+       ERROR
+  ================================================== -->
+
+  <div
+    class="content-detail-state"
+    id="contentDetailError"
+    hidden
+  >
+
+    <h3>
+      CONTENT COULD NOT BE LOADED
+    </h3>
+
+    <p id="contentDetailErrorText">
+      The content record could not be retrieved.
+    </p>
+
+  </div>
+
+
+  <!-- =================================================
+       CONTENT
+  ================================================== -->
+
+  <div
+    class="content-detail-body"
+    id="contentDetailBody"
+    hidden
+  >
+
+    <!-- ===============================================
+         HERO
+    ================================================ -->
+
+    <header class="content-detail-hero">
+
+      <div>
+
+        <div class="content-detail-client-row">
+
+          <span id="contentDetailClient">
+            Client
+          </span>
+
+          <span
+            class="content-status"
+            id="contentDetailStatus"
+          >
+            Draft
+          </span>
+
+        </div>
+
+
+        <h2 id="contentDetailTitle">
+          Content Title
+        </h2>
+
+
+        <p
+          class="content-detail-type"
+          id="contentDetailType"
+        >
+          Static Post
+        </p>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="btn"
+        id="contentDetailEdit"
+      >
+        Edit Content
+      </button>
+
+    </header>
+
+
+    <!-- ===============================================
+         SUMMARY
+    ================================================ -->
+
+    <div class="content-detail-summary">
+
+      <article class="content-detail-summary-card">
+
+        <span>
+          STATUS
+        </span>
+
+        <strong id="contentDetailStatusValue">
+          Draft
+        </strong>
+
+      </article>
+
+
+      <article class="content-detail-summary-card">
+
+        <span>
+          APPROVAL
+        </span>
+
+        <strong id="contentDetailApproval">
+          Not Requested
+        </strong>
+
+      </article>
+
+
+      <article class="content-detail-summary-card">
+
+        <span>
+          PUBLISH
+        </span>
+
+        <strong id="contentDetailPublish">
+          Not scheduled
+        </strong>
+
+      </article>
+
+    </div>
+
+
+    <!-- ===============================================
+         MAIN GRID
+    ================================================ -->
+
+    <div class="content-detail-grid">
+
+      <!-- CAPTION -->
+
+      <article class="content-detail-card content-detail-caption">
+
+        <p class="eyebrow">
+          COPY
+        </p>
+
+        <h3>
+          CAPTION / COPY
+        </h3>
+
+        <div
+          class="content-detail-copy"
+          id="contentDetailCaption"
+        >
+          No caption added.
+        </div>
+
+      </article>
+
+
+      <!-- PLATFORMS -->
+
+      <article class="content-detail-card">
+
+        <p class="eyebrow">
+          DISTRIBUTION
+        </p>
+
+        <h3>
+          PLATFORMS
+        </h3>
+
+        <div
+          class="content-detail-platforms"
+          id="contentDetailPlatforms"
+        ></div>
+
+      </article>
+
+
+      <!-- SCHEDULING -->
+
+      <article class="content-detail-card">
+
+        <p class="eyebrow">
+          SCHEDULING
+        </p>
+
+        <h3>
+          PUBLISH DETAILS
+        </h3>
+
+        <div class="content-detail-fields">
+
+          <div>
+
+            <span>
+              PLANNED PUBLISH
+            </span>
+
+            <strong id="contentDetailPublishFull">
+              Not scheduled
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              CONTENT TYPE
+            </span>
+
+            <strong id="contentDetailTypeFull">
+              Static Post
+            </strong>
+
+          </div>
+
+        </div>
+
+      </article>
+
+
+      <!-- INTERNAL NOTES -->
+
+      <article class="content-detail-card">
+
+        <p class="eyebrow">
+          INTERNAL
+        </p>
+
+        <h3>
+          NOTES
+        </h3>
+
+        <div
+          class="content-detail-copy"
+          id="contentDetailNotes"
+        >
+          No internal notes.
+        </div>
+
+      </article>
+
+
+     <!-- MEDIA -->
+
+<article class="content-detail-card content-detail-assets">
+
+  <div class="content-assets-heading">
+
+    <div>
+
+      <p class="eyebrow">
+        MEDIA
+      </p>
+
+      <h3>
+        ASSETS
+      </h3>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn content-asset-upload-button"
+      id="contentAssetUploadButton"
+    >
+      + Upload Asset
+    </button>
+
+  </div>
+
+
+  <input
+    type="file"
+    id="contentAssetFileInput"
+    accept="image/*,video/*,application/pdf"
+    hidden
+  >
+
+
+  <div
+    class="content-asset-upload-status"
+    id="contentAssetUploadStatus"
+    hidden
+  ></div>
+
+
+  <div id="contentDetailAssets">
+
+    <p class="content-detail-empty">
+      No media assets attached yet.
+    </p>
+
+  </div>
+
+</article>
+
+    </div>
+
+  </div>
+
+</section>
+
+ <!-- =================================================
+     NEW CONTENT PANEL
+================================================== -->
+
+<div
+  class="content-create-panel"
+  id="contentCreatePanel"
+  hidden
+>
+
+  <div class="content-create-overlay"></div>
+
+  <section
+    class="content-create-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="contentCreateTitle"
+  >
+
+    <div class="content-create-header">
+
+      <div>
+
+        <p class="eyebrow">
+          CONTENT OPERATIONS
+        </p>
+
+        <h3 id="contentCreateTitle">
+          NEW CONTENT
+        </h3>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="content-create-close"
+        id="contentCreateClose"
+        aria-label="Close new content form"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form
+      class="content-create-form"
+      id="contentCreateForm"
+      novalidate
+    >
+
+      <!-- =================================================
+           CLIENT
+      ================================================== -->
+
+      <label class="content-create-field">
+
+        <span class="content-create-label">
+          CLIENT
+        </span>
+
+        <select
+          id="contentClient"
+          required
+        >
+
+          <option value="">
+            Select a client
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <!-- =================================================
+           TITLE
+      ================================================== -->
+
+      <label class="content-create-field">
+
+        <span class="content-create-label">
+          INTERNAL TITLE
+        </span>
+
+        <input
+          type="text"
+          id="contentTitle"
+          placeholder="Example: Labor Day promo post"
+          maxlength="160"
+          required
+        >
+
+      </label>
+
+
+      <!-- =================================================
+           CONTENT TYPE
+      ================================================== -->
+
+      <label class="content-create-field">
+
+        <span class="content-create-label">
+          CONTENT TYPE
+        </span>
+
+        <select
+          id="contentType"
+          required
+        >
+
+          <option value="">
+            Select content type
+          </option>
+
+          <option value="static_post">
+            Static Post
+          </option>
+
+          <option value="carousel">
+            Carousel
+          </option>
+
+          <option value="short_form_video">
+            Short-Form Video
+          </option>
+
+          <option value="story">
+            Story
+          </option>
+
+          <option value="other">
+            Other
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <!-- =================================================
+           PLATFORMS
+      ================================================== -->
+
+      <fieldset class="content-create-field">
+
+        <legend class="content-create-label">
+          PLATFORMS
+        </legend>
+
+        <div class="content-create-platforms">
+
+          <label class="content-create-check">
+
+            <input
+              type="checkbox"
+              value="facebook"
+              data-content-platform
+            >
+
+            <span>
+              Facebook
+            </span>
+
+          </label>
+
+
+          <label class="content-create-check">
+
+            <input
+              type="checkbox"
+              value="instagram"
+              data-content-platform
+            >
+
+            <span>
+              Instagram
+            </span>
+
+          </label>
+
+
+          <label class="content-create-check">
+
+            <input
+              type="checkbox"
+              value="tiktok"
+              data-content-platform
+            >
+
+            <span>
+              TikTok
+            </span>
+
+          </label>
+
+        </div>
+
+      </fieldset>
+
+
+      <!-- =================================================
+           CAPTION
+      ================================================== -->
+
+      <label class="content-create-field">
+
+        <span class="content-create-label">
+          CAPTION / COPY
+        </span>
+
+        <textarea
+          id="contentCaption"
+          rows="7"
+          placeholder="Write the main post copy here..."
+        ></textarea>
+
+      </label>
+
+
+      <!-- =================================================
+           DATE / TIME
+      ================================================== -->
+
+      <label class="content-create-field">
+
+        <span class="content-create-label">
+          PLANNED PUBLISH DATE & TIME
+        </span>
+
+        <input
+          type="datetime-local"
+          id="contentPublishAt"
+        >
+
+      </label>
+
+
+      <!-- =================================================
+           STATUS
+      ================================================== -->
+
+      <label class="content-create-field">
+
+        <span class="content-create-label">
+          STATUS
+        </span>
+
+        <select id="contentStatus">
+
+          <option value="draft">
+            Draft
+          </option>
+
+          <option value="awaiting_approval">
+            Awaiting Approval
+          </option>
+
+          <option value="approved">
+            Approved
+          </option>
+
+          <option value="scheduled">
+            Scheduled
+          </option>
+
+          <option value="posted">
+            Posted
+          </option>
+
+          <option value="cancelled">
+            Cancelled
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <!-- =================================================
+           APPROVAL STATUS
+      ================================================== -->
+
+      <label class="content-create-field">
+
+        <span class="content-create-label">
+          APPROVAL STATUS
+        </span>
+
+        <select id="contentApprovalStatus">
+
+          <option value="not_requested">
+            Not Requested
+          </option>
+
+          <option value="awaiting_approval">
+            Awaiting Approval
+          </option>
+
+          <option value="approved">
+            Approved
+          </option>
+
+          <option value="changes_requested">
+            Changes Requested
+          </option>
+
+        </select>
+
+      </label>
+
+
+      <!-- =================================================
+           INTERNAL NOTES
+      ================================================== -->
+
+      <label class="content-create-field">
+
+        <span class="content-create-label">
+          INTERNAL NOTES
+        </span>
+
+        <textarea
+          id="contentInternalNotes"
+          rows="4"
+          placeholder="Private notes for The Algorithm Forge..."
+        ></textarea>
+
+      </label>
+
+
+      <!-- =================================================
+           ERROR
+      ================================================== -->
+
+      <div
+        class="content-create-error"
+        id="contentCreateError"
+        hidden
+      ></div>
+
+
+      <!-- =================================================
+           ACTIONS
+      ================================================== -->
+
+      <div class="content-create-actions">
+
+        <button
+          type="button"
+          class="content-create-cancel"
+          id="contentCreateCancel"
+        >
+          Cancel
+        </button>
+
+
+        <button
+          type="submit"
+          class="btn content-create-submit"
+          id="contentCreateSubmit"
+        >
+          <span id="contentCreateSubmitText">
+            Create Content
+          </span>
+
+          <span
+            class="button-loader"
+            id="contentCreateLoader"
+            hidden
+          ></span>
+        </button>
+
+      </div>
+
+    </form>
+
+  </section>
+
+</div> 
+
+</section>
+
+    </main>
+
+  </div>
+
+
+  <!-- =====================================================
+       SUPABASE JAVASCRIPT SDK
+  ====================================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+  <!-- =====================================================
+       ADMIN APPLICATION
+  ====================================================== -->
+
+  <script src="js/admin.js"></script>
+
+</body>
+
+</html>
