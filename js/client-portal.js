@@ -580,19 +580,67 @@ function renderOnboardingComplete() {
 
 
 // =========================================================
-// TEMPORARY ONBOARDING STATE
+// ONBOARDING STATE
 // =========================================================
 
-function initializeOnboardingState() {
+async function initializeOnboardingState() {
 
-  /*
-    For this first portal shell, a newly invited
-    account is treated as requiring onboarding.
+  if (!currentMembership?.client_id) {
 
-    Next we will connect this to the existing
-    onboarding records so returning clients
-    automatically show Complete instead.
-  */
+    renderOnboardingRequired();
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "onboarding_submissions"
+      )
+      .select(
+        "id, submitted_at"
+      )
+      .eq(
+        "client_id",
+        currentMembership.client_id
+      )
+      .order(
+        "submitted_at",
+        {
+          ascending: false,
+        }
+      )
+      .limit(1)
+      .maybeSingle();
+
+
+  if (error) {
+
+    console.error(
+      "Onboarding status load failed:",
+      error
+    );
+
+    renderOnboardingRequired();
+
+    return;
+
+  }
+
+
+  if (data) {
+
+    renderOnboardingComplete();
+
+    return;
+
+  }
+
 
   renderOnboardingRequired();
 
@@ -804,7 +852,7 @@ async function initializePortal() {
     renderClientIdentity();
 
 
-    initializeOnboardingState();
+    await initializeOnboardingState();
 
 
     showPortal();
