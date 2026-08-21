@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <meta
+    name="robots"
+    content="noindex, nofollow"
+  />
+
+  <title>Client Portal | The Algorithm Forge</title>
+
+  <!-- FAVICONS -->
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="assets/images/favicon-32x32.png"
+  />
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="assets/images/favicon-16x16.png"
+  />
+
+  <link
+    rel="apple-touch-icon"
+    href="assets/images/apple-touch-icon.png"
+  />
+
+  <!-- FONTS -->
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- STYLES -->
+
+  <link
+    rel="stylesheet"
+    href="css/client-portal.css"
+  />
+
+</head>
+
+
+<body>
+
+  <!-- ==========================================
+       LOADING SCREEN
+  =========================================== -->
+
+  <div
+    class="portal-loading"
+    id="portalLoading"
+  >
+
+    <div class="portal-loader"></div>
+
+    <p>
+      Loading your client portal...
+    </p>
+
+  </div>
+
+
+  <!-- ==========================================
+       PORTAL APPLICATION
+  =========================================== -->
+
+  <div
+    class="portal-app"
+    id="portalApp"
+    hidden
+  >
+
+
+    <!-- ========================================
+         SIDEBAR
+    ========================================= -->
+
+    <aside class="portal-sidebar">
+
+      <div class="sidebar-brand">
+
+        <img
+          src="assets/images/af-logo.png"
+          alt=""
+          class="sidebar-logo"
+        />
+
+        <div class="sidebar-wordmark">
+
+          <span class="sidebar-the">
+            THE
+          </span>
+
+          <span class="sidebar-brand-name">
+            <span>A</span>LGORITHM
+            <span>F</span>ORGE
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <nav
+        class="portal-nav"
+        aria-label="Client portal navigation"
+      >
+
+        <button
+          class="portal-nav-item active"
+          type="button"
+          data-view="dashboard"
+        >
+          <span class="nav-icon">⌂</span>
+          Dashboard
+        </button>
+
+
+        <button
+          class="portal-nav-item"
+          type="button"
+          data-view="content"
+        >
+          <span class="nav-icon">▤</span>
+          Content
+        </button>
+
+
+        <button
+          class="portal-nav-item"
+          type="button"
+          data-view="uploads"
+        >
+          <span class="nav-icon">↑</span>
+          Uploads
+        </button>
+
+
+        <button
+          class="portal-nav-item"
+          type="button"
+          data-view="onboarding"
+        >
+          <span class="nav-icon">✓</span>
+          Onboarding
+        </button>
+
+      </nav>
+
+
+      <div class="sidebar-bottom">
+
+        <div class="sidebar-account">
+
+          <div
+            class="account-avatar"
+            id="clientAvatar"
+          >
+            AF
+          </div>
+
+          <div class="account-copy">
+
+            <strong id="sidebarClientName">
+              Client
+            </strong>
+
+            <span id="sidebarClientEmail">
+              Loading...
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="sign-out-button"
+          id="clientSignOut"
+        >
+          Sign Out
+        </button>
+
+      </div>
+
+    </aside>
+
+
+    <!-- ========================================
+         MAIN PORTAL
+    ========================================= -->
+
+    <main class="portal-main">
+
+
+      <!-- ======================================
+           TOP BAR
+      ======================================= -->
+
+      <header class="portal-topbar">
+
+        <div>
+
+          <div class="eyebrow">
+            CLIENT PORTAL
+          </div>
+
+          <h1 id="portalBusinessName">
+            YOUR BUSINESS
+          </h1>
+
+        </div>
+
+
+        <div class="topbar-account">
+
+          <span id="topbarClientEmail">
+            Loading...
+          </span>
+
+          <div
+            class="topbar-avatar"
+            id="topbarAvatar"
+          >
+            AF
+          </div>
+
+        </div>
+
+      </header>
+
+
+      <!-- ======================================
+           DASHBOARD VIEW
+      ======================================= -->
+
+      <section
+        class="portal-view active"
+        id="view-dashboard"
+      >
+
+        <div class="welcome-panel">
+
+          <div>
+
+            <div class="eyebrow">
+              WELCOME TO THE FORGE
+            </div>
+
+            <h2 id="welcomeHeading">
+              LET'S GET TO WORK.
+            </h2>
+
+            <p>
+              This is your home base for onboarding,
+              content, uploads, approvals, and everything
+              we're building together.
+            </p>
+
+          </div>
+
+          <div class="welcome-mark">
+            AF
+          </div>
+
+        </div>
+
+
+        <!-- STATUS CARDS -->
+
+        <div class="dashboard-grid">
+
+          <article class="portal-card">
+
+            <div class="card-heading">
+
+              <div>
+
+                <span class="card-kicker">
+                  ACCOUNT
+                </span>
+
+                <h3>
+                  Onboarding
+                </h3>
+
+              </div>
+
+              <span
+                class="status-pill"
+                id="onboardingStatus"
+              >
+                Checking
+              </span>
+
+            </div>
+
+            <p id="onboardingDescription">
+              We're checking your onboarding status.
+            </p>
+
+            <button
+              type="button"
+              class="card-action"
+              id="onboardingAction"
+            >
+              View Onboarding
+            </button>
+
+          </article>
+
+
+          <article class="portal-card">
+
+            <div class="card-heading">
+
+              <div>
+
+                <span class="card-kicker">
+                  CONTENT
+                </span>
+
+                <h3>
+                  Content Queue
+                </h3>
+
+              </div>
+
+              <span
+                class="card-number"
+                id="contentCount"
+              >
+                0
+              </span>
+
+            </div>
+
+            <p>
+              Review content currently being prepared,
+              scheduled, or awaiting your approval.
+            </p>
+
+            <button
+              type="button"
+              class="card-action"
+              data-open-view="content"
+            >
+              View Content
+            </button>
+
+          </article>
+
+
+          <article class="portal-card">
+
+            <div class="card-heading">
+
+              <div>
+
+                <span class="card-kicker">
+                  MEDIA
+                </span>
+
+                <h3>
+                  Uploads
+                </h3>
+
+              </div>
+
+              <span
+                class="card-number"
+                id="uploadCount"
+              >
+                0
+              </span>
+
+            </div>
+
+            <p>
+              Send photos, videos, graphics, and other
+              assets directly to The Algorithm Forge.
+            </p>
+
+            <button
+              type="button"
+              class="card-action"
+              data-open-view="uploads"
+            >
+              Upload Media
+            </button>
+
+          </article>
+
+        </div>
+
+
+        <!-- ACTIVITY -->
+
+        <article class="portal-card activity-card">
+
+          <div class="card-heading">
+
+            <div>
+
+              <span class="card-kicker">
+                ACTIVITY
+              </span>
+
+              <h3>
+                Recent Activity
+              </h3>
+
+            </div>
+
+          </div>
+
+          <div
+            class="empty-state"
+            id="recentActivity"
+          >
+
+            <strong>
+              Nothing here yet.
+            </strong>
+
+            <p>
+              Portal activity will appear here as
+              we begin working together.
+            </p>
+
+          </div>
+
+        </article>
+
+      </section>
+
+
+      <!-- ======================================
+           CONTENT VIEW
+      ======================================= -->
+
+      <section
+        class="portal-view"
+        id="view-content"
+        hidden
+      >
+
+        <div class="view-heading">
+
+          <div>
+
+            <div class="eyebrow">
+              CONTENT
+            </div>
+
+            <h2>
+              CONTENT QUEUE
+            </h2>
+
+            <p>
+              Review your upcoming and completed
+              social content.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="portal-card"
+          id="clientContentList"
+        >
+
+          <div class="empty-state">
+
+            <strong>
+              No content yet.
+            </strong>
+
+            <p>
+              Content created for your business
+              will appear here.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================
+           UPLOADS VIEW
+      ======================================= -->
+
+      <section
+        class="portal-view"
+        id="view-uploads"
+        hidden
+      >
+
+        <div class="view-heading">
+
+          <div>
+
+            <div class="eyebrow">
+              MEDIA
+            </div>
+
+            <h2>
+              SEND US YOUR STUFF.
+            </h2>
+
+            <p>
+              Upload photos, video clips, logos,
+              graphics, and other media we can use
+              when creating your content.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="portal-card upload-panel">
+
+          <input
+            type="file"
+            id="clientUploadInput"
+            multiple
+            hidden
+          />
+
+          <button
+            type="button"
+            class="upload-dropzone"
+            id="clientUploadButton"
+          >
+
+            <span class="upload-icon">
+              ↑
+            </span>
+
+            <strong>
+              Choose Files
+            </strong>
+
+            <span>
+              Photos, videos, graphics, and documents
+            </span>
+
+          </button>
+
+
+          <div
+            class="upload-status"
+            id="clientUploadStatus"
+            hidden
+          ></div>
+
+        </div>
+
+
+        <div class="portal-card uploads-list-card">
+
+          <div class="card-heading">
+
+            <div>
+
+              <span class="card-kicker">
+                YOUR FILES
+              </span>
+
+              <h3>
+                Recent Uploads
+              </h3>
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="empty-state"
+            id="clientUploadsList"
+          >
+
+            <strong>
+              No uploads yet.
+            </strong>
+
+            <p>
+              Files you send to us will appear here.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================
+           ONBOARDING VIEW
+      ======================================= -->
+
+      <section
+        class="portal-view"
+        id="view-onboarding"
+        hidden
+      >
+
+        <div class="view-heading">
+
+          <div>
+
+            <div class="eyebrow">
+              GETTING STARTED
+            </div>
+
+            <h2>
+              ONBOARDING
+            </h2>
+
+            <p>
+              Give us the information we need to
+              understand your business, brand, audience,
+              and content goals.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="portal-card"
+          id="onboardingPanel"
+        >
+
+          <div class="empty-state">
+
+            <strong>
+              Loading onboarding...
+            </strong>
+
+            <p>
+              We're checking your current onboarding
+              status.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+    </main>
+
+  </div>
+
+
+  <!-- ==========================================
+       ACCESS ERROR
+  =========================================== -->
+
+  <div
+    class="portal-access-error"
+    id="portalAccessError"
+    hidden
+  >
+
+    <div class="access-error-card">
+
+      <div class="eyebrow">
+        CLIENT PORTAL
+      </div>
+
+      <h1>
+        PORTAL ACCESS REQUIRED.
+      </h1>
+
+      <p id="portalAccessErrorMessage">
+        Please sign in with an authorized client
+        account to access this portal.
+      </p>
+
+      <a
+        href="index.html"
+        class="access-home-link"
+      >
+        Return to The Algorithm Forge
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <!-- SUPABASE -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <!-- CLIENT PORTAL -->
+
+  <script
+    src="js/client-portal.js"
+  ></script>
+
+</body>
+
+</html>
