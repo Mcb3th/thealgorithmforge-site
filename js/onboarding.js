@@ -18,6 +18,145 @@
 const ONBOARDING_ENDPOINT =
   "https://dbujzfjwbzjrwaknvdax.supabase.co/functions/v1/submit-onboarding";
 
+  const SUPABASE_URL =
+  "https://dbujzfjwbzjrwaknvdax.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_LaXzH-5gXws_N8LMfbf-6g_aInczyqT";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    }
+  );
+
+  // =========================================================
+// CLIENT PORTAL AUTHENTICATION
+// =========================================================
+
+async function initializeClientOnboarding() {
+
+  const {
+    data: sessionData,
+    error: sessionError,
+  } =
+    await supabaseClient
+      .auth
+      .getSession();
+
+
+  const session =
+    sessionData?.session;
+
+
+  // No valid login session.
+  if (
+    sessionError ||
+    !session?.user
+  ) {
+
+    window.location.replace(
+      "client-login.html"
+    );
+
+    return;
+  }
+
+
+  const user =
+    session.user;
+
+
+  // Confirm this user belongs to an active client.
+ const {
+  data: membership,
+  error: membershipError,
+} =
+  await supabaseClient
+    .from("client_users")
+    .select(
+      "client_id, role, is_active"
+    )
+    .eq(
+      "user_id",
+      user.id
+    )
+    .eq(
+      "is_active",
+      true
+    )
+    .maybeSingle();
+
+
+  if (
+    membershipError ||
+    !membership?.client_id
+  ) {
+
+    console.error(
+      "Client membership could not be verified:",
+      membershipError
+    );
+
+    window.location.replace(
+      "client-login.html"
+    );
+
+    return;
+  }
+
+
+  // =======================================================
+  // PREFILL KNOWN CLIENT INFORMATION
+  // =======================================================
+
+  const businessNameField =
+    document.getElementById(
+      "business_name"
+    );
+
+  const contactEmailField =
+    document.getElementById(
+      "contact_email"
+    );
+
+
+ const businessName =
+  user.user_metadata
+    ?.business_name ||
+  "";
+
+
+if (
+  businessNameField &&
+  businessName
+) {
+
+  businessNameField.value =
+    businessName;
+
+}
+
+
+  if (
+    contactEmailField &&
+    user.email
+  ) {
+
+    contactEmailField.value =
+      user.email;
+
+  }
+
+}
 
 // =========================================================
 // ELEMENTS
@@ -3521,24 +3660,54 @@ form.addEventListener(
 
     try {
 
-      const response =
-        await fetch(
-          ONBOARDING_ENDPOINT,
-          {
-            method:
-              "POST",
+      const {
+  data: sessionData,
+  error: sessionError,
+} =
+  await supabaseClient
+    .auth
+    .getSession();
 
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
 
-            body:
-              JSON.stringify(
-                payload
-              ),
-          }
-        );
+if (
+  sessionError ||
+  !sessionData?.session
+) {
+
+  throw new Error(
+    "Your client portal session has expired. Please return to the portal and sign in again."
+  );
+
+}
+
+
+const accessToken =
+  sessionData
+    .session
+    .access_token;
+
+
+const response =
+  await fetch(
+    ONBOARDING_ENDPOINT,
+    {
+      method:
+        "POST",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+
+        "Authorization":
+          `Bearer ${accessToken}`,
+      },
+
+      body:
+        JSON.stringify(
+          payload
+        ),
+    }
+  );
 
 
       let result = null;
@@ -3718,3 +3887,5 @@ function initializeFormState() {
 initializeFormState();
 
 showStep(1);
+
+initializeClientOnboarding();

@@ -458,8 +458,25 @@ portalNavItems.forEach(
       "click",
       () => {
 
+        const viewName =
+          button.dataset.view;
+
+
+        if (
+          viewName ===
+          "onboarding"
+        ) {
+
+          window.location.href =
+            "onboarding.html";
+
+          return;
+
+        }
+
+
         showPortalView(
-          button.dataset.view
+          viewName
         );
 
       }
@@ -590,9 +607,8 @@ onboardingAction.addEventListener(
   "click",
   () => {
 
-    showPortalView(
-      "onboarding"
-    );
+    window.location.href =
+      "onboarding.html";
 
   }
 );
