@@ -2661,6 +2661,13 @@ function renderClientCommandCenter(
     )
   );
 
+  clientsList.appendChild(
+  createPortalAccessSection(
+    client,
+    primaryContact
+  )
+);
+
 
   const grid =
     document.createElement(
@@ -2740,6 +2747,400 @@ function renderClientCommandCenter(
   });
 }
 
+// =========================================================
+// CLIENT PORTAL ACCESS
+// =========================================================
+
+function createPortalAccessSection(
+  client,
+  primaryContact
+) {
+
+  const section =
+    document.createElement(
+      "section"
+    );
+
+  section.className =
+    "client-portal-access";
+
+
+  const heading =
+    document.createElement(
+      "div"
+    );
+
+  heading.className =
+    "client-portal-heading";
+
+
+  const headingText =
+    document.createElement(
+      "div"
+    );
+
+
+  const eyebrow =
+    document.createElement(
+      "p"
+    );
+
+  eyebrow.className =
+    "eyebrow";
+
+  eyebrow.textContent =
+    "CLIENT PORTAL";
+
+
+  const title =
+    document.createElement(
+      "h3"
+    );
+
+  title.textContent =
+    "PORTAL ACCESS";
+
+
+  const description =
+    document.createElement(
+      "p"
+    );
+
+  description.className =
+    "client-portal-description";
+
+  description.textContent =
+    "Invite an authorized client contact to create their portal account.";
+
+
+  headingText.appendChild(
+    eyebrow
+  );
+
+  headingText.appendChild(
+    title
+  );
+
+  headingText.appendChild(
+    description
+  );
+
+
+  heading.appendChild(
+    headingText
+  );
+
+
+  section.appendChild(
+    heading
+  );
+
+
+  const form =
+    document.createElement(
+      "form"
+    );
+
+  form.className =
+    "client-portal-form";
+
+
+  const emailField =
+    document.createElement(
+      "label"
+    );
+
+  emailField.className =
+    "client-portal-field";
+
+
+  const emailLabel =
+    document.createElement(
+      "span"
+    );
+
+  emailLabel.textContent =
+    "EMAIL ADDRESS";
+
+
+  const emailInput =
+    document.createElement(
+      "input"
+    );
+
+  emailInput.type =
+    "email";
+
+  emailInput.placeholder =
+    "client@example.com";
+
+  emailInput.required =
+    true;
+
+  emailInput.value =
+    primaryContact?.email ||
+    "";
+
+
+  emailField.appendChild(
+    emailLabel
+  );
+
+  emailField.appendChild(
+    emailInput
+  );
+
+
+  const roleField =
+    document.createElement(
+      "label"
+    );
+
+  roleField.className =
+    "client-portal-field";
+
+
+  const roleLabel =
+    document.createElement(
+      "span"
+    );
+
+  roleLabel.textContent =
+    "PORTAL ROLE";
+
+
+  const roleSelect =
+    document.createElement(
+      "select"
+    );
+
+
+  const ownerOption =
+    document.createElement(
+      "option"
+    );
+
+  ownerOption.value =
+    "owner";
+
+  ownerOption.textContent =
+    "Owner";
+
+
+  const managerOption =
+    document.createElement(
+      "option"
+    );
+
+  managerOption.value =
+    "manager";
+
+  managerOption.textContent =
+    "Manager";
+
+
+  const memberOption =
+    document.createElement(
+      "option"
+    );
+
+  memberOption.value =
+    "member";
+
+  memberOption.textContent =
+    "Member";
+
+
+  roleSelect.appendChild(
+    ownerOption
+  );
+
+  roleSelect.appendChild(
+    managerOption
+  );
+
+  roleSelect.appendChild(
+    memberOption
+  );
+
+
+  roleField.appendChild(
+    roleLabel
+  );
+
+  roleField.appendChild(
+    roleSelect
+  );
+
+
+  const inviteButton =
+    document.createElement(
+      "button"
+    );
+
+  inviteButton.type =
+    "submit";
+
+  inviteButton.className =
+    "btn client-portal-invite-button";
+
+  inviteButton.textContent =
+    "Invite to Portal";
+
+
+  const status =
+    document.createElement(
+      "div"
+    );
+
+  status.className =
+    "client-portal-status";
+
+  status.hidden =
+    true;
+
+
+  form.appendChild(
+    emailField
+  );
+
+  form.appendChild(
+    roleField
+  );
+
+  form.appendChild(
+    inviteButton
+  );
+
+
+  section.appendChild(
+    form
+  );
+
+  section.appendChild(
+    status
+  );
+
+
+  form.addEventListener(
+    "submit",
+    async (event) => {
+
+      event.preventDefault();
+
+
+      const email =
+        emailInput
+          .value
+          .trim()
+          .toLowerCase();
+
+      const role =
+        roleSelect.value;
+
+
+      if (!email) {
+        return;
+      }
+
+
+      inviteButton.disabled =
+        true;
+
+      inviteButton.textContent =
+        "Sending Invite...";
+
+
+      status.hidden =
+        false;
+
+      status.className =
+        "client-portal-status";
+
+      status.textContent =
+        "Creating portal invitation...";
+
+
+      try {
+
+        const {
+          data,
+          error,
+        } =
+          await supabaseClient
+            .functions
+            .invoke(
+              "invite-client",
+              {
+                body: {
+                  email,
+                  client_id:
+                    client.id,
+                  role,
+                },
+              }
+            );
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        if (
+          !data?.success
+        ) {
+
+          throw new Error(
+            data?.error ||
+            "The portal invitation could not be created."
+          );
+
+        }
+
+
+        status.classList.add(
+          "is-success"
+        );
+
+        status.textContent =
+          data.message ||
+          `Invitation sent to ${email}.`;
+
+
+      } catch (error) {
+
+        console.error(
+          "Client portal invitation failed:",
+          error
+        );
+
+
+        status.classList.add(
+          "is-error"
+        );
+
+        status.textContent =
+          error?.message ||
+          "The portal invitation could not be sent.";
+
+      } finally {
+
+        inviteButton.disabled =
+          false;
+
+        inviteButton.textContent =
+          "Invite to Portal";
+
+      }
+
+    }
+  );
+
+
+  return section;
+
+}
 
 // =========================================================
 // CLIENT DETAIL HEADER
@@ -4512,8 +4913,58 @@ async function performSetupTasksLoad() {
 
 
     if (error) {
-      throw error;
+
+  let functionMessage =
+    error.message ||
+    "The portal invitation could not be created.";
+
+  try {
+
+    if (
+      error.context &&
+      typeof error.context.json ===
+        "function"
+    ) {
+
+      const errorBody =
+        await error.context.json();
+
+
+      if (
+        errorBody?.error
+      ) {
+
+        functionMessage =
+          errorBody.error;
+
+      } else if (
+        errorBody?.message
+      ) {
+
+        functionMessage =
+          errorBody.message;
+
+      }
+
     }
+
+  } catch (
+    responseError
+  ) {
+
+    console.error(
+      "Could not read invite function error response:",
+      responseError
+    );
+
+  }
+
+
+  throw new Error(
+    functionMessage
+  );
+
+}
 
 
     if (

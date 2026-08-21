@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <meta
+    name="robots"
+    content="noindex, nofollow"
+  />
+
+  <title>
+    Set Up Your Account | The Algorithm Forge
+  </title>
+
+  <!-- ========================================
+       FAVICON
+  ======================================== -->
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="assets/images/favicon-32x32.png"
+  />
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="assets/images/favicon-16x16.png"
+  />
+
+  <link
+    rel="apple-touch-icon"
+    href="assets/images/apple-touch-icon.png"
+  />
+
+  <!-- ========================================
+       FONTS
+  ======================================== -->
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- ========================================
+       STYLES
+  ======================================== -->
+
+  <link
+    rel="stylesheet"
+    href="css/client-setup.css"
+  />
+
+</head>
+
+<body>
+
+  <main class="setup-page">
+
+    <!-- ========================================
+         BRAND
+    ======================================== -->
+
+    <header class="setup-header">
+
+      <a
+        href="index.html"
+        class="setup-brand"
+        aria-label="The Algorithm Forge home"
+      >
+
+        <img
+          src="assets/images/af-logo.png"
+          alt=""
+          class="setup-brand-mark"
+        />
+
+        <span class="setup-wordmark">
+
+          <span class="setup-the">
+            THE
+          </span>
+
+          <span class="setup-brand-name">
+            <span class="brand-accent">A</span>LGORITHM
+            <span class="brand-accent">F</span>ORGE
+          </span>
+
+        </span>
+
+      </a>
+
+    </header>
+
+
+    <!-- ========================================
+         ACCOUNT SETUP
+    ======================================== -->
+
+    <section class="setup-shell">
+
+      <div class="setup-card">
+
+        <div class="setup-intro">
+
+          <div class="eyebrow">
+            <span class="spark"></span>
+            CLIENT PORTAL
+          </div>
+
+          <h1>
+            WELCOME TO THE
+            <span>FORGE.</span>
+          </h1>
+
+          <p>
+            Your portal invitation has been accepted.
+            Create a password to finish setting up your
+            account.
+          </p>
+
+        </div>
+
+
+        <!-- ========================================
+             LOADING STATE
+        ======================================== -->
+
+        <div
+          class="setup-state"
+          id="setupLoading"
+        >
+
+          <div class="setup-loader"></div>
+
+          <p>
+            Verifying your invitation...
+          </p>
+
+        </div>
+
+
+        <!-- ========================================
+             SETUP FORM
+        ======================================== -->
+
+        <form
+          class="setup-form"
+          id="clientSetupForm"
+          hidden
+        >
+
+          <label class="setup-field">
+
+            <span>
+              EMAIL ADDRESS
+            </span>
+
+            <input
+              type="email"
+              id="clientEmail"
+              autocomplete="email"
+              readonly
+            />
+
+          </label>
+
+
+          <label class="setup-field">
+
+            <span>
+              CREATE PASSWORD
+            </span>
+
+            <input
+              type="password"
+              id="clientPassword"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            />
+
+          </label>
+
+
+          <label class="setup-field">
+
+            <span>
+              CONFIRM PASSWORD
+            </span>
+
+            <input
+              type="password"
+              id="clientPasswordConfirm"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            />
+
+          </label>
+
+
+          <div class="password-note">
+
+            <p>
+              Your password must contain at least
+              8 characters.
+            </p>
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="setup-button"
+            id="setupSubmitButton"
+          >
+            Create My Account
+          </button>
+
+
+          <div
+            class="setup-status"
+            id="setupStatus"
+            hidden
+          ></div>
+
+        </form>
+
+
+        <!-- ========================================
+             INVALID / EXPIRED INVITATION
+        ======================================== -->
+
+        <div
+          class="setup-message"
+          id="setupError"
+          hidden
+        >
+
+          <div class="setup-message-icon">
+            !
+          </div>
+
+          <h2>
+            THIS INVITATION CAN'T BE USED.
+          </h2>
+
+          <p id="setupErrorMessage">
+            The invitation may have expired or already
+            been used. Contact The Algorithm Forge for
+            a new portal invitation.
+          </p>
+
+          <a
+            href="mailto:hello@thealgorithmforge.com"
+            class="setup-link"
+          >
+            Contact The Algorithm Forge
+          </a>
+
+        </div>
+
+
+        <!-- ========================================
+             SUCCESS STATE
+        ======================================== -->
+
+        <div
+          class="setup-message setup-success"
+          id="setupSuccess"
+          hidden
+        >
+
+          <div class="setup-message-icon">
+            ✓
+          </div>
+
+          <h2>
+            ACCOUNT FORGED.
+          </h2>
+
+          <p>
+            Your password has been created and your
+            client portal account is ready.
+          </p>
+
+          <p class="setup-success-note">
+            Taking you to your portal...
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================
+         FOOTER
+    ======================================== -->
+
+    <footer class="setup-footer">
+
+      <p>
+        © <span id="currentYear"></span>
+        The Algorithm Forge
+      </p>
+
+      <span class="footer-divider">
+        •
+      </span>
+
+      <a href="index.html">
+        thealgorithmforge.com
+      </a>
+
+    </footer>
+
+  </main>
+
+
+  <!-- ========================================
+       SUPABASE
+  ======================================== -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <!-- ========================================
+       CLIENT SETUP
+  ======================================== -->
+
+  <script
+    src="js/client-setup.js"
+  ></script>
+
+</body>
+
+</html>
