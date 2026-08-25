@@ -158,6 +158,9 @@ let currentUser =
 let currentMembership =
   null;
 
+let currentOnboardingSubmission =
+  null;
+
 let currentView =
   "dashboard";
 
@@ -463,16 +466,28 @@ portalNavItems.forEach(
 
 
         if (
-          viewName ===
-          "onboarding"
-        ) {
+  viewName ===
+  "onboarding"
+) {
 
-          window.location.href =
-            "onboarding.html";
+  if (
+    currentOnboardingSubmission
+  ) {
 
-          return;
+    showPortalView(
+      "onboarding"
+    );
 
-        }
+  } else {
+
+    window.location.href =
+      "onboarding.html";
+
+  }
+
+  return;
+
+}
 
 
         showPortalView(
@@ -603,8 +618,8 @@ async function initializeOnboardingState() {
         "onboarding_submissions"
       )
       .select(
-        "id, submitted_at"
-      )
+  "id, submitted_at, raw_response"
+)
       .eq(
         "client_id",
         currentMembership.client_id
@@ -635,12 +650,600 @@ async function initializeOnboardingState() {
 
   if (data) {
 
-    renderOnboardingComplete();
+  currentOnboardingSubmission =
+    data;
+
+  renderOnboardingComplete();
+
+  renderOnboardingSummary();
+
+  return;
+
+}
+
+if (data) {
+
+  currentOnboardingSubmission =
+    data;
+
+  renderOnboardingComplete();
+
+  // =========================================================
+// ONBOARDING SUMMARY
+// =========================================================
+
+function renderOnboardingSummary() {
+
+  if (
+    !currentOnboardingSubmission
+      ?.raw_response
+  ) {
+
+    onboardingPanel.innerHTML = `
+      <div class="empty-state">
+
+        <strong>
+          Onboarding complete.
+        </strong>
+
+        <p>
+          Your onboarding submission has been received.
+        </p>
+
+      </div>
+    `;
 
     return;
 
   }
 
+
+  const payload =
+    currentOnboardingSubmission
+      .raw_response;
+
+
+  const formatValue =
+    (value) => {
+
+      if (
+        value === null ||
+        value === undefined ||
+        value === ""
+      ) {
+        return "Not provided";
+      }
+
+
+      if (
+        typeof value ===
+        "boolean"
+      ) {
+        return value
+          ? "Yes"
+          : "No";
+      }
+
+
+      if (
+        Array.isArray(value)
+      ) {
+
+        if (
+          value.length === 0
+        ) {
+          return "None";
+        }
+
+
+        return value
+          .map(
+            (item) => {
+
+              if (
+                typeof item ===
+                "string"
+              ) {
+                return formatLabel(
+                  item
+                );
+              }
+
+
+              if (
+                item &&
+                typeof item ===
+                "object"
+              ) {
+
+                const platform =
+                  item.platform
+                    ? formatLabel(
+                        item.platform
+                      )
+                    : "Account";
+
+                const url =
+                  item.profile_url ||
+                  "";
+
+                return url
+                  ? `${platform}: ${url}`
+                  : platform;
+
+              }
+
+
+              return String(
+                item
+              );
+
+            }
+          )
+          .join(", ");
+
+      }
+
+
+      return formatLabel(
+        String(value)
+      );
+
+    };
+
+
+  const formatLabel =
+    (value) =>
+      String(value)
+        .replaceAll(
+          "_",
+          " "
+        )
+        .replace(
+          /\b\w/g,
+          (letter) =>
+            letter.toUpperCase()
+        );
+
+
+  const makeRow =
+    (
+      label,
+      value
+    ) => `
+      <div class="onboarding-summary-row">
+
+        <span class="onboarding-summary-label">
+          ${escapePortalHtml(label)}
+        </span>
+
+        <div class="onboarding-summary-value">
+          ${escapePortalHtml(
+            formatValue(value)
+          )}
+        </div>
+
+      </div>
+    `;
+
+
+  const makeSection =
+    (
+      title,
+      rows
+    ) => `
+      <section class="onboarding-summary-section">
+
+        <h3>
+          ${escapePortalHtml(title)}
+        </h3>
+
+        <div class="onboarding-summary-grid">
+          ${rows.join("")}
+        </div>
+
+      </section>
+    `;
+
+
+  const business =
+    payload.business ||
+    {};
+
+  const contact =
+    payload.primary_contact ||
+    {};
+
+  const brand =
+    payload.brand ||
+    {};
+
+  const social =
+    payload.social_media ||
+    {};
+
+  const goals =
+    payload.goals ||
+    {};
+
+  const content =
+    payload.content ||
+    {};
+
+  const requirements =
+    payload.requirements ||
+    {};
+
+  const workflow =
+    payload.workflow ||
+    {};
+
+
+  const submittedDate =
+    currentOnboardingSubmission
+      .submitted_at
+      ? new Date(
+          currentOnboardingSubmission
+            .submitted_at
+        ).toLocaleString()
+      : "Unknown";
+
+
+  onboardingPanel.innerHTML = `
+
+    <div class="onboarding-summary-header">
+
+      <div>
+
+        <span class="card-kicker">
+          SUBMITTED
+        </span>
+
+        <h3>
+          YOUR ONBOARDING
+        </h3>
+
+        <p>
+          Submitted ${escapePortalHtml(
+            submittedDate
+          )}
+        </p>
+
+      </div>
+
+      <span class="status-pill is-complete">
+        Complete
+      </span>
+
+    </div>
+
+
+    ${makeSection(
+      "Business",
+      [
+        makeRow(
+          "Business Name",
+          business.business_name
+        ),
+
+        makeRow(
+          "Website",
+          business.website
+        ),
+
+        makeRow(
+          "What We Do",
+          business.business_description
+        ),
+
+        makeRow(
+          "Operating Scope",
+          business.operating_scope
+        ),
+
+        makeRow(
+          "Service Area",
+          business.service_area
+        ),
+
+        makeRow(
+          "Priority Products / Services",
+          business.priority_products_services
+        ),
+      ]
+    )}
+
+
+    ${makeSection(
+      "Primary Contact",
+      [
+        makeRow(
+          "Name",
+          contact.name
+        ),
+
+        makeRow(
+          "Role",
+          contact.role
+        ),
+
+        makeRow(
+          "Email",
+          contact.email
+        ),
+
+        makeRow(
+          "Phone",
+          contact.phone
+        ),
+
+        makeRow(
+          "Preferred Contact Method",
+          contact.preferred_contact_method
+        ),
+      ]
+    )}
+
+
+    ${makeSection(
+      "Brand",
+      [
+        makeRow(
+          "Ideal Customer",
+          brand.ideal_customer
+        ),
+
+        makeRow(
+          "What Sets Us Apart",
+          brand.differentiators
+        ),
+
+        makeRow(
+          "Brand Voice",
+          brand.brand_voice
+        ),
+
+        makeRow(
+          "Brand Voice Notes",
+          brand.brand_voice_notes
+        ),
+
+        makeRow(
+          "Preferred Language",
+          brand.preferred_language
+        ),
+
+        makeRow(
+          "Language to Avoid",
+          brand.avoid_language
+        ),
+
+        makeRow(
+          "Brand Guidelines",
+          brand.brand_guidelines_status
+        ),
+
+        makeRow(
+          "Brand Materials",
+          brand.brand_materials
+        ),
+      ]
+    )}
+
+
+    ${makeSection(
+      "Social Media",
+      [
+        makeRow(
+          "Existing Accounts",
+          social.existing_accounts
+        ),
+
+        makeRow(
+          "Platforms to Manage",
+          social.platforms_to_manage
+        ),
+
+        makeRow(
+          "New Accounts Needed",
+          social.new_accounts_needed
+        ),
+
+        makeRow(
+          "Current Social Manager",
+          social.current_social_manager
+        ),
+
+        makeRow(
+          "Previous Agency Experience",
+          social.previous_agency_experience
+        ),
+
+        makeRow(
+          "Previous Agency Notes",
+          social.previous_agency_notes
+        ),
+
+        makeRow(
+          "Meta Business Portfolio",
+          social.meta_business_portfolio_status
+        ),
+
+        makeRow(
+          "TikTok Business Center",
+          social.tiktok_business_center_status
+        ),
+      ]
+    )}
+
+
+    ${makeSection(
+      "Goals",
+      [
+        makeRow(
+          "Primary Goals",
+          goals.primary_goals
+        ),
+
+        makeRow(
+          "Top Priority",
+          goals.primary_goal
+        ),
+
+        makeRow(
+          "Desired Improvement",
+          goals.desired_improvement
+        ),
+      ]
+    )}
+
+
+    ${makeSection(
+      "Content",
+      [
+        makeRow(
+          "Content Preferences",
+          content.content_preferences
+        ),
+
+        makeRow(
+          "Existing Media",
+          content.media_inventory
+        ),
+
+        makeRow(
+          "Media Supply",
+          content.media_supply_frequency
+        ),
+
+        makeRow(
+          "Priority Features",
+          content.priority_features
+        ),
+
+        makeRow(
+          "Testimonials",
+          content.testimonials_available
+        ),
+
+        makeRow(
+          "Upcoming Promotions",
+          content.upcoming_promotions
+        ),
+
+        makeRow(
+          "Content Exclusions",
+          content.content_exclusions
+        ),
+      ]
+    )}
+
+
+    ${makeSection(
+      "Requirements",
+      [
+        makeRow(
+          "Competitors / Inspiration",
+          requirements.competitor_inspiration
+        ),
+
+        makeRow(
+          "Inspiration Notes",
+          requirements.competitor_inspiration_notes
+        ),
+
+        makeRow(
+          "Compliance Requirements",
+          requirements.compliance_status
+        ),
+
+        makeRow(
+          "Compliance Notes",
+          requirements.compliance_notes
+        ),
+      ]
+    )}
+
+
+    ${makeSection(
+      "Workflow",
+      [
+        makeRow(
+          "Primary Call to Action",
+          workflow.primary_call_to_action
+        ),
+
+        makeRow(
+          "CTA Destination",
+          workflow.call_to_action_destination
+        ),
+
+        makeRow(
+          "Approval Contact",
+          workflow.approval_contact
+        ),
+
+        makeRow(
+          "Approval Timing",
+          workflow.approval_timing
+        ),
+
+        makeRow(
+          "Approval Preference",
+          workflow.approval_preference
+        ),
+
+        makeRow(
+          "Approval Requirements",
+          workflow.approval_requirements
+        ),
+
+        makeRow(
+          "Additional Notes",
+          workflow.additional_notes
+        ),
+      ]
+    )}
+
+  `;
+
+}
+
+function escapePortalHtml(
+  value
+) {
+
+  return String(
+    value ?? ""
+  )
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+  renderOnboardingSummary();
+
+  return;
+
+}
 
   renderOnboardingRequired();
 
@@ -654,6 +1257,19 @@ async function initializeOnboardingState() {
 onboardingAction.addEventListener(
   "click",
   () => {
+
+    if (
+      currentOnboardingSubmission
+    ) {
+
+      showPortalView(
+        "onboarding"
+      );
+
+      return;
+
+    }
+
 
     window.location.href =
       "onboarding.html";
