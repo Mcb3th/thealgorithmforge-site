@@ -593,82 +593,42 @@ function renderOnboardingComplete() {
 
 }
 
-
 // =========================================================
-// ONBOARDING STATE
+// ONBOARDING SUMMARY HELPERS
 // =========================================================
 
-async function initializeOnboardingState() {
+function escapePortalHtml(
+  value
+) {
 
-  if (!currentMembership?.client_id) {
-
-    renderOnboardingRequired();
-
-    return;
-
-  }
-
-
-  const {
-    data,
-    error,
-  } =
-    await supabaseClient
-      .from(
-        "onboarding_submissions"
-      )
-      .select(
-  "id, submitted_at, raw_response"
-)
-      .eq(
-        "client_id",
-        currentMembership.client_id
-      )
-      .order(
-        "submitted_at",
-        {
-          ascending: false,
-        }
-      )
-      .limit(1)
-      .maybeSingle();
-
-
-  if (error) {
-
-    console.error(
-      "Onboarding status load failed:",
-      error
+  return String(
+    value ?? ""
+  )
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
     );
-
-    renderOnboardingRequired();
-
-    return;
-
-  }
-
-
-  if (data) {
-
-  currentOnboardingSubmission =
-    data;
-
-  renderOnboardingComplete();
-
-  renderOnboardingSummary();
-
-  return;
 
 }
 
-if (data) {
 
-  currentOnboardingSubmission =
-    data;
-
-  renderOnboardingComplete();
-
-  // =========================================================
+// =========================================================
 // ONBOARDING SUMMARY
 // =========================================================
 
@@ -701,6 +661,20 @@ function renderOnboardingSummary() {
   const payload =
     currentOnboardingSubmission
       .raw_response;
+
+
+  const formatLabel =
+    (value) =>
+      String(value)
+        .replaceAll(
+          "_",
+          " "
+        )
+        .replace(
+          /\b\w/g,
+          (letter) =>
+            letter.toUpperCase()
+        );
 
 
   const formatValue =
@@ -790,20 +764,6 @@ function renderOnboardingSummary() {
       );
 
     };
-
-
-  const formatLabel =
-    (value) =>
-      String(value)
-        .replaceAll(
-          "_",
-          " "
-        )
-        .replace(
-          /\b\w/g,
-          (letter) =>
-            letter.toUpperCase()
-        );
 
 
   const makeRow =
@@ -1209,41 +1169,85 @@ function renderOnboardingSummary() {
 
 }
 
-function escapePortalHtml(
-  value
-) {
 
-  return String(
-    value ?? ""
-  )
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-    .replaceAll(
-      "'",
-      "&#039;"
+// =========================================================
+// ONBOARDING STATE
+// =========================================================
+
+async function initializeOnboardingState() {
+
+  if (
+    !currentMembership?.client_id
+  ) {
+
+    currentOnboardingSubmission =
+      null;
+
+    renderOnboardingRequired();
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "onboarding_submissions"
+      )
+      .select(
+        "id, submitted_at, raw_response"
+      )
+      .eq(
+        "client_id",
+        currentMembership.client_id
+      )
+      .order(
+        "submitted_at",
+        {
+          ascending: false,
+        }
+      )
+      .limit(1)
+      .maybeSingle();
+
+
+  if (error) {
+
+    console.error(
+      "Onboarding status load failed:",
+      error
     );
 
-}
+    currentOnboardingSubmission =
+      null;
 
-  renderOnboardingSummary();
+    renderOnboardingRequired();
 
-  return;
+    return;
 
-}
+  }
+
+
+  if (data) {
+
+    currentOnboardingSubmission =
+      data;
+
+    renderOnboardingComplete();
+
+    renderOnboardingSummary();
+
+    return;
+
+  }
+
+
+  currentOnboardingSubmission =
+    null;
 
   renderOnboardingRequired();
 
