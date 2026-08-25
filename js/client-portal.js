@@ -127,6 +127,60 @@ const onboardingPanel =
     "onboardingPanel"
   );
 
+  // =========================================================
+// UPLOAD ELEMENTS
+// =========================================================
+
+const clientUploadInput =
+  document.getElementById(
+    "clientUploadInput"
+  );
+
+const clientUploadButton =
+  document.getElementById(
+    "clientUploadButton"
+  );
+
+const selectedUploadFiles =
+  document.getElementById(
+    "selectedUploadFiles"
+  );
+
+const clientUploadNote =
+  document.getElementById(
+    "clientUploadNote"
+  );
+
+const clientUploadClearButton =
+  document.getElementById(
+    "clientUploadClearButton"
+  );
+
+const clientUploadSubmitButton =
+  document.getElementById(
+    "clientUploadSubmitButton"
+  );
+
+const clientUploadStatus =
+  document.getElementById(
+    "clientUploadStatus"
+  );
+
+const clientUploadsList =
+  document.getElementById(
+    "clientUploadsList"
+  );
+
+const clientUploadCount =
+  document.getElementById(
+    "clientUploadCount"
+  );
+
+const uploadCount =
+  document.getElementById(
+    "uploadCount"
+  );
+
 
 // =========================================================
 // NAVIGATION
@@ -164,6 +218,14 @@ let currentOnboardingSubmission =
 let currentView =
   "dashboard";
 
+  let selectedClientUploadFiles =
+  [];
+
+let clientUploads =
+  [];
+
+let uploadInProgress =
+  false;
 
 // =========================================================
 // ROOT VIEWS
@@ -1281,6 +1343,1197 @@ onboardingAction.addEventListener(
   }
 );
 
+// =========================================================
+// CLIENT UPLOAD HELPERS
+// =========================================================
+
+function formatUploadBytes(
+  bytes
+) {
+
+  const value =
+    Number(bytes || 0);
+
+
+  if (
+    !Number.isFinite(value) ||
+    value <= 0
+  ) {
+    return "0 B";
+  }
+
+
+  const units = [
+    "B",
+    "KB",
+    "MB",
+    "GB",
+  ];
+
+
+  const index =
+    Math.min(
+      Math.floor(
+        Math.log(value) /
+        Math.log(1024)
+      ),
+      units.length - 1
+    );
+
+
+  const amount =
+    value /
+    Math.pow(
+      1024,
+      index
+    );
+
+
+  return `${amount.toFixed(
+    index === 0
+      ? 0
+      : 1
+  )} ${units[index]}`;
+
+}
+
+
+function sanitizeUploadFileName(
+  fileName
+) {
+
+  const clean =
+    String(
+      fileName || "file"
+    )
+      .trim()
+      .replace(
+        /[^a-zA-Z0-9._-]+/g,
+        "-"
+      )
+      .replace(
+        /-+/g,
+        "-"
+      );
+
+
+  return (
+    clean ||
+    "file"
+  );
+
+}
+
+
+function getUploadTypeLabel(
+  mimeType
+) {
+
+  const type =
+    String(
+      mimeType || ""
+    ).toLowerCase();
+
+
+  if (
+    type.startsWith(
+      "image/"
+    )
+  ) {
+    return "IMG";
+  }
+
+
+  if (
+    type.startsWith(
+      "video/"
+    )
+  ) {
+    return "VID";
+  }
+
+
+  if (
+    type.startsWith(
+      "audio/"
+    )
+  ) {
+    return "AUD";
+  }
+
+
+  if (
+    type ===
+      "application/pdf"
+  ) {
+    return "PDF";
+  }
+
+
+  return "FILE";
+
+}
+
+
+// =========================================================
+// SELECTED FILES
+// =========================================================
+
+function renderSelectedUploadFiles() {
+
+  if (
+    selectedClientUploadFiles
+      .length === 0
+  ) {
+
+    selectedUploadFiles.hidden =
+      true;
+
+    selectedUploadFiles.innerHTML =
+      "";
+
+    clientUploadClearButton.hidden =
+      true;
+
+    clientUploadSubmitButton.disabled =
+      true;
+
+    return;
+
+  }
+
+
+  selectedUploadFiles.innerHTML =
+    selectedClientUploadFiles
+      .map(
+        (file) => `
+          <div class="selected-upload-file">
+
+            <div class="selected-upload-file-main">
+
+              <span class="selected-upload-file-name">
+                ${escapePortalHtml(
+                  file.name
+                )}
+              </span>
+
+              <span class="selected-upload-file-meta">
+                ${escapePortalHtml(
+                  file.type ||
+                  "Unknown file type"
+                )}
+                ·
+                ${escapePortalHtml(
+                  formatUploadBytes(
+                    file.size
+                  )
+                )}
+              </span>
+
+            </div>
+
+          </div>
+        `
+      )
+      .join("");
+
+
+  selectedUploadFiles.hidden =
+    false;
+
+  clientUploadClearButton.hidden =
+    false;
+
+  clientUploadSubmitButton.disabled =
+    uploadInProgress;
+
+}
+
+
+function setSelectedUploadFiles(
+  files
+) {
+
+  selectedClientUploadFiles =
+    Array.from(
+      files || []
+    ).filter(
+      (file) =>
+        file instanceof File
+    );
+
+
+  renderSelectedUploadFiles();
+
+}
+
+
+function clearSelectedUploadFiles() {
+
+  selectedClientUploadFiles =
+    [];
+
+  clientUploadInput.value =
+    "";
+
+  clientUploadNote.value =
+    "";
+
+  renderSelectedUploadFiles();
+
+}
+
+
+// =========================================================
+// UPLOAD STATUS
+// =========================================================
+
+function clearClientUploadStatus() {
+
+  clientUploadStatus.hidden =
+    true;
+
+  clientUploadStatus.textContent =
+    "";
+
+  clientUploadStatus.className =
+    "upload-status";
+
+}
+
+
+function showClientUploadStatus(
+  message,
+  type = ""
+) {
+
+  clientUploadStatus.hidden =
+    false;
+
+  clientUploadStatus.textContent =
+    message;
+
+  clientUploadStatus.className =
+    "upload-status";
+
+
+  if (
+    type ===
+    "success"
+  ) {
+
+    clientUploadStatus
+      .classList
+      .add(
+        "is-success"
+      );
+
+  }
+
+
+  if (
+    type ===
+    "error"
+  ) {
+
+    clientUploadStatus
+      .classList
+      .add(
+        "is-error"
+      );
+
+  }
+
+}
+
+
+// =========================================================
+// UPLOAD BUSY STATE
+// =========================================================
+
+function setUploadBusy(
+  busy
+) {
+
+  uploadInProgress =
+    busy;
+
+  clientUploadSubmitButton.disabled =
+    busy ||
+    selectedClientUploadFiles
+      .length === 0;
+
+  clientUploadButton.disabled =
+    busy;
+
+  clientUploadClearButton.disabled =
+    busy;
+
+  clientUploadNote.disabled =
+    busy;
+
+  clientUploadSubmitButton.textContent =
+    busy
+      ? "Uploading..."
+      : "Upload Files";
+
+}
+
+
+// =========================================================
+// LOAD CLIENT UPLOADS
+// =========================================================
+
+async function loadClientUploads() {
+
+  if (
+    !currentMembership
+      ?.client_id
+  ) {
+    return;
+  }
+
+
+  const {
+    data,
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "client_uploads"
+      )
+      .select(
+        `
+          id,
+          client_id,
+          uploaded_by,
+          storage_path,
+          file_name,
+          mime_type,
+          file_size,
+          note,
+          created_at
+        `
+      )
+      .eq(
+        "client_id",
+        currentMembership.client_id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false,
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Client uploads load failed:",
+      error
+    );
+
+    clientUploads =
+      [];
+
+    renderClientUploads();
+
+    return;
+
+  }
+
+
+  clientUploads =
+    data ||
+    [];
+
+
+  renderClientUploads();
+
+}
+
+
+// =========================================================
+// RENDER CLIENT UPLOADS
+// =========================================================
+
+function renderClientUploads() {
+
+  const count =
+    clientUploads.length;
+
+
+  clientUploadCount.textContent =
+    String(count);
+
+
+  if (uploadCount) {
+
+    uploadCount.textContent =
+      String(count);
+
+  }
+
+
+  if (
+    count === 0
+  ) {
+
+    clientUploadsList.innerHTML = `
+      <div class="empty-state">
+
+        <strong>
+          No uploads yet.
+        </strong>
+
+        <p>
+          Files you send to us will appear here.
+        </p>
+
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  clientUploadsList.innerHTML = `
+    <div class="client-upload-list">
+
+      ${clientUploads
+        .map(
+          (upload) => {
+
+            const canDelete =
+              upload.uploaded_by ===
+              currentUser?.id;
+
+
+            const created =
+              upload.created_at
+                ? new Date(
+                    upload.created_at
+                  ).toLocaleString()
+                : "";
+
+
+            return `
+              <div
+                class="client-upload-item"
+                data-upload-id="${escapePortalHtml(
+                  upload.id
+                )}"
+              >
+
+                <div class="client-upload-main">
+
+                  <div class="client-upload-icon">
+                    ${escapePortalHtml(
+                      getUploadTypeLabel(
+                        upload.mime_type
+                      )
+                    )}
+                  </div>
+
+                  <div class="client-upload-copy">
+
+                    <span class="client-upload-name">
+                      ${escapePortalHtml(
+                        upload.file_name
+                      )}
+                    </span>
+
+                    <div class="client-upload-meta">
+                      ${escapePortalHtml(
+                        formatUploadBytes(
+                          upload.file_size
+                        )
+                      )}
+                      ·
+                      ${escapePortalHtml(
+                        created
+                      )}
+                    </div>
+
+                    ${
+                      upload.note
+                        ? `
+                          <div class="client-upload-note">
+                            ${escapePortalHtml(
+                              upload.note
+                            )}
+                          </div>
+                        `
+                        : ""
+                    }
+
+                  </div>
+
+                </div>
+
+
+                <div class="client-upload-actions">
+
+                  <button
+                    type="button"
+                    class="client-upload-action"
+                    data-upload-action="open"
+                    data-upload-id="${escapePortalHtml(
+                      upload.id
+                    )}"
+                  >
+                    Open
+                  </button>
+
+                  ${
+                    canDelete
+                      ? `
+                        <button
+                          type="button"
+                          class="client-upload-action is-danger"
+                          data-upload-action="delete"
+                          data-upload-id="${escapePortalHtml(
+                            upload.id
+                          )}"
+                        >
+                          Delete
+                        </button>
+                      `
+                      : ""
+                  }
+
+                </div>
+
+              </div>
+            `;
+
+          }
+        )
+        .join("")}
+
+    </div>
+  `;
+
+}
+
+
+// =========================================================
+// UPLOAD FILES
+// =========================================================
+
+async function uploadSelectedClientFiles() {
+
+  if (
+    uploadInProgress ||
+    selectedClientUploadFiles
+      .length === 0
+  ) {
+    return;
+  }
+
+
+  if (
+    !currentMembership
+      ?.client_id ||
+    !currentUser?.id
+  ) {
+
+    showClientUploadStatus(
+      "Your client portal session could not be verified.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  clearClientUploadStatus();
+
+  setUploadBusy(
+    true
+  );
+
+
+  const note =
+    clientUploadNote.value
+      .trim() ||
+    null;
+
+
+  let completed =
+    0;
+
+
+  try {
+
+    for (
+      const file
+      of selectedClientUploadFiles
+    ) {
+
+      const safeName =
+        sanitizeUploadFileName(
+          file.name
+        );
+
+
+      const storagePath =
+        `${currentMembership.client_id}/uploads/${crypto.randomUUID()}-${safeName}`;
+
+
+      const {
+        error: storageError,
+      } =
+        await supabaseClient
+          .storage
+          .from(
+            "content-assets"
+          )
+          .upload(
+            storagePath,
+            file,
+            {
+              cacheControl:
+                "3600",
+
+              upsert:
+                false,
+
+              contentType:
+                file.type ||
+                undefined,
+            }
+          );
+
+
+      if (storageError) {
+
+        console.error(
+          "Client file upload failed:",
+          storageError
+        );
+
+        throw new Error(
+          `Could not upload ${file.name}.`
+        );
+
+      }
+
+
+      const {
+        error: recordError,
+      } =
+        await supabaseClient
+          .from(
+            "client_uploads"
+          )
+          .insert({
+            client_id:
+              currentMembership
+                .client_id,
+
+            uploaded_by:
+              currentUser.id,
+
+            storage_path:
+              storagePath,
+
+            file_name:
+              file.name,
+
+            mime_type:
+              file.type ||
+              null,
+
+            file_size:
+              file.size,
+
+            note,
+          });
+
+
+      if (recordError) {
+
+        console.error(
+          "Client upload record failed:",
+          recordError
+        );
+
+
+        /*
+          Clean up the Storage file if
+          the database record fails.
+        */
+
+        await supabaseClient
+          .storage
+          .from(
+            "content-assets"
+          )
+          .remove([
+            storagePath,
+          ]);
+
+
+        throw new Error(
+          `Could not finish saving ${file.name}.`
+        );
+
+      }
+
+
+      completed += 1;
+
+    }
+
+
+    clearSelectedUploadFiles();
+
+
+    await loadClientUploads();
+
+
+    showClientUploadStatus(
+      `${completed} ${
+        completed === 1
+          ? "file"
+          : "files"
+      } uploaded successfully.`,
+      "success"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Client upload failed:",
+      error
+    );
+
+
+    showClientUploadStatus(
+      error?.message ||
+      "We could not upload your files. Please try again.",
+      "error"
+    );
+
+
+    /*
+      Reload the list because some files
+      may have completed successfully
+      before another file failed.
+    */
+
+    await loadClientUploads();
+
+
+  } finally {
+
+    setUploadBusy(
+      false
+    );
+
+  }
+
+}
+
+
+// =========================================================
+// OPEN CLIENT UPLOAD
+// =========================================================
+
+async function openClientUpload(
+  uploadId
+) {
+
+  const upload =
+    clientUploads.find(
+      (item) =>
+        item.id ===
+        uploadId
+    );
+
+
+  if (!upload) {
+    return;
+  }
+
+
+  const {
+    data,
+    error,
+  } =
+    await supabaseClient
+      .storage
+      .from(
+        "content-assets"
+      )
+      .createSignedUrl(
+        upload.storage_path,
+        300
+      );
+
+
+  if (
+    error ||
+    !data?.signedUrl
+  ) {
+
+    console.error(
+      "Signed upload URL failed:",
+      error
+    );
+
+    showClientUploadStatus(
+      "We couldn't open that file.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  window.open(
+    data.signedUrl,
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+}
+
+
+// =========================================================
+// DELETE CLIENT UPLOAD
+// =========================================================
+
+async function deleteClientUpload(
+  uploadId
+) {
+
+  const upload =
+    clientUploads.find(
+      (item) =>
+        item.id ===
+        uploadId
+    );
+
+
+  if (!upload) {
+    return;
+  }
+
+
+  if (
+    upload.uploaded_by !==
+    currentUser?.id
+  ) {
+    return;
+  }
+
+
+  const confirmed =
+    window.confirm(
+      `Delete "${upload.file_name}"?`
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  clearClientUploadStatus();
+
+
+  const {
+    error: storageError,
+  } =
+    await supabaseClient
+      .storage
+      .from(
+        "content-assets"
+      )
+      .remove([
+        upload.storage_path,
+      ]);
+
+
+  if (storageError) {
+
+    console.error(
+      "Client upload delete failed:",
+      storageError
+    );
+
+    showClientUploadStatus(
+      "We couldn't delete that file.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const {
+    error: recordError,
+  } =
+    await supabaseClient
+      .from(
+        "client_uploads"
+      )
+      .delete()
+      .eq(
+        "id",
+        upload.id
+      );
+
+
+  if (recordError) {
+
+    console.error(
+      "Client upload record delete failed:",
+      recordError
+    );
+
+    showClientUploadStatus(
+      "The file was removed, but its upload record could not be cleaned up.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  await loadClientUploads();
+
+
+  showClientUploadStatus(
+    "File deleted.",
+    "success"
+  );
+
+}
+
+
+// =========================================================
+// CLIENT UPLOAD EVENTS
+// =========================================================
+
+clientUploadButton.addEventListener(
+  "click",
+  () => {
+
+    if (
+      !uploadInProgress
+    ) {
+
+      clientUploadInput.click();
+
+    }
+
+  }
+);
+
+
+clientUploadInput.addEventListener(
+  "change",
+  () => {
+
+    setSelectedUploadFiles(
+      clientUploadInput.files
+    );
+
+    clearClientUploadStatus();
+
+  }
+);
+
+
+clientUploadClearButton.addEventListener(
+  "click",
+  () => {
+
+    if (
+      !uploadInProgress
+    ) {
+
+      clearSelectedUploadFiles();
+
+      clearClientUploadStatus();
+
+    }
+
+  }
+);
+
+
+clientUploadSubmitButton.addEventListener(
+  "click",
+  uploadSelectedClientFiles
+);
+
+
+// ---------------------------------------------------------
+// DRAG + DROP
+// ---------------------------------------------------------
+
+[
+  "dragenter",
+  "dragover",
+].forEach(
+  (eventName) => {
+
+    clientUploadButton.addEventListener(
+      eventName,
+      (event) => {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        if (
+          !uploadInProgress
+        ) {
+
+          clientUploadButton
+            .classList
+            .add(
+              "is-dragging"
+            );
+
+        }
+
+      }
+    );
+
+  }
+);
+
+
+[
+  "dragleave",
+  "drop",
+].forEach(
+  (eventName) => {
+
+    clientUploadButton.addEventListener(
+      eventName,
+      (event) => {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        clientUploadButton
+          .classList
+          .remove(
+            "is-dragging"
+          );
+
+      }
+    );
+
+  }
+);
+
+
+clientUploadButton.addEventListener(
+  "drop",
+  (event) => {
+
+    if (uploadInProgress) {
+      return;
+    }
+
+
+    const files =
+      event.dataTransfer
+        ?.files;
+
+
+    if (
+      files?.length
+    ) {
+
+      setSelectedUploadFiles(
+        files
+      );
+
+      clearClientUploadStatus();
+
+    }
+
+  }
+);
+
+
+// ---------------------------------------------------------
+// UPLOAD LIST ACTIONS
+// ---------------------------------------------------------
+
+clientUploadsList.addEventListener(
+  "click",
+  async (event) => {
+
+    const button =
+      event.target.closest(
+        "[data-upload-action]"
+      );
+
+
+    if (!button) {
+      return;
+    }
+
+
+    const uploadId =
+      button.dataset
+        .uploadId;
+
+    const action =
+      button.dataset
+        .uploadAction;
+
+
+    if (!uploadId) {
+      return;
+    }
+
+
+    if (
+      action ===
+      "open"
+    ) {
+
+      await openClientUpload(
+        uploadId
+      );
+
+      return;
+
+    }
+
+
+    if (
+      action ===
+      "delete"
+    ) {
+
+      await deleteClientUpload(
+        uploadId
+      );
+
+    }
+
+  }
+);
 
 // =========================================================
 // SIGN OUT
@@ -1474,6 +2727,7 @@ async function initializePortal() {
 
     await initializeOnboardingState();
 
+    await loadClientUploads();
 
     showPortal();
 

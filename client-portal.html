@@ -521,111 +521,180 @@
            UPLOADS VIEW
       ======================================= -->
 
-      <section
-        class="portal-view"
-        id="view-uploads"
+   <section
+  class="portal-view"
+  id="view-uploads"
+  hidden
+>
+
+  <div class="view-heading">
+
+    <div>
+
+      <div class="eyebrow">
+        MEDIA
+      </div>
+
+      <h2>
+        SEND US YOUR STUFF.
+      </h2>
+
+      <p>
+        Upload photos, video clips, logos,
+        graphics, and other media we can use
+        when creating your content.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="portal-card upload-panel">
+
+    <input
+      type="file"
+      id="clientUploadInput"
+      multiple
+      hidden
+    />
+
+
+    <button
+      type="button"
+      class="upload-dropzone"
+      id="clientUploadButton"
+    >
+
+      <span class="upload-icon">
+        ↑
+      </span>
+
+      <strong>
+        Choose Files
+      </strong>
+
+      <span>
+        Or drag and drop files here
+      </span>
+
+      <small>
+        Photos, videos, graphics, and documents
+      </small>
+
+    </button>
+
+
+    <div
+      class="selected-upload-files"
+      id="selectedUploadFiles"
+      hidden
+    ></div>
+
+
+    <label
+      class="upload-note-field"
+      for="clientUploadNote"
+    >
+
+      <span>
+        Add a note
+        <small>
+          Optional
+        </small>
+      </span>
+
+      <textarea
+        id="clientUploadNote"
+        rows="3"
+        maxlength="500"
+        placeholder="Example: Please use these photos for our Labor Day promotion."
+      ></textarea>
+
+    </label>
+
+
+    <div class="upload-actions">
+
+      <button
+        type="button"
+        class="card-action upload-clear-button"
+        id="clientUploadClearButton"
         hidden
       >
-
-        <div class="view-heading">
-
-          <div>
-
-            <div class="eyebrow">
-              MEDIA
-            </div>
-
-            <h2>
-              SEND US YOUR STUFF.
-            </h2>
-
-            <p>
-              Upload photos, video clips, logos,
-              graphics, and other media we can use
-              when creating your content.
-            </p>
-
-          </div>
-
-        </div>
+        Clear Selection
+      </button>
 
 
-        <div class="portal-card upload-panel">
+      <button
+        type="button"
+        class="upload-submit-button"
+        id="clientUploadSubmitButton"
+        disabled
+      >
+        Upload Files
+      </button>
 
-          <input
-            type="file"
-            id="clientUploadInput"
-            multiple
-            hidden
-          />
-
-          <button
-            type="button"
-            class="upload-dropzone"
-            id="clientUploadButton"
-          >
-
-            <span class="upload-icon">
-              ↑
-            </span>
-
-            <strong>
-              Choose Files
-            </strong>
-
-            <span>
-              Photos, videos, graphics, and documents
-            </span>
-
-          </button>
+    </div>
 
 
-          <div
-            class="upload-status"
-            id="clientUploadStatus"
-            hidden
-          ></div>
+    <div
+      class="upload-status"
+      id="clientUploadStatus"
+      hidden
+      aria-live="polite"
+    ></div>
 
-        </div>
-
-
-        <div class="portal-card uploads-list-card">
-
-          <div class="card-heading">
-
-            <div>
-
-              <span class="card-kicker">
-                YOUR FILES
-              </span>
-
-              <h3>
-                Recent Uploads
-              </h3>
-
-            </div>
-
-          </div>
+  </div>
 
 
-          <div
-            class="empty-state"
-            id="clientUploadsList"
-          >
+  <div class="portal-card uploads-list-card">
 
-            <strong>
-              No uploads yet.
-            </strong>
+    <div class="card-heading">
 
-            <p>
-              Files you send to us will appear here.
-            </p>
+      <div>
 
-          </div>
+        <span class="card-kicker">
+          YOUR FILES
+        </span>
 
-        </div>
+        <h3>
+          Recent Uploads
+        </h3>
 
-      </section>
+      </div>
+
+      <span
+        class="status-pill"
+        id="clientUploadCount"
+      >
+        0
+      </span>
+
+    </div>
+
+
+    <div
+      id="clientUploadsList"
+    >
+
+      <div class="empty-state">
+
+        <strong>
+          No uploads yet.
+        </strong>
+
+        <p>
+          Files you send to us will appear here.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
 
 
       <!-- ======================================
