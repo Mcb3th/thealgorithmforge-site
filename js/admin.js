@@ -2728,6 +2728,12 @@ function renderClientCommandCenter(
     )
   );
 
+  grid.appendChild(
+  createClientUploadsSection(
+    clientUploads
+  )
+);
+
 
   grid.appendChild(
     createWorkflowSection(
@@ -4247,6 +4253,384 @@ function createContentSection(
   return section;
 }
 
+// =========================================================
+// CLIENT UPLOADS SECTION
+// =========================================================
+
+function createClientUploadsSection(
+  uploads
+) {
+
+  const section =
+    createDetailSection(
+      "UPLOADS",
+      "CLIENT-SUPPLIED MEDIA"
+    );
+
+
+  if (
+    !uploads.length
+  ) {
+
+    section.appendChild(
+      createDetailEmpty(
+        "No client uploads yet."
+      )
+    );
+
+    return section;
+
+  }
+
+
+  const list =
+    document.createElement(
+      "div"
+    );
+
+  list.className =
+    "admin-client-uploads-list";
+
+
+  uploads.forEach(
+    (upload) => {
+
+      list.appendChild(
+        createClientUploadRow(
+          upload
+        )
+      );
+
+    }
+  );
+
+
+  section.appendChild(
+    list
+  );
+
+
+  return section;
+
+}
+
+
+// =========================================================
+// CLIENT UPLOAD ROW
+// =========================================================
+
+function createClientUploadRow(
+  upload
+) {
+
+  const row =
+    document.createElement(
+      "article"
+    );
+
+  row.className =
+    "admin-client-upload-row";
+
+
+  const main =
+    document.createElement(
+      "div"
+    );
+
+  main.className =
+    "admin-client-upload-main";
+
+
+  const icon =
+    document.createElement(
+      "div"
+    );
+
+  icon.className =
+    "admin-client-upload-icon";
+
+  icon.textContent =
+    getAdminUploadTypeLabel(
+      upload.mime_type
+    );
+
+
+  const copy =
+    document.createElement(
+      "div"
+    );
+
+  copy.className =
+    "admin-client-upload-copy";
+
+
+  const name =
+    document.createElement(
+      "strong"
+    );
+
+  name.className =
+    "admin-client-upload-name";
+
+  name.textContent =
+    upload.file_name ||
+    "Unnamed File";
+
+
+  const meta =
+    document.createElement(
+      "span"
+    );
+
+  meta.className =
+    "admin-client-upload-meta";
+
+  meta.textContent =
+    `${formatAdminUploadBytes(
+      upload.file_size
+    )} • ${formatClientDate(
+      upload.created_at
+    )}`;
+
+
+  copy.appendChild(
+    name
+  );
+
+  copy.appendChild(
+    meta
+  );
+
+
+  if (
+    upload.note
+  ) {
+
+    const note =
+      document.createElement(
+        "p"
+      );
+
+    note.className =
+      "admin-client-upload-note";
+
+    note.textContent =
+      upload.note;
+
+    copy.appendChild(
+      note
+    );
+
+  }
+
+
+  main.appendChild(
+    icon
+  );
+
+  main.appendChild(
+    copy
+  );
+
+
+  const actions =
+    document.createElement(
+      "div"
+    );
+
+  actions.className =
+    "admin-client-upload-actions";
+
+
+  const openButton =
+    document.createElement(
+      "button"
+    );
+
+  openButton.type =
+    "button";
+
+  openButton.className =
+    "client-open-button";
+
+  openButton.textContent =
+    "Open";
+
+
+  openButton.addEventListener(
+    "click",
+    async () => {
+
+      const {
+        data,
+        error,
+      } =
+        await supabaseClient
+          .storage
+          .from(
+            "content-assets"
+          )
+          .createSignedUrl(
+            upload.storage_path,
+            300
+          );
+
+
+      if (
+        error ||
+        !data?.signedUrl
+      ) {
+
+        console.error(
+          "Admin client upload open failed:",
+          error
+        );
+
+        window.alert(
+          "The uploaded file could not be opened."
+        );
+
+        return;
+
+      }
+
+
+      window.open(
+        data.signedUrl,
+        "_blank",
+        "noopener,noreferrer"
+      );
+
+    }
+  );
+
+
+  actions.appendChild(
+    openButton
+  );
+
+
+  row.appendChild(
+    main
+  );
+
+  row.appendChild(
+    actions
+  );
+
+
+  return row;
+
+}
+
+
+// =========================================================
+// CLIENT UPLOAD DISPLAY HELPERS
+// =========================================================
+
+function getAdminUploadTypeLabel(
+  mimeType
+) {
+
+  const type =
+    String(
+      mimeType || ""
+    ).toLowerCase();
+
+
+  if (
+    type.startsWith(
+      "image/"
+    )
+  ) {
+    return "IMG";
+  }
+
+
+  if (
+    type.startsWith(
+      "video/"
+    )
+  ) {
+    return "VID";
+  }
+
+
+  if (
+    type.startsWith(
+      "audio/"
+    )
+  ) {
+    return "AUD";
+  }
+
+
+  if (
+    type ===
+      "application/pdf"
+  ) {
+    return "PDF";
+  }
+
+
+  return "FILE";
+
+}
+
+
+function formatAdminUploadBytes(
+  bytes
+) {
+
+  const value =
+    Number(
+      bytes || 0
+    );
+
+
+  if (
+    !Number.isFinite(
+      value
+    ) ||
+    value <= 0
+  ) {
+    return "0 B";
+  }
+
+
+  const units = [
+    "B",
+    "KB",
+    "MB",
+    "GB",
+  ];
+
+
+  const index =
+    Math.min(
+      Math.floor(
+        Math.log(value) /
+        Math.log(1024)
+      ),
+      units.length - 1
+    );
+
+
+  const amount =
+    value /
+    Math.pow(
+      1024,
+      index
+    );
+
+
+  return `${amount.toFixed(
+    index === 0
+      ? 0
+      : 1
+  )} ${units[index]}`;
+
+}
 
 function createWorkflowSection(
   onboarding

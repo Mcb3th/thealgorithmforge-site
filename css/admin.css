@@ -4953,6 +4953,150 @@ img {
 }
 
 /* =========================================================
+   ADMIN CLIENT UPLOADS
+========================================================= */
+
+.admin-client-uploads-list {
+  display: grid;
+
+  gap: 12px;
+}
+
+
+.admin-client-upload-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  padding:
+    14px
+    16px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 10px;
+
+  background:
+    var(--soft);
+}
+
+
+.admin-client-upload-main {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+
+.admin-client-upload-icon {
+  flex: 0 0 auto;
+
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 9px;
+
+  font-size: 0.72rem;
+  font-weight: 800;
+
+  letter-spacing: 0.04em;
+
+  color:
+    var(--ember);
+
+  background:
+    rgba(240, 100, 43, 0.1);
+}
+
+
+.admin-client-upload-copy {
+  min-width: 0;
+}
+
+
+.admin-client-upload-name {
+  display: block;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  font-size: 0.84rem;
+  font-weight: 700;
+
+  color:
+    var(--charcoal);
+}
+
+
+.admin-client-upload-meta {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 0.7rem;
+
+  color:
+    var(--muted);
+}
+
+
+.admin-client-upload-note {
+  margin:
+    6px
+    0
+    0;
+
+  font-size: 0.76rem;
+  line-height: 1.5;
+
+  color:
+    var(--muted);
+}
+
+
+.admin-client-upload-actions {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+/* =========================================================
+   ADMIN CLIENT UPLOADS MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .admin-client-upload-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+
+  .admin-client-upload-actions {
+    width: 100%;
+
+    justify-content: flex-end;
+  }
+
+}
+
+/* =========================================================
    CLIENT PORTAL ACCESS
 ========================================================= */
 
