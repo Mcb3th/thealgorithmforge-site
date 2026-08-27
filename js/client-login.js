@@ -77,6 +77,11 @@ const clientLoginLoader =
     "clientLoginLoader"
   );
 
+  const forgotPasswordButton =
+  document.getElementById(
+    "forgotPasswordButton"
+  );
+
 
 // =========================================================
 // STATE
@@ -145,6 +150,9 @@ function setClientLoginBusy(
   clientLoginLoader.hidden =
     !busy;
 
+    forgotPasswordButton.disabled =
+  busy;
+
 }
 
 
@@ -182,6 +190,108 @@ clientPasswordToggle.addEventListener(
 
 
     clientLoginPassword.focus();
+
+  }
+);
+
+// =========================================================
+// FORGOT PASSWORD
+// =========================================================
+
+forgotPasswordButton.addEventListener(
+  "click",
+  async () => {
+
+    if (loginBusy) {
+      return;
+    }
+
+
+    clearClientLoginError();
+
+
+    const email =
+      clientLoginEmail
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    if (!email) {
+
+      showClientLoginError(
+        "Enter your email address first, then click Forgot password."
+      );
+
+      clientLoginEmail.focus();
+
+      return;
+
+    }
+
+
+    setClientLoginBusy(
+      true
+    );
+
+
+    try {
+
+      const {
+        error,
+      } =
+        await supabaseClient
+          .auth
+          .resetPasswordForEmail(
+            email,
+            {
+              redirectTo:
+                "https://thealgorithmforge.com/client-reset-password.html",
+            }
+          );
+
+
+      if (error) {
+
+        console.error(
+          "Password reset request failed:",
+          error
+        );
+
+        showClientLoginError(
+          "We couldn't send the password reset email. Please try again."
+        );
+
+        return;
+
+      }
+
+
+      showClientLoginError(
+        "If that email belongs to a client account, a password reset link has been sent."
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Unexpected password reset error:",
+        error
+      );
+
+
+      showClientLoginError(
+        "We couldn't send the password reset email. Please try again."
+      );
+
+
+    } finally {
+
+      setClientLoginBusy(
+        false
+      );
+
+    }
 
   }
 );

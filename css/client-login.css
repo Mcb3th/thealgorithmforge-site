@@ -775,6 +775,59 @@ a {
     var(--ember);
 }
 
+/* =========================================================
+   FORGOT PASSWORD
+========================================================= */
+
+.forgot-password-row {
+
+  display:
+    flex;
+
+  justify-content:
+    flex-end;
+
+  margin-top:
+    -10px;
+
+}
+
+
+.forgot-password-button {
+
+  padding:
+    0;
+
+  border:
+    0;
+
+  cursor:
+    pointer;
+
+  font-size:
+    0.72rem;
+
+  font-weight:
+    700;
+
+  color:
+    var(--ember);
+
+  background:
+    transparent;
+
+}
+
+
+.forgot-password-button:hover {
+
+  color:
+    var(--ember-hover);
+
+  text-decoration:
+    underline;
+
+}
 
 /* =========================================================
    MOBILE
