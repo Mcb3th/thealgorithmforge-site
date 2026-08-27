@@ -2602,6 +2602,12 @@ function renderClientCommandCenter(
       ? data.social_accounts
       : [];
 
+ const clientUploads =
+  Array.isArray(
+    data.client_uploads
+  )
+    ? data.client_uploads
+    : [];
 
   const activeFlags =
     Array.isArray(
