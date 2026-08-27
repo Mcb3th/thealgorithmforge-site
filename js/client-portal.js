@@ -2673,16 +2673,17 @@ async function initializePortal() {
       null;
 
 
-    if (
-      !session ||
-      !session.user
-    ) {
+   if (
+  !session ||
+  !session.user
+) {
 
-      throw new Error(
-        "Please sign in with an authorized client account to access this portal."
-      );
+  window.location.href =
+    "client-login.html";
 
-    }
+  return;
+
+}
 
 
     currentUser =

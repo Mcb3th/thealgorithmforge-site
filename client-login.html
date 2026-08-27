@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>
+    Client Login | The Algorithm Forge
+  </title>
+
+  <meta
+    name="robots"
+    content="noindex, nofollow"
+  />
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="assets/images/af-logo.png"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link
+    rel="stylesheet"
+    href="css/client-login.css"
+  />
+
+</head>
+
+
+<body>
+
+  <main class="login-page">
+
+    <!-- ================================================
+         BRAND
+    ================================================= -->
+
+    <header class="login-brand">
+
+      <a
+        href="index.html"
+        class="brand-link"
+        aria-label="The Algorithm Forge home"
+      >
+
+        <img
+          src="assets/images/af-logo.png"
+          alt=""
+          class="brand-logo"
+        />
+
+        <div class="brand-wordmark">
+
+          <span class="brand-the">
+            THE
+          </span>
+
+          <span class="brand-name">
+            <span class="brand-accent">A</span>LGORITHM
+            <span class="brand-accent">F</span>ORGE
+          </span>
+
+        </div>
+
+      </a>
+
+    </header>
+
+
+    <!-- ================================================
+         LOGIN
+    ================================================= -->
+
+    <section class="login-shell">
+
+      <div class="login-card">
+
+        <div class="login-heading">
+
+          <p class="eyebrow">
+            CLIENT PORTAL
+          </p>
+
+          <h1>
+            BACK TO THE
+            <span>FORGE.</span>
+          </h1>
+
+          <p class="login-intro">
+            Sign in to access your content,
+            uploads, onboarding information,
+            and account workspace.
+          </p>
+
+        </div>
+
+
+        <form
+          class="login-form"
+          id="clientLoginForm"
+          novalidate
+        >
+
+          <div class="form-field">
+
+            <label for="clientLoginEmail">
+              Email Address
+            </label>
+
+            <input
+              type="email"
+              id="clientLoginEmail"
+              name="email"
+              autocomplete="email"
+              required
+            />
+
+          </div>
+
+
+          <div class="form-field">
+
+            <label for="clientLoginPassword">
+              Password
+            </label>
+
+            <div class="password-field">
+
+              <input
+                type="password"
+                id="clientLoginPassword"
+                name="password"
+                autocomplete="current-password"
+                required
+              />
+
+              <button
+                type="button"
+                class="password-toggle"
+                id="clientPasswordToggle"
+                aria-label="Show password"
+              >
+                Show
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="login-error"
+            id="clientLoginError"
+            role="alert"
+            aria-live="polite"
+            hidden
+          ></div>
+
+
+          <button
+            type="submit"
+            class="login-button"
+            id="clientLoginButton"
+          >
+
+            <span id="clientLoginButtonText">
+              Sign In
+            </span>
+
+            <span
+              class="button-loader"
+              id="clientLoginLoader"
+              aria-hidden="true"
+              hidden
+            ></span>
+
+          </button>
+
+        </form>
+
+
+        <div class="login-help">
+
+          <p>
+            Having trouble accessing your account?
+          </p>
+
+          <a href="mailto:hello@thealgorithmforge.com">
+            Contact The Algorithm Forge
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================================================
+         FOOTER
+    ================================================= -->
+
+    <footer class="login-footer">
+
+      <span>
+        © 2026 The Algorithm Forge
+      </span>
+
+      <span aria-hidden="true">
+        •
+      </span>
+
+      <a href="index.html">
+        thealgorithmforge.com
+      </a>
+
+    </footer>
+
+  </main>
+
+
+  <!-- ================================================
+       SUPABASE
+  ================================================= -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script src="js/client-login.js"></script>
+
+</body>
+
+</html>
