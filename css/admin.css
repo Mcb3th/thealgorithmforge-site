@@ -4289,6 +4289,50 @@ img {
     rgba(201, 64, 64, 0.1);
 }
 
+/* =========================================================
+   CLIENT REVISION FEEDBACK
+   ========================================================= */
+
+.content-revision-feedback {
+  margin-top: 18px;
+  padding: 16px 18px;
+
+  border:
+    1px solid
+    rgba(240, 100, 43, 0.28);
+
+  border-left:
+    4px solid
+    var(--ember);
+
+  border-radius:
+    var(--radius-small);
+
+  background:
+    rgba(240, 100, 43, 0.06);
+}
+
+
+.content-revision-feedback-label {
+  margin-bottom: 7px;
+
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+
+  color: var(--ember);
+}
+
+
+.content-revision-feedback p {
+  margin: 0;
+
+  font-size: 0.88rem;
+  line-height: 1.6;
+
+  color: var(--charcoal);
+}
+
 
 /* =========================================================
    CONTENT ASSET UPLOAD - MOBILE
@@ -4341,6 +4385,8 @@ img {
 @media (
   max-width: 620px
 ) {
+
+
 
   .content-detail-hero {
     flex-direction: column;
@@ -4410,15 +4456,62 @@ img {
 
 
   .content-create-actions {
-    flex-direction: column-reverse;
+    display: flex;
 
-    align-items: stretch;
+    flex-direction:
+      column;
+
+    align-items:
+      stretch;
+
+    gap:
+      10px;
+
+    width:
+      100%;
   }
 
 
-  .content-create-cancel,
-  .content-create-submit {
-    width: 100%;
+  .content-create-primary-actions {
+    display: flex;
+
+    flex-direction:
+      column;
+
+    align-items:
+      stretch;
+
+    gap:
+      10px;
+
+    width:
+      100%;
+  }
+
+
+  .content-send-approval,
+  .content-create-submit,
+  .content-create-cancel {
+    width:
+      100%;
+
+    min-width:
+      0;
+
+    margin:
+      0;
+  }
+
+
+  .content-create-primary-actions {
+    order:
+      1;
+  }
+
+
+  .content-create-cancel {
+    order:
+      2;
   }
 
 }
@@ -4679,10 +4772,18 @@ img {
   }
 
 
-  .admin-nav {
-    display: flex;
+    .admin-nav {
+    display: grid;
 
-    overflow-x: auto;
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 8px;
+
+    overflow: visible;
 
     padding:
       12px 14px;
@@ -4690,12 +4791,14 @@ img {
 
 
   .admin-nav-item {
-    flex:
-      0 0 auto;
+    min-width: 0;
 
-    width: auto;
+    width: 100%;
 
-    white-space: nowrap;
+    justify-content:
+      flex-start;
+
+    white-space: normal;
   }
 
 
@@ -5220,6 +5323,312 @@ img {
 
   .client-portal-invite-button {
     width: 100%;
+  }
+
+}
+
+/* =========================================================
+   CLIENT CONTENT VISIBILITY BUTTON
+   ========================================================= */
+
+.content-client-visibility-button {
+  appearance: none;
+
+  border: 1px solid
+    rgba(240, 100, 43, 0.28);
+
+  padding: 11px 16px;
+
+  border-radius:
+    var(--radius-small);
+
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+
+  color: var(--ember);
+
+  background:
+    rgba(240, 100, 43, 0.06);
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+
+.content-client-visibility-button:hover {
+  background: var(--ember);
+  border-color: var(--ember);
+  color: var(--white);
+
+  transform:
+    translateY(-1px);
+}
+
+
+.content-client-visibility-button:active {
+  transform:
+    translateY(0);
+}
+
+
+.content-client-visibility-button:focus-visible {
+  outline: 3px solid
+    rgba(240, 100, 43, 0.18);
+
+  outline-offset: 2px;
+}
+
+/* Space content card action buttons */
+.content-card-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* =====================================================
+   SEND BACK FOR APPROVAL MODAL
+===================================================== */
+
+.content-send-approval-dialog {
+  width: min(560px, calc(100vw - 32px));
+}
+
+.content-send-approval-modal-body {
+  padding: 28px;
+}
+
+.content-send-approval-modal-body > p {
+  margin: 0 0 28px;
+  color: var(--charcoal);
+  line-height: 1.6;
+}
+
+.content-send-approval-modal-body
+  .content-create-actions {
+  margin-top: 0;
+}
+
+/* =========================================================
+   ADMIN MOBILE LAYOUT OVERRIDES
+========================================================= */
+
+@media (
+  max-width: 620px
+) {
+
+  .admin-app,
+  .admin-sidebar,
+  .admin-main {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+
+  .admin-main {
+    overflow-x: hidden;
+  }
+
+
+  .sidebar-footer {
+    display: grid;
+
+    grid-template-columns:
+      1fr;
+
+    gap: 12px;
+
+    padding:
+      14px 18px;
+  }
+
+
+  .admin-user {
+    min-width: 0;
+
+    margin: 0;
+  }
+
+
+  .admin-user-details {
+    min-width: 0;
+  }
+
+
+  .admin-user-email {
+    max-width: 100%;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+
+  .sign-out-button {
+    width: 100%;
+  }
+
+
+  .dashboard-welcome {
+    width: 100%;
+    max-width: 100%;
+
+    padding:
+      28px 24px;
+  }
+
+
+  .dashboard-welcome h2 {
+    max-width: 100%;
+
+    font-size:
+      clamp(
+        2rem,
+        10vw,
+        2.8rem
+      );
+
+    line-height: 1.15;
+
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+
+  .dashboard-stats,
+  .dashboard-section,
+  .stat-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+}
+
+/* =========================================================
+   ADMIN CONTENT ASSET PREVIEWS
+========================================================= */
+
+.content-detail-asset-main {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+}
+
+
+.content-detail-asset-preview-link {
+  flex:
+    0
+    0
+    auto;
+
+  display: block;
+
+  width: 72px;
+  height: 72px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    var(--line-dark);
+
+  border-radius:
+    10px;
+
+  background:
+    rgba(0, 0, 0, 0.03);
+}
+
+
+.content-detail-asset-thumbnail {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+.content-detail-asset-type {
+  flex:
+    0
+    0
+    auto;
+
+  width: 58px;
+  height: 50px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius:
+    9px;
+
+  font-size: 0.64rem;
+  font-weight: 800;
+
+  letter-spacing:
+    0.05em;
+
+  color:
+    var(--ember);
+
+  background:
+    rgba(231, 104, 47, 0.08);
+}
+
+
+.content-detail-asset-copy {
+  min-width: 0;
+}
+
+
+.content-detail-asset-copy strong {
+  display: block;
+
+  overflow-wrap: anywhere;
+}
+
+
+@media (
+  max-width: 620px
+) {
+
+  .content-detail-asset {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+
+  .content-detail-asset-main {
+    width: 100%;
+  }
+
+
+  .content-detail-asset-actions {
+    width: 100%;
+
+    justify-content:
+      flex-end;
+  }
+
+
+  .content-detail-asset-preview-link {
+    width: 64px;
+    height: 64px;
   }
 
 }

@@ -276,6 +276,260 @@ const contentCreateSubmitText =
     "contentCreateSubmitText"
   );
 
+const contentSendApproval =
+  document.getElementById(
+    "contentSendApproval"
+  );
+
+  const contentSendApprovalModal =
+  document.getElementById(
+    "contentSendApprovalModal"
+  );
+
+const contentSendApprovalModalCancel =
+  document.getElementById(
+    "contentSendApprovalModalCancel"
+  );
+
+const contentSendApprovalModalConfirm =
+  document.getElementById(
+    "contentSendApprovalModalConfirm"
+  );
+
+  // =========================================================
+// ADMIN ACTION MODAL
+// =========================================================
+
+const adminActionModal =
+  document.getElementById(
+    "adminActionModal"
+  );
+
+const adminActionModalEyebrow =
+  document.getElementById(
+    "adminActionModalEyebrow"
+  );
+
+const adminActionModalTitle =
+  document.getElementById(
+    "adminActionModalTitle"
+  );
+
+const adminActionModalMessage =
+  document.getElementById(
+    "adminActionModalMessage"
+  );
+
+const adminActionModalCancel =
+  document.getElementById(
+    "adminActionModalCancel"
+  );
+
+  let adminActionModalResolver =
+  null;
+
+
+function closeAdminActionModal(
+  result = false
+) {
+
+  if (adminActionModal) {
+    adminActionModal.hidden =
+      true;
+  }
+
+  document.body.style.overflow =
+    "";
+
+  if (adminActionModalResolver) {
+
+    const resolve =
+      adminActionModalResolver;
+
+    adminActionModalResolver =
+      null;
+
+    resolve(result);
+
+  }
+
+}
+
+
+function showAdminConfirm({
+  eyebrow = "CONFIRM ACTION",
+  title = "ARE YOU SURE?",
+  message = "Confirm this action to continue.",
+  confirmText = "Confirm",
+} = {}) {
+
+  if (
+    !adminActionModal ||
+    !adminActionModalEyebrow ||
+    !adminActionModalTitle ||
+    !adminActionModalMessage ||
+    !adminActionModalCancel ||
+    !adminActionModalConfirm
+  ) {
+    return Promise.resolve(false);
+  }
+
+
+  adminActionModalEyebrow.textContent =
+    eyebrow;
+
+  adminActionModalTitle.textContent =
+    title;
+
+  adminActionModalMessage.textContent =
+    message;
+
+  adminActionModalCancel.hidden =
+    false;
+
+  adminActionModalConfirm.textContent =
+    confirmText;
+
+
+  adminActionModal.hidden =
+    false;
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  return new Promise(
+    (resolve) => {
+      adminActionModalResolver =
+        resolve;
+    }
+  );
+
+}
+
+
+function showAdminMessage({
+  eyebrow = "NOTICE",
+  title = "SOMETHING WENT WRONG",
+  message = "Please try again.",
+  confirmText = "Got It",
+} = {}) {
+
+  if (
+    !adminActionModal ||
+    !adminActionModalEyebrow ||
+    !adminActionModalTitle ||
+    !adminActionModalMessage ||
+    !adminActionModalCancel ||
+    !adminActionModalConfirm
+  ) {
+    return Promise.resolve();
+  }
+
+
+  adminActionModalEyebrow.textContent =
+    eyebrow;
+
+  adminActionModalTitle.textContent =
+    title;
+
+  adminActionModalMessage.textContent =
+    message;
+
+  adminActionModalCancel.hidden =
+    true;
+
+  adminActionModalConfirm.textContent =
+    confirmText;
+
+
+  adminActionModal.hidden =
+    false;
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  return new Promise(
+    (resolve) => {
+      adminActionModalResolver =
+        resolve;
+    }
+  );
+
+}
+
+
+
+const adminActionModalConfirm =
+  document.getElementById(
+    "adminActionModalConfirm"
+  );
+
+// =========================================================
+// ADMIN ACTION MODAL CONTROLS
+// =========================================================
+
+adminActionModalCancel
+  ?.addEventListener(
+    "click",
+    () => {
+      closeAdminActionModal(false);
+    }
+  );
+
+
+adminActionModalConfirm
+  ?.addEventListener(
+    "click",
+    () => {
+      closeAdminActionModal(true);
+    }
+  );
+
+
+adminActionModal
+  ?.querySelectorAll(
+    "[data-close-admin-action-modal]"
+  )
+  .forEach(
+    (element) => {
+
+      element.addEventListener(
+        "click",
+        () => {
+          closeAdminActionModal(false);
+        }
+      );
+
+    }
+  );
+
+function openContentSendApprovalModal() {
+
+  if (!contentSendApprovalModal) {
+    return;
+  }
+
+  contentSendApprovalModal.hidden =
+    false;
+
+  document.body.style.overflow =
+    "hidden";
+}
+
+
+function closeContentSendApprovalModal() {
+
+  if (contentSendApprovalModal) {
+    contentSendApprovalModal.hidden =
+      true;
+  }
+
+  document.body.style.overflow =
+    "";
+}
+
 const contentCreateLoader =
   document.getElementById(
     "contentCreateLoader"
@@ -394,6 +648,16 @@ const contentAssetFileInput =
 const contentAssetUploadStatus =
   document.getElementById(
     "contentAssetUploadStatus"
+  );
+
+  const contentDetailRevisionCard =
+  document.getElementById(
+    "contentDetailRevisionCard"
+  );
+
+const contentDetailRevisionFeedback =
+  document.getElementById(
+    "contentDetailRevisionFeedback"
   );
 
 // =========================================================
@@ -545,6 +809,16 @@ contentClient.value =
   contentApprovalStatus.value =
     content.approval_status ||
     "not_requested";
+
+  if (contentSendApproval) {
+  contentSendApproval.hidden =
+    ![
+      "changes_requested",
+      "approved",
+    ].includes(
+      content.approval_status
+    );
+}
 
 
   // -------------------------------------------------------
@@ -1874,6 +2148,7 @@ function createClientCard(
   main.appendChild(
     meta
   );
+
 
 
   const actions =
@@ -4492,9 +4767,13 @@ function createClientUploadRow(
           error
         );
 
-        window.alert(
-          "The uploaded file could not be opened."
-        );
+       await showAdminMessage({
+  eyebrow: "FILE ERROR",
+  title: "FILE COULD NOT BE OPENED",
+  message:
+    "The uploaded file could not be opened.",
+  confirmText: "Got It",
+});
 
         return;
 
@@ -5800,11 +6079,18 @@ async function resolveSetupTask(
 
 
   const confirmed =
-    window.confirm(
-      `Resolve "${formatFlagType(
-        task.flag_type
-      )}" for ${task.business_name || "this client"}?`
-    );
+    await showAdminConfirm({
+      eyebrow: "SETUP TASK",
+      title: "RESOLVE THIS TASK?",
+      message:
+        `Resolve "${formatFlagType(
+          task.flag_type
+        )}" for ${
+          task.business_name ||
+          "this client"
+        }?`,
+      confirmText: "Resolve Task",
+    });
 
 
   if (!confirmed) {
@@ -5907,9 +6193,13 @@ async function resolveSetupTask(
     );
 
 
-    window.alert(
-      "The setup task could not be resolved. Please try again."
-    );
+   await showAdminMessage({
+  eyebrow: "SETUP TASK ERROR",
+  title: "TASK COULD NOT BE RESOLVED",
+  message:
+    "The setup task could not be resolved. Please try again.",
+  confirmText: "Got It",
+});
 
 
   } finally {
@@ -6234,6 +6524,10 @@ function resetContentCreateForm() {
 
   contentClient.disabled =
     false;
+
+  if (contentSendApproval) {
+  contentSendApproval.hidden = true;
+}
 
 
   contentCreateTitle.textContent =
@@ -6846,6 +7140,107 @@ function renderContent(
   );
 }
 
+// =========================================================
+// TOGGLE CLIENT CONTENT VISIBILITY
+// =========================================================
+
+async function toggleContentClientVisibility(
+  item
+) {
+
+  if (!item?.id) {
+    return;
+  }
+
+
+  const makeVisible =
+    item.client_visible !== true;
+
+
+  const actionText =
+    makeVisible
+      ? "release this content to the client"
+      : "hide this content from the client";
+
+
+const confirmed =
+    await showAdminConfirm({
+      eyebrow: "CLIENT VISIBILITY",
+      title:
+        makeVisible
+          ? "RELEASE TO CLIENT?"
+          : "HIDE FROM CLIENT?",
+      message:
+        makeVisible
+          ? "Release this content to the client for review?"
+          : "Hide this content from the client?",
+      confirmText:
+        makeVisible
+          ? "Release Content"
+          : "Hide Content",
+    });
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient.rpc(
+        "set_content_client_visibility",
+        {
+          p_content_item_id:
+            item.id,
+
+          p_client_visible:
+            makeVisible,
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    item.client_visible =
+      makeVisible;
+
+
+    console.log(
+      "Client content visibility updated:",
+      data
+    );
+
+
+    await loadContent(true);
+
+  } catch (error) {
+
+    console.error(
+      "Client visibility update failed:",
+      error
+    );
+
+
+   await showAdminMessage({
+  eyebrow: "VISIBILITY ERROR",
+  title: "VISIBILITY COULD NOT BE UPDATED",
+  message:
+    "The client visibility could not be updated. Please try again.",
+  confirmText: "Got It",
+});
+
+  }
+
+}
+
 
 // =========================================================
 // FILTERED EMPTY STATE
@@ -6998,6 +7393,56 @@ function createContentCard(
     meta
   );
 
+   if (
+  item.approval_status ===
+    "changes_requested" &&
+  item.client_revision_feedback
+) {
+
+  const revisionFeedback =
+    document.createElement(
+      "div"
+    );
+
+  revisionFeedback.className =
+    "content-revision-feedback";
+
+
+  const revisionLabel =
+    document.createElement(
+      "div"
+    );
+
+  revisionLabel.className =
+    "content-revision-feedback-label";
+
+  revisionLabel.textContent =
+    "CLIENT REVISION FEEDBACK";
+
+
+  const revisionMessage =
+    document.createElement(
+      "p"
+    );
+
+  revisionMessage.textContent =
+    item.client_revision_feedback;
+
+
+  revisionFeedback.appendChild(
+    revisionLabel
+  );
+
+  revisionFeedback.appendChild(
+    revisionMessage
+  );
+
+  main.appendChild(
+    revisionFeedback
+  );
+
+}
+
 
   const actions =
     document.createElement(
@@ -7037,12 +7482,50 @@ openButton.addEventListener(
   }
 );
 
-
-
-
-  actions.appendChild(
-    openButton
+const clientVisibilityButton =
+  document.createElement(
+    "button"
   );
+
+
+clientVisibilityButton.type =
+  "button";
+
+
+clientVisibilityButton.className =
+  "content-client-visibility-button";
+
+
+clientVisibilityButton.textContent =
+  item.client_visible === true
+    ? "Hide from Client"
+    : "Release to Client";
+
+
+clientVisibilityButton.dataset.contentItemId =
+  item.id || "";
+
+
+clientVisibilityButton.addEventListener(
+  "click",
+  async () => {
+
+    await toggleContentClientVisibility(
+      item
+    );
+
+  }
+);
+
+
+
+ actions.appendChild(
+  clientVisibilityButton
+);
+
+actions.appendChild(
+  openButton
+);
 
 
   card.appendChild(
@@ -7337,6 +7820,36 @@ function renderContentDetail(
     content.caption ||
     "No caption added.";
 
+  // -------------------------------------------------------
+// CLIENT REVISION FEEDBACK
+// -------------------------------------------------------
+
+const revisionFeedback =
+  content.client_revision_feedback
+    ?.trim() ||
+  "";
+
+
+if (
+  revisionFeedback
+) {
+
+  contentDetailRevisionFeedback.textContent =
+    revisionFeedback;
+
+  contentDetailRevisionCard.hidden =
+    false;
+
+} else {
+
+  contentDetailRevisionFeedback.textContent =
+    "";
+
+  contentDetailRevisionCard.hidden =
+    true;
+
+}
+
 
   // -------------------------------------------------------
   // PLATFORMS
@@ -7450,7 +7963,6 @@ function renderContentDetailPlatforms(
   );
 }
 
-
 // =========================================================
 // CONTENT DETAIL ASSETS
 // =========================================================
@@ -7482,6 +7994,7 @@ async function renderContentDetailAssets(
     );
 
     return;
+
   }
 
 
@@ -7498,26 +8011,17 @@ async function renderContentDetailAssets(
       "content-detail-asset";
 
 
-    const name =
-      document.createElement(
-        "strong"
-      );
-
-    name.textContent =
-      asset.file_name ||
-      formatStatus(
-        asset.asset_type
-      ) ||
-      "Media Asset";
-
-
-    const actions =
+    const main =
       document.createElement(
         "div"
       );
 
-    actions.className =
-      "content-detail-asset-actions";
+    main.className =
+      "content-detail-asset-main";
+
+
+    let assetLink =
+      null;
 
 
     if (
@@ -7526,7 +8030,7 @@ async function renderContentDetailAssets(
 
       try {
 
-        let assetLink =
+        assetLink =
           asset.asset_url;
 
 
@@ -7557,39 +8061,8 @@ async function renderContentDetailAssets(
 
 
           assetLink =
-            data?.signedUrl || null;
-
-        }
-
-
-        if (
-          assetLink
-        ) {
-
-          const link =
-            document.createElement(
-              "a"
-            );
-
-          link.href =
-            assetLink;
-
-          link.target =
-            "_blank";
-
-          link.rel =
-            "noopener noreferrer";
-
-          link.className =
-            "content-detail-asset-open";
-
-          link.textContent =
-            "Open Asset";
-
-
-          actions.appendChild(
-            link
-          );
+            data?.signedUrl ||
+            null;
 
         }
 
@@ -7600,24 +8073,202 @@ async function renderContentDetailAssets(
           error
         );
 
-
-        const unavailable =
-          document.createElement(
-            "span"
-          );
-
-        unavailable.className =
-          "content-detail-asset-error";
-
-        unavailable.textContent =
-          "Asset unavailable";
-
-
-        actions.appendChild(
-          unavailable
-        );
+        assetLink =
+          null;
 
       }
+
+    }
+
+
+    const assetType =
+      asset.asset_type ||
+      "file";
+
+
+    const fileName =
+      asset.file_name ||
+      formatStatus(
+        asset.asset_type
+      ) ||
+      "Media Asset";
+
+
+    if (
+      assetType === "image" &&
+      assetLink
+    ) {
+
+      const previewLink =
+        document.createElement(
+          "a"
+        );
+
+      previewLink.href =
+        assetLink;
+
+      previewLink.target =
+        "_blank";
+
+      previewLink.rel =
+        "noopener noreferrer";
+
+      previewLink.className =
+        "content-detail-asset-preview-link";
+
+
+      const image =
+        document.createElement(
+          "img"
+        );
+
+      image.src =
+        assetLink;
+
+      image.alt =
+        fileName;
+
+      image.loading =
+        "lazy";
+
+      image.className =
+        "content-detail-asset-thumbnail";
+
+
+      previewLink.appendChild(
+        image
+      );
+
+
+      main.appendChild(
+        previewLink
+      );
+
+    } else {
+
+      const typeBadge =
+        document.createElement(
+          "div"
+        );
+
+      typeBadge.className =
+        "content-detail-asset-type";
+
+
+      if (
+        assetType === "video"
+      ) {
+
+        typeBadge.textContent =
+          "VIDEO";
+
+      } else if (
+        assetType === "pdf"
+      ) {
+
+        typeBadge.textContent =
+          "PDF";
+
+      } else {
+
+        typeBadge.textContent =
+          "FILE";
+
+      }
+
+
+      main.appendChild(
+        typeBadge
+      );
+
+    }
+
+
+    const copy =
+      document.createElement(
+        "div"
+      );
+
+    copy.className =
+      "content-detail-asset-copy";
+
+
+    const name =
+      document.createElement(
+        "strong"
+      );
+
+    name.textContent =
+      fileName;
+
+
+    copy.appendChild(
+      name
+    );
+
+
+    main.appendChild(
+      copy
+    );
+
+
+    const actions =
+      document.createElement(
+        "div"
+      );
+
+    actions.className =
+      "content-detail-asset-actions";
+
+
+    if (
+      assetLink
+    ) {
+
+      const link =
+        document.createElement(
+          "a"
+        );
+
+      link.href =
+        assetLink;
+
+      link.target =
+        "_blank";
+
+      link.rel =
+        "noopener noreferrer";
+
+      link.className =
+        "content-detail-asset-open";
+
+      link.textContent =
+        "Open Asset";
+
+
+      actions.appendChild(
+        link
+      );
+
+    } else if (
+      asset.asset_url
+    ) {
+
+      const unavailable =
+        document.createElement(
+          "span"
+        );
+
+      unavailable.className =
+        "content-detail-asset-error";
+
+      unavailable.textContent =
+        "Asset unavailable";
+
+
+      actions.appendChild(
+        unavailable
+      );
 
     }
 
@@ -7661,7 +8312,7 @@ async function renderContentDetailAssets(
 
 
     item.appendChild(
-      name
+      main
     );
 
     item.appendChild(
@@ -7690,9 +8341,16 @@ async function deleteContentAsset(
 
 
   const confirmed =
-    window.confirm(
-      `Delete "${asset.file_name || "this asset"}"?`
-    );
+    await showAdminConfirm({
+      eyebrow: "DELETE ASSET",
+      title: "DELETE THIS ASSET?",
+      message:
+        `Delete "${
+          asset.file_name ||
+          "this asset"
+        }"?`,
+      confirmText: "Delete Asset",
+    });
 
 
   if (!confirmed) {
@@ -8861,19 +9519,370 @@ document.addEventListener(
   (event) => {
 
     if (
-      event.key ===
-        "Escape" &&
+      event.key !== "Escape"
+    ) {
+      return;
+    }
+
+    // Close the reusable admin action modal first.
+    if (
+      adminActionModal &&
+      !adminActionModal.hidden
+    ) {
+      closeAdminActionModal(false);
+      return;
+    }
+
+    // Close the confirmation modal first.
+    if (
+      contentSendApprovalModal &&
+      !contentSendApprovalModal.hidden
+    ) {
+      closeContentSendApprovalModal();
+      return;
+    }
+
+
+        // Otherwise close the content editor.
+    if (
       contentCreatePanel &&
       !contentCreatePanel.hidden &&
       !contentCreateBusy
     ) {
-
       closeContentCreatePanel();
-
     }
 
   }
 );
+
+
+// =========================================================
+// SEND REVISED CONTENT BACK FOR APPROVAL
+// =========================================================
+
+async function sendRevisedContentBackForApproval() {
+
+  if (
+    contentCreateBusy ||
+    contentFormMode !== "edit" ||
+    !editingContentId
+  ) {
+    return;
+  }
+
+
+  clearContentCreateError();
+
+
+  // ---------------------------------------------------
+  // PRESERVE CONTENT ID
+  // ---------------------------------------------------
+
+  const contentItemId =
+    editingContentId;
+
+
+  // ---------------------------------------------------
+  // VALIDATE TITLE
+  // ---------------------------------------------------
+
+  const title =
+    contentTitle.value.trim();
+
+  if (!title) {
+
+    showContentCreateError(
+      "Enter an internal title."
+    );
+
+    contentTitle.focus();
+
+    return;
+  }
+
+
+  // ---------------------------------------------------
+  // VALIDATE CONTENT TYPE
+  // ---------------------------------------------------
+
+  const type =
+    contentType.value;
+
+  if (!type) {
+
+    showContentCreateError(
+      "Select a content type."
+    );
+
+    contentType.focus();
+
+    return;
+  }
+
+
+  // ---------------------------------------------------
+  // VALIDATE PLATFORMS
+  // ---------------------------------------------------
+
+  const platforms =
+    Array.from(
+      contentPlatformInputs
+    )
+      .filter(
+        (input) =>
+          input.checked
+      )
+      .map(
+        (input) =>
+          input.value
+      );
+
+  if (!platforms.length) {
+
+    showContentCreateError(
+      "Select at least one platform."
+    );
+
+    return;
+  }
+
+
+  // ---------------------------------------------------
+  // OPTIONAL VALUES
+  // ---------------------------------------------------
+
+  const caption =
+    contentCaption.value.trim();
+
+  const publishAt =
+    contentPublishAt.value;
+
+  const internalNotes =
+    contentInternalNotes.value.trim();
+
+
+  // ---------------------------------------------------
+  // BUSY STATE
+  // ---------------------------------------------------
+
+  setContentCreateBusy(true);
+
+  contentSendApproval.disabled =
+    true;
+
+  const originalButtonText =
+    contentSendApproval.textContent;
+
+  contentSendApproval.textContent =
+    "Sending...";
+
+
+  try {
+
+    // -------------------------------------------------
+    // 1. SAVE THE REVISED CONTENT
+    // -------------------------------------------------
+
+    const {
+      error: updateError,
+    } =
+      await supabaseClient.rpc(
+        "update_admin_content_item",
+        {
+
+          p_content_item_id:
+            contentItemId,
+
+          p_title:
+            title,
+
+          p_content_type:
+            type,
+
+          p_platforms:
+            platforms,
+
+          p_caption:
+            caption || null,
+
+          p_planned_publish_at:
+            publishAt
+              ? new Date(
+                  publishAt
+                ).toISOString()
+              : null,
+
+          p_status:
+            contentStatus.value ||
+            "draft",
+
+          p_approval_status:
+            contentApprovalStatus.value ||
+            "not_requested",
+
+          p_internal_notes:
+            internalNotes || null,
+
+        }
+      );
+
+
+    if (updateError) {
+      throw updateError;
+    }
+
+
+    // -------------------------------------------------
+    // 2. RETURN IT TO CLIENT APPROVAL
+    // -------------------------------------------------
+
+    const {
+      data: approvalData,
+      error: approvalError,
+    } =
+      await supabaseClient.rpc(
+        "send_content_back_for_approval",
+        {
+          p_content_item_id:
+            contentItemId,
+        }
+      );
+
+
+    if (approvalError) {
+      throw approvalError;
+    }
+
+
+    console.log(
+      "Revised content returned for approval:",
+      approvalData
+    );
+
+
+    // -------------------------------------------------
+    // 3. CLOSE EDIT PANEL
+    // -------------------------------------------------
+
+    contentCreatePanel.hidden =
+      true;
+
+    document.body.style.overflow =
+      "";
+
+    resetContentCreateForm();
+
+
+    // -------------------------------------------------
+    // 4. REFRESH ADMIN CONTENT
+    // -------------------------------------------------
+
+    contentLoaded =
+      false;
+
+    cachedContent =
+      [];
+
+    await loadContent(true);
+
+    await openContentItem(
+      contentItemId
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Send revised content for approval failed:",
+      error
+    );
+
+    showContentCreateError(
+      error?.message ||
+      "The revised content could not be sent for approval."
+    );
+
+
+  } finally {
+
+    setContentCreateBusy(false);
+
+    contentSendApproval.disabled =
+      false;
+
+    contentSendApproval.textContent =
+      originalButtonText;
+
+  }
+
+}
+
+
+// =========================================================
+// SEND APPROVAL MODAL CONTROLS
+// =========================================================
+
+if (contentSendApproval) {
+
+  contentSendApproval.addEventListener(
+    "click",
+    () => {
+
+      if (
+        contentCreateBusy ||
+        contentFormMode !== "edit" ||
+        !editingContentId
+      ) {
+        return;
+      }
+
+      openContentSendApprovalModal();
+
+    }
+  );
+
+}
+
+
+contentSendApprovalModalCancel
+  ?.addEventListener(
+    "click",
+    () => {
+      closeContentSendApprovalModal();
+    }
+  );
+
+
+contentSendApprovalModal
+  ?.querySelectorAll(
+    "[data-close-send-approval-modal]"
+  )
+  .forEach(
+    (element) => {
+
+      element.addEventListener(
+        "click",
+        () => {
+          closeContentSendApprovalModal();
+        }
+      );
+
+    }
+  );
+
+
+contentSendApprovalModalConfirm
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      closeContentSendApprovalModal();
+
+      await sendRevisedContentBackForApproval();
+
+    }
+  );
+
 
 // =========================================================
 // CREATE CONTENT FORM SUBMISSION

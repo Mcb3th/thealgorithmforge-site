@@ -648,6 +648,23 @@ a {
     var(--ember);
 }
 
+/* =========================================================
+   CLICKABLE PROGRESS NAVIGATION
+   ========================================================= */
+
+.progress-steps li {
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.progress-steps li:hover {
+  color: var(--ember);
+  transform: translateY(-1px);
+}
+
 
 /* =========================================================
    FORM STEP

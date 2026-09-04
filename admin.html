@@ -1124,6 +1124,28 @@
 
       </article>
 
+<!-- CLIENT REVISION FEEDBACK -->
+
+<article
+  class="content-detail-card content-detail-revision"
+  id="contentDetailRevisionCard"
+  hidden
+>
+
+  <p class="eyebrow">
+    CLIENT FEEDBACK
+  </p>
+
+  <h3>
+    REVISION REQUEST
+  </h3>
+
+  <div
+    class="content-detail-revision-copy"
+    id="contentDetailRevisionFeedback"
+  ></div>
+
+</article>
 
       <!-- PLATFORMS -->
 
@@ -1621,40 +1643,199 @@
 
       <div class="content-create-actions">
 
-        <button
-          type="button"
-          class="content-create-cancel"
-          id="contentCreateCancel"
-        >
-          Cancel
-        </button>
+  <button
+    type="button"
+    class="content-create-cancel"
+    id="contentCreateCancel"
+  >
+    Cancel
+  </button>
 
 
-        <button
-          type="submit"
-          class="btn content-create-submit"
-          id="contentCreateSubmit"
-        >
-          <span id="contentCreateSubmitText">
-            Create Content
-          </span>
+  <div class="content-create-primary-actions">
 
-          <span
-            class="button-loader"
-            id="contentCreateLoader"
-            hidden
-          ></span>
-        </button>
+    <button
+      type="button"
+      class="btn content-send-approval"
+      id="contentSendApproval"
+      hidden
+    >
+      Send Back for Approval
+    </button>
 
-      </div>
+
+    <button
+      type="submit"
+      class="btn content-create-submit"
+      id="contentCreateSubmit"
+    >
+      <span id="contentCreateSubmitText">
+        Create Content
+      </span>
+
+      <span
+        class="button-loader"
+        id="contentCreateLoader"
+        hidden
+      ></span>
+    </button>
+
+  </div>
+
+</div>
 
     </form>
 
   </section>
 
-</div> 
+</div>
 
 </section>
+
+<!-- =====================================================
+     SEND BACK FOR APPROVAL MODAL
+====================================================== -->
+
+<div
+  class="content-create-panel"
+  id="contentSendApprovalModal"
+  hidden
+>
+
+  <div
+    class="content-create-overlay"
+    data-close-send-approval-modal
+  ></div>
+
+  <section
+    class="content-create-dialog content-send-approval-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="contentSendApprovalModalTitle"
+  >
+
+    <div class="content-create-header">
+
+      <div>
+
+        <p class="eyebrow">
+          CONTENT APPROVAL
+        </p>
+
+        <h3 id="contentSendApprovalModalTitle">
+          SEND BACK FOR APPROVAL?
+        </h3>
+
+      </div>
+
+    </div>
+
+
+    <div class="content-send-approval-modal-body">
+
+      <p>
+        Save these revisions and send the content
+        back to the client for approval?
+      </p>
+
+      <div class="content-create-actions">
+
+        <button
+          type="button"
+          class="content-create-cancel"
+          id="contentSendApprovalModalCancel"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn content-send-approval"
+          id="contentSendApprovalModalConfirm"
+        >
+          Send Back for Approval
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+<!-- =====================================================
+     ADMIN ACTION MODAL
+====================================================== -->
+
+<div
+  class="content-create-panel"
+  id="adminActionModal"
+  hidden
+>
+
+  <div
+    class="content-create-overlay"
+    data-close-admin-action-modal
+  ></div>
+
+  <section
+    class="content-create-dialog content-send-approval-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="adminActionModalTitle"
+  >
+
+    <div class="content-create-header">
+
+      <div>
+
+        <p
+          class="eyebrow"
+          id="adminActionModalEyebrow"
+        >
+          CONFIRM ACTION
+        </p>
+
+        <h3 id="adminActionModalTitle">
+          ARE YOU SURE?
+        </h3>
+
+      </div>
+
+    </div>
+
+    <div class="content-send-approval-modal-body">
+
+      <p id="adminActionModalMessage">
+        Confirm this action to continue.
+      </p>
+
+      <div class="content-create-actions">
+
+        <button
+          type="button"
+          class="content-create-cancel"
+          id="adminActionModalCancel"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn"
+          id="adminActionModalConfirm"
+        >
+          Confirm
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
 
     </main>
 

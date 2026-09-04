@@ -212,6 +212,8 @@ let currentUser =
 let currentMembership =
   null;
 
+let currentClient = null;
+
 let currentOnboardingSubmission =
   null;
 
@@ -226,6 +228,8 @@ let clientUploads =
 
 let uploadInProgress =
   false;
+
+let currentContentItems = [];
 
 // =========================================================
 // ROOT VIEWS
@@ -344,9 +348,1611 @@ async function loadClientMembership() {
     data;
 
 
+  const {
+    data: clientData,
+    error: clientError,
+  } =
+    await supabaseClient
+      .from(
+        "clients"
+      )
+      .select(
+        "id, business_name"
+      )
+      .eq(
+        "id",
+        data.client_id
+      )
+      .maybeSingle();
+
+
+  if (clientError) {
+
+    console.error(
+      "Client record load failed:",
+      clientError
+    );
+
+    throw new Error(
+      "We couldn't load your business information."
+    );
+
+  }
+
+
+  if (!clientData) {
+
+    throw new Error(
+      "Your business record could not be found."
+    );
+
+  }
+
+
+  currentClient =
+    clientData;
+
+
   return data;
 
 }
+
+// =========================================================
+// CLIENT CONTENT
+// =========================================================
+
+async function loadClientContent() {
+
+  if (!currentMembership?.client_id) {
+    return;
+  }
+
+
+  const {
+    data,
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "content_items"
+      )
+      .select(`
+        id,
+        title,
+        content_type,
+        caption,
+        planned_publish_at,
+        status,
+        approval_status,
+        client_revision_feedback,
+        created_at,
+        content_platforms (
+          platform,
+          platform_caption_override
+        ),
+        content_assets (
+          id,
+          asset_type,
+          asset_url,
+          file_name,
+          sort_order
+        )
+      `)
+      .eq(
+        "client_id",
+        currentMembership.client_id
+      )
+      .order(
+        "planned_publish_at",
+        {
+          ascending: true,
+          nullsFirst: false,
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Client content load failed:",
+      error
+    );
+
+    throw new Error(
+      "We couldn't load your content."
+    );
+
+  }
+
+
+  currentContentItems =
+    Array.isArray(data)
+      ? data
+      : [];
+
+
+  for (
+    const item
+    of currentContentItems
+  ) {
+
+    const assets =
+      Array.isArray(
+        item.content_assets
+      )
+        ? item.content_assets
+        : [];
+
+
+    assets.sort(
+      (a, b) =>
+        (a.sort_order ?? 0) -
+        (b.sort_order ?? 0)
+    );
+
+
+    for (
+      const asset
+      of assets
+    ) {
+
+      asset.signed_url = null;
+
+
+      if (
+        !asset.asset_url
+      ) {
+        continue;
+      }
+
+
+      if (
+        /^https?:\/\//i.test(
+          asset.asset_url
+        )
+      ) {
+
+        asset.signed_url =
+          asset.asset_url;
+
+        continue;
+
+      }
+
+
+      const {
+        data: signedData,
+        error: signedError,
+      } =
+        await supabaseClient
+          .storage
+          .from(
+            "content-assets"
+          )
+          .createSignedUrl(
+            asset.asset_url,
+            3600
+          );
+
+
+      if (signedError) {
+
+        console.error(
+          "Content asset signed URL failed:",
+          signedError
+        );
+
+        continue;
+
+      }
+
+
+      asset.signed_url =
+        signedData?.signedUrl ||
+        null;
+
+    }
+
+  }
+
+
+  renderClientContent();
+
+}
+
+// =========================================================
+// CLIENT CONTENT APPROVAL ACTIONS
+// =========================================================
+
+function renderClientApprovalActions(
+  item
+) {
+
+  const approvalStatus =
+    item?.approval_status ||
+    "not_requested";
+
+
+  if (
+    approvalStatus ===
+    "awaiting_approval"
+  ) {
+
+    return `
+      <div class="client-content-approval-actions">
+
+        <button
+          type="button"
+          class="btn client-content-approve-button"
+          data-content-approve="${escapePortalHtml(
+            item.id
+          )}"
+        >
+          Approve
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary client-content-revision-button"
+          data-content-revision="${escapePortalHtml(
+            item.id
+          )}"
+        >
+          Request Revision
+        </button>
+
+      </div>
+    `;
+  }
+
+
+  if (
+    approvalStatus ===
+    "approved"
+  ) {
+
+    return `
+      <div class="client-content-approval-result is-approved">
+        <span class="client-content-approval-label">
+          APPROVED
+        </span>
+
+        <p>
+          This content has been approved
+          and is ready to move forward.
+        </p>
+      </div>
+    `;
+  }
+
+
+  if (
+    approvalStatus ===
+    "changes_requested"
+  ) {
+
+    const feedback =
+      item.client_revision_feedback ||
+      "";
+
+    return `
+      <div class="client-content-approval-result is-revision">
+
+        <span class="client-content-approval-label">
+          REVISION REQUESTED
+        </span>
+
+        ${
+          feedback
+            ? `
+              <div class="client-revision-feedback-block">
+
+                <span class="client-revision-feedback-label">
+                  YOUR FEEDBACK
+                </span>
+
+                <p class="client-revision-feedback">
+                  ${escapePortalHtml(
+                    feedback
+                  )}
+                </p>
+
+              </div>
+            `
+            : `
+              <p>
+                A revision has been requested
+                for this content.
+              </p>
+            `
+        }
+
+      </div>
+    `;
+  }
+
+
+  return "";
+
+}
+
+// =========================================================
+// SUBMIT CLIENT CONTENT APPROVAL
+// =========================================================
+
+let pendingRevisionContentItemId =
+  null;
+
+let pendingApprovalContentItemId = null;
+
+function openApprovalModal(contentItemId) {
+
+  const modal =
+    document.getElementById(
+      "approvalModal"
+    );
+
+  if (!modal) {
+    return;
+  }
+
+  pendingApprovalContentItemId =
+    contentItemId;
+
+  modal.hidden =
+    false;
+
+  document.body.style.overflow =
+    "hidden";
+}
+
+
+function closeApprovalModal() {
+
+  const modal =
+    document.getElementById(
+      "approvalModal"
+    );
+
+  if (modal) {
+    modal.hidden =
+      true;
+  }
+
+  pendingApprovalContentItemId =
+    null;
+
+  document.body.style.overflow =
+    "";
+}
+
+function openRevisionModal(
+  contentItemId
+) {
+
+  const modal =
+    document.getElementById(
+      "revisionModal"
+    );
+
+  const textarea =
+    document.getElementById(
+      "revisionFeedback"
+    );
+
+  const error =
+    document.getElementById(
+      "revisionModalError"
+    );
+
+
+  if (
+    !modal ||
+    !textarea
+  ) {
+    return;
+  }
+
+
+  pendingRevisionContentItemId =
+    contentItemId;
+
+
+  textarea.value =
+    "";
+
+
+  if (error) {
+    error.hidden = true;
+  }
+
+
+  modal.hidden =
+    false;
+
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  requestAnimationFrame(
+    () => {
+      textarea.focus();
+    }
+  );
+
+}
+
+
+function closeRevisionModal() {
+
+  const modal =
+    document.getElementById(
+      "revisionModal"
+    );
+
+  const textarea =
+    document.getElementById(
+      "revisionFeedback"
+    );
+
+  const error =
+    document.getElementById(
+      "revisionModalError"
+    );
+
+
+  if (modal) {
+    modal.hidden = true;
+  }
+
+
+  if (textarea) {
+    textarea.value = "";
+  }
+
+
+  if (error) {
+    error.hidden = true;
+  }
+
+
+  pendingRevisionContentItemId =
+    null;
+
+
+  document.body.style.overflow =
+    "";
+
+}
+
+
+async function submitClientContentApproval(
+  contentItemId,
+  decision,
+  feedback = null
+) {
+
+  if (
+    !contentItemId ||
+    !decision
+  ) {
+    return;
+  }
+
+
+
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient.rpc(
+        "submit_client_content_approval",
+        {
+          p_content_item_id:
+            contentItemId,
+
+          p_decision:
+            decision,
+
+          p_feedback:
+            feedback,
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    const item =
+      currentContentItems.find(
+        (contentItem) =>
+          contentItem.id ===
+          contentItemId
+      );
+
+
+    if (item) {
+
+      item.approval_status =
+        decision;
+
+      item.client_revision_feedback =
+        feedback;
+
+    }
+
+
+    if (
+  decision ===
+  "changes_requested"
+) {
+  closeRevisionModal();
+}
+
+if (
+  decision ===
+  "approved"
+) {
+  closeApprovalModal();
+}
+
+
+    console.log(
+      "Client approval submitted:",
+      data
+    );
+
+
+    renderClientContent();
+
+  } catch (error) {
+
+    console.error(
+      "Client approval submission failed:",
+      error
+    );
+
+
+    await showClientMessage({
+  eyebrow: "SUBMISSION ERROR",
+  title: "RESPONSE COULD NOT BE SUBMITTED",
+  message:
+    "Your response could not be submitted. Please try again.",
+  confirmText: "Got It",
+});
+
+  }
+
+}
+
+// =========================================================
+// REVISION MODAL CONTROLS
+// =========================================================
+
+const revisionModal =
+  document.getElementById(
+    "revisionModal"
+  );
+
+const revisionModalCancel =
+  document.getElementById(
+    "revisionModalCancel"
+  );
+
+const revisionModalSubmit =
+  document.getElementById(
+    "revisionModalSubmit"
+  );
+
+const revisionFeedback =
+  document.getElementById(
+    "revisionFeedback"
+  );
+
+const revisionModalError =
+  document.getElementById(
+    "revisionModalError"
+  );
+
+
+revisionModalCancel
+  ?.addEventListener(
+    "click",
+    () => {
+      closeRevisionModal();
+    }
+  );
+
+
+revisionModal
+  ?.querySelectorAll(
+    "[data-close-revision-modal]"
+  )
+  .forEach(
+    (element) => {
+      element.addEventListener(
+        "click",
+        () => {
+          closeRevisionModal();
+        }
+      );
+    }
+  );
+
+
+revisionModalSubmit
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      if (
+        !pendingRevisionContentItemId
+      ) {
+        return;
+      }
+
+
+      const feedback =
+        revisionFeedback
+          ?.value
+          .trim() ||
+        "";
+
+
+      if (!feedback) {
+
+        if (revisionModalError) {
+          revisionModalError.hidden =
+            false;
+        }
+
+        revisionFeedback?.focus();
+
+        return;
+      }
+
+
+      if (revisionModalError) {
+        revisionModalError.hidden =
+          true;
+      }
+
+
+      await submitClientContentApproval(
+        pendingRevisionContentItemId,
+        "changes_requested",
+        feedback
+      );
+
+    }
+  );
+
+
+revisionFeedback
+  ?.addEventListener(
+    "input",
+    () => {
+
+      if (
+        revisionModalError &&
+        revisionFeedback.value.trim()
+      ) {
+        revisionModalError.hidden =
+          true;
+      }
+
+    }
+  );
+
+const approvalModal =
+  document.getElementById(
+    "approvalModal"
+  );
+
+  const clientActionModal =
+  document.getElementById(
+    "clientActionModal"
+  );
+
+const clientActionModalEyebrow =
+  document.getElementById(
+    "clientActionModalEyebrow"
+  );
+
+const clientActionModalTitle =
+  document.getElementById(
+    "clientActionModalTitle"
+  );
+
+const clientActionModalMessage =
+  document.getElementById(
+    "clientActionModalMessage"
+  );
+
+let clientActionModalResolver =
+  null;
+
+
+function closeClientActionModal(
+  result = false
+) {
+
+  if (clientActionModal) {
+    clientActionModal.hidden =
+      true;
+  }
+
+  document.body.style.overflow =
+    "";
+
+  if (clientActionModalResolver) {
+
+    const resolve =
+      clientActionModalResolver;
+
+    clientActionModalResolver =
+      null;
+
+    resolve(result);
+
+  }
+
+}
+
+
+function showClientConfirm({
+  eyebrow = "CONFIRM ACTION",
+  title = "ARE YOU SURE?",
+  message = "Confirm this action to continue.",
+  confirmText = "Confirm",
+} = {}) {
+
+  if (
+    !clientActionModal ||
+    !clientActionModalEyebrow ||
+    !clientActionModalTitle ||
+    !clientActionModalMessage ||
+    !clientActionModalCancel ||
+    !clientActionModalConfirm
+  ) {
+    return Promise.resolve(false);
+  }
+
+  clientActionModalEyebrow.textContent =
+    eyebrow;
+
+  clientActionModalTitle.textContent =
+    title;
+
+  clientActionModalMessage.textContent =
+    message;
+
+  clientActionModalCancel.hidden =
+    false;
+
+  clientActionModalConfirm.textContent =
+    confirmText;
+
+  clientActionModal.hidden =
+    false;
+
+  document.body.style.overflow =
+    "hidden";
+
+  return new Promise(
+    (resolve) => {
+      clientActionModalResolver =
+        resolve;
+    }
+  );
+
+}
+
+
+function showClientMessage({
+  eyebrow = "NOTICE",
+  title = "SOMETHING WENT WRONG",
+  message = "Please try again.",
+  confirmText = "Got It",
+} = {}) {
+
+  if (
+    !clientActionModal ||
+    !clientActionModalEyebrow ||
+    !clientActionModalTitle ||
+    !clientActionModalMessage ||
+    !clientActionModalCancel ||
+    !clientActionModalConfirm
+  ) {
+    return Promise.resolve();
+  }
+
+  clientActionModalEyebrow.textContent =
+    eyebrow;
+
+  clientActionModalTitle.textContent =
+    title;
+
+  clientActionModalMessage.textContent =
+    message;
+
+  clientActionModalCancel.hidden =
+    true;
+
+  clientActionModalConfirm.textContent =
+    confirmText;
+
+  clientActionModal.hidden =
+    false;
+
+  document.body.style.overflow =
+    "hidden";
+
+  return new Promise(
+    (resolve) => {
+      clientActionModalResolver =
+        resolve;
+    }
+  );
+
+}
+
+
+
+const clientActionModalCancel =
+  document.getElementById(
+    "clientActionModalCancel"
+  );
+
+const clientActionModalConfirm =
+  document.getElementById(
+    "clientActionModalConfirm"
+  );
+
+// =========================================================
+// CLIENT ACTION MODAL CONTROLS
+// =========================================================
+
+clientActionModalCancel
+  ?.addEventListener(
+    "click",
+    () => {
+      closeClientActionModal(false);
+    }
+  );
+
+
+clientActionModalConfirm
+  ?.addEventListener(
+    "click",
+    () => {
+      closeClientActionModal(true);
+    }
+  );
+
+
+clientActionModal
+  ?.querySelectorAll(
+    "[data-close-client-action-modal]"
+  )
+  .forEach(
+    (element) => {
+
+      element.addEventListener(
+        "click",
+        () => {
+          closeClientActionModal(false);
+        }
+      );
+
+    }
+  );
+
+const approvalModalCancel =
+  document.getElementById(
+    "approvalModalCancel"
+  );
+
+const approvalModalSubmit =
+  document.getElementById(
+    "approvalModalSubmit"
+  );
+
+
+approvalModalCancel
+  ?.addEventListener(
+    "click",
+    () => {
+      closeApprovalModal();
+    }
+  );
+
+
+approvalModal
+  ?.querySelectorAll(
+    "[data-close-approval-modal]"
+  )
+  .forEach(
+    (element) => {
+
+      element.addEventListener(
+        "click",
+        () => {
+          closeApprovalModal();
+        }
+      );
+
+    }
+  );
+
+
+approvalModalSubmit
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      if (
+        !pendingApprovalContentItemId
+      ) {
+        return;
+      }
+
+      await submitClientContentApproval(
+        pendingApprovalContentItemId,
+        "approved"
+      );
+
+    }
+  );
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key ===
+      "Escape"
+    ) {
+
+            // Close the reusable client action modal first.
+      if (
+        clientActionModal &&
+        !clientActionModal.hidden
+      ) {
+        closeClientActionModal(false);
+        return;
+      }
+
+      if (
+        approvalModal &&
+        !approvalModal.hidden
+      ) {
+        closeApprovalModal();
+        return;
+      }
+
+      if (
+        revisionModal &&
+        !revisionModal.hidden
+      ) {
+        closeRevisionModal();
+      }
+
+    }
+
+  }
+);
+
+// =========================================================
+// RENDER CLIENT CONTENT
+// =========================================================
+
+function formatContentLabel(value) {
+
+  if (!value) {
+    return "";
+  }
+
+  return String(value)
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (letter) =>
+      letter.toUpperCase()
+    );
+
+}
+
+
+// =========================================================
+// CLIENT-FACING CONTENT STATUS
+// =========================================================
+
+function getClientContentStatus(
+  item
+) {
+
+  const approvalStatus =
+    item?.approval_status ||
+    "not_requested";
+
+  const status =
+    item?.status ||
+    "draft";
+
+
+  if (
+    approvalStatus ===
+    "changes_requested"
+  ) {
+    return "Revision Requested";
+  }
+
+
+  if (
+    approvalStatus ===
+    "awaiting_approval"
+  ) {
+    return "Awaiting Your Approval";
+  }
+
+
+  if (
+    status ===
+    "posted"
+  ) {
+    return "Posted";
+  }
+
+
+  if (
+    status ===
+    "scheduled"
+  ) {
+    return "Scheduled";
+  }
+
+
+  if (
+    status ===
+    "cancelled"
+  ) {
+    return "Cancelled";
+  }
+
+
+  if (
+    approvalStatus ===
+    "approved"
+  ) {
+    return "Approved";
+  }
+
+
+  return formatContentLabel(
+    status
+  );
+
+}
+
+
+function getClientContentStatusClass(
+  item
+) {
+
+  const approvalStatus =
+    item?.approval_status ||
+    "not_requested";
+
+  const status =
+    item?.status ||
+    "draft";
+
+
+  if (
+    approvalStatus ===
+    "changes_requested"
+  ) {
+    return "is-revision";
+  }
+
+
+  if (
+    approvalStatus ===
+    "awaiting_approval"
+  ) {
+    return "is-awaiting";
+  }
+
+
+  if (
+    status ===
+    "posted"
+  ) {
+    return "is-posted";
+  }
+
+
+  if (
+    status ===
+    "scheduled"
+  ) {
+    return "is-scheduled";
+  }
+
+
+  if (
+    status ===
+    "cancelled"
+  ) {
+    return "is-cancelled";
+  }
+
+
+  if (
+    approvalStatus ===
+    "approved"
+  ) {
+    return "is-approved";
+  }
+
+
+  return "is-draft";
+
+}
+
+// =========================================================
+// RENDER CLIENT CONTENT ASSETS
+// =========================================================
+
+function renderClientContentAssets(
+  item
+) {
+
+  const assets =
+    Array.isArray(
+      item?.content_assets
+    )
+      ? item.content_assets
+      : [];
+
+
+  if (
+    assets.length === 0
+  ) {
+    return "";
+  }
+
+
+  const assetMarkup =
+    assets
+      .map((asset) => {
+
+        const signedUrl =
+          asset.signed_url ||
+          "";
+
+        const assetType =
+          asset.asset_type ||
+          "file";
+
+        const fileName =
+          asset.file_name ||
+          "Content asset";
+
+
+        if (!signedUrl) {
+
+          return `
+            <div class="client-content-asset is-unavailable">
+
+              <div class="client-content-file-preview">
+
+                <span class="client-content-file-type">
+                  FILE
+                </span>
+
+                <div>
+                  <strong>
+                    ${escapePortalHtml(
+                      fileName
+                    )}
+                  </strong>
+
+                  <span>
+                    Preview unavailable
+                  </span>
+                </div>
+
+              </div>
+
+            </div>
+          `;
+
+        }
+
+
+        if (
+          assetType ===
+          "image"
+        ) {
+
+          return `
+            <div class="client-content-asset is-image">
+
+              <a
+                href="${escapePortalHtml(
+                  signedUrl
+                )}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="client-content-image-link"
+              >
+
+                <img
+                  src="${escapePortalHtml(
+                    signedUrl
+                  )}"
+                  alt="${escapePortalHtml(
+                    fileName
+                  )}"
+                  loading="lazy"
+                >
+
+              </a>
+
+            </div>
+          `;
+
+        }
+
+
+        if (
+          assetType ===
+          "video"
+        ) {
+
+          return `
+            <div class="client-content-asset is-video">
+
+              <video
+                controls
+                preload="metadata"
+                class="client-content-video"
+              >
+                <source
+                  src="${escapePortalHtml(
+                    signedUrl
+                  )}"
+                >
+                Your browser does not support
+                video playback.
+              </video>
+
+              <div class="client-content-asset-name">
+                ${escapePortalHtml(
+                  fileName
+                )}
+              </div>
+
+            </div>
+          `;
+
+        }
+
+
+        const typeLabel =
+          assetType === "pdf"
+            ? "PDF"
+            : "FILE";
+
+
+        return `
+          <div class="client-content-asset is-file">
+
+            <a
+              href="${escapePortalHtml(
+                signedUrl
+              )}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="client-content-file-preview"
+            >
+
+              <span class="client-content-file-type">
+                ${escapePortalHtml(
+                  typeLabel
+                )}
+              </span>
+
+              <div>
+
+                <strong>
+                  ${escapePortalHtml(
+                    fileName
+                  )}
+                </strong>
+
+                <span>
+                  Open ${escapePortalHtml(
+                    typeLabel
+                  )}
+                </span>
+
+              </div>
+
+            </a>
+
+          </div>
+        `;
+
+      })
+      .join("");
+
+
+  return `
+    <div class="client-content-assets">
+
+      <span class="client-content-label">
+        CONTENT PREVIEW
+      </span>
+
+      <div class="client-content-assets-grid">
+        ${assetMarkup}
+      </div>
+
+    </div>
+  `;
+
+}
+
+// =========================================================
+// RENDER CLIENT CONTENT CARDS
+// =========================================================
+
+function renderClientContent() {
+
+  if (!clientContentList) {
+    return;
+  }
+
+
+  contentCount.textContent =
+    String(
+      currentContentItems.length
+    );
+
+
+  if (
+    currentContentItems.length ===
+      0
+  ) {
+
+    clientContentList.innerHTML = `
+      <div class="empty-state">
+
+        <strong>
+          No content yet.
+        </strong>
+
+        <p>
+          Content created for your business
+          will appear here.
+        </p>
+
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  clientContentList.innerHTML =
+    currentContentItems
+      .map((item) => {
+
+        const platforms =
+          Array.isArray(
+            item.content_platforms
+          )
+            ? item.content_platforms
+            : [];
+
+
+        const platformNames =
+          platforms
+            .map(
+              (platform) =>
+                formatContentLabel(
+                  platform.platform
+                )
+            )
+            .filter(Boolean)
+            .join(", ");
+
+
+        const publishDate =
+          item.planned_publish_at
+            ? new Date(
+                item.planned_publish_at
+              ).toLocaleDateString(
+                undefined,
+                {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                }
+              )
+            : "Not scheduled";
+
+
+        const status =
+          getClientContentStatus(
+            item
+          );
+
+
+        const statusClass =
+          getClientContentStatusClass(
+            item
+          );
+
+
+        const caption =
+          item.caption ||
+          "No caption has been added yet.";
+
+
+        return `
+          <article class="client-content-item">
+
+            <div class="client-content-item-header">
+
+              <div>
+
+                <span class="card-kicker">
+                  ${escapePortalHtml(
+                    formatContentLabel(
+                      item.content_type ||
+                      "CONTENT"
+                    )
+                  )}
+                </span>
+
+                <h3>
+                  ${escapePortalHtml(
+                    item.title ||
+                    "Untitled Content"
+                  )}
+                </h3>
+
+              </div>
+
+
+              <span
+                class="status-pill ${escapePortalHtml(
+                  statusClass
+                )}"
+              >
+                ${escapePortalHtml(
+                  status
+                )}
+              </span>
+
+            </div>
+
+
+            <div class="client-content-meta">
+
+              <span>
+                <strong>
+                  Platforms:
+                </strong>
+
+                ${escapePortalHtml(
+                  platformNames ||
+                  "Not selected"
+                )}
+              </span>
+
+
+              <span>
+                <strong>
+                  Publish:
+                </strong>
+
+                ${escapePortalHtml(
+                  publishDate
+                )}
+              </span>
+
+            </div>
+
+
+            ${renderClientContentAssets(
+              item
+            )}
+
+
+            <div class="client-content-caption">
+
+              <span class="client-content-label">
+                CAPTION
+              </span>
+
+              <p>
+                ${escapePortalHtml(
+                  caption
+                )}
+              </p>
+
+            </div>
+
+
+            ${renderClientApprovalActions(
+              item
+            )}
+
+          </article>
+        `;
+
+      })
+      .join("");
+
+
+  clientContentList
+    .querySelectorAll(
+      "[data-content-approve]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            openApprovalModal(
+              button.dataset
+                .contentApprove
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+  clientContentList
+    .querySelectorAll(
+      "[data-content-revision]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            openRevisionModal(
+              button.dataset
+                .contentRevision
+            );
+
+          }
+        );
+
+      }
+    );
+
+}
+
 
 
 // =========================================================
@@ -364,8 +1970,9 @@ function renderClientIdentity() {
     {};
 
   const businessName =
-    metadata.business_name ||
-    "Your Business";
+  currentClient?.business_name ||
+  metadata.business_name ||
+  "Your Business";
 
   const displayName =
     metadata.full_name ||
@@ -917,25 +2524,32 @@ function renderOnboardingSummary() {
 
       <div>
 
-        <span class="card-kicker">
-          SUBMITTED
-        </span>
+  <span class="card-kicker">
+    SUBMITTED
+  </span>
 
-        <h3>
-          YOUR ONBOARDING
-        </h3>
+  <h3>
+    YOUR ONBOARDING
+  </h3>
 
-        <p>
-          Submitted ${escapePortalHtml(
-            submittedDate
-          )}
-        </p>
+  <p>
+    Submitted ${escapePortalHtml(
+      submittedDate
+    )}
+  </p>
 
-      </div>
+  <a
+    href="onboarding.html?mode=edit"
+    class="btn"
+  >
+    Edit Information
+  </a>
 
-      <span class="status-pill is-complete">
-        Complete
-      </span>
+</div>
+
+<span class="status-pill is-complete">
+  Complete
+</span>
 
     </div>
 
@@ -1745,14 +3359,72 @@ async function loadClientUploads() {
 
 
   clientUploads =
-    data ||
-    [];
+    Array.isArray(data)
+      ? data
+      : [];
+
+
+  for (
+    const upload
+    of clientUploads
+  ) {
+
+    upload.preview_url =
+      null;
+
+
+    const isImage =
+      upload.mime_type
+        ?.startsWith(
+          "image/"
+        );
+
+
+    if (
+      !isImage ||
+      !upload.storage_path
+    ) {
+      continue;
+    }
+
+
+    const {
+      data: signedData,
+      error: signedError,
+    } =
+      await supabaseClient
+        .storage
+        .from(
+          "content-assets"
+        )
+        .createSignedUrl(
+          upload.storage_path,
+          3600
+        );
+
+
+    if (signedError) {
+
+      console.error(
+        "Upload thumbnail signed URL failed:",
+        signedError
+      );
+
+      continue;
+
+    }
+
+
+    upload.preview_url =
+      signedData?.signedUrl ||
+      null;
+
+  }
 
 
   renderClientUploads();
 
 }
-
 
 // =========================================================
 // RENDER CLIENT UPLOADS
@@ -1819,6 +3491,42 @@ function renderClientUploads() {
                 : "";
 
 
+            const isImage =
+              upload.mime_type
+                ?.startsWith(
+                  "image/"
+                );
+
+
+            const previewMarkup =
+              isImage &&
+              upload.preview_url
+                ? `
+                  <div class="client-upload-thumbnail">
+
+                    <img
+                      src="${escapePortalHtml(
+                        upload.preview_url
+                      )}"
+                      alt="${escapePortalHtml(
+                        upload.file_name
+                      )}"
+                      loading="lazy"
+                    >
+
+                  </div>
+                `
+                : `
+                  <div class="client-upload-icon">
+                    ${escapePortalHtml(
+                      getUploadTypeLabel(
+                        upload.mime_type
+                      )
+                    )}
+                  </div>
+                `;
+
+
             return `
               <div
                 class="client-upload-item"
@@ -1829,13 +3537,7 @@ function renderClientUploads() {
 
                 <div class="client-upload-main">
 
-                  <div class="client-upload-icon">
-                    ${escapePortalHtml(
-                      getUploadTypeLabel(
-                        upload.mime_type
-                      )
-                    )}
-                  </div>
+                  ${previewMarkup}
 
                   <div class="client-upload-copy">
 
@@ -2235,10 +3937,14 @@ async function deleteClientUpload(
   }
 
 
-  const confirmed =
-    window.confirm(
-      `Delete "${upload.file_name}"?`
-    );
+const confirmed =
+  await showClientConfirm({
+    eyebrow: "DELETE UPLOAD",
+    title: "DELETE THIS FILE?",
+    message:
+      `Delete "${upload.file_name}"?`,
+    confirmText: "Delete File",
+  });
 
 
   if (!confirmed) {
@@ -2633,6 +4339,257 @@ supabaseClient
     }
   );
 
+// =========================================================
+// RECENT ACTIVITY
+// =========================================================
+
+async function loadRecentActivity() {
+
+  const recentActivity =
+    document.getElementById(
+      "recentActivity"
+    );
+
+
+  if (
+    !recentActivity ||
+    !currentMembership?.client_id
+  ) {
+    return;
+  }
+
+
+  const {
+    data,
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "client_activity"
+      )
+      .select(
+        `
+          id,
+          activity_type,
+          title,
+          description,
+          related_content_item_id,
+          created_at
+        `
+      )
+      .eq(
+        "client_id",
+        currentMembership.client_id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false,
+        }
+      )
+      .limit(5);
+
+
+  if (error) {
+
+    console.error(
+      "Recent activity load failed:",
+      error
+    );
+
+    renderRecentActivity(
+      []
+    );
+
+    return;
+
+  }
+
+
+  renderRecentActivity(
+    Array.isArray(data)
+      ? data
+      : []
+  );
+
+}
+
+
+function renderRecentActivity(
+  activityItems
+) {
+
+  const recentActivity =
+    document.getElementById(
+      "recentActivity"
+    );
+
+
+  if (!recentActivity) {
+    return;
+  }
+
+
+  if (
+    !activityItems.length
+  ) {
+
+    recentActivity.className =
+      "empty-state";
+
+
+    recentActivity.innerHTML = `
+      <strong>
+        Nothing here yet.
+      </strong>
+
+      <p>
+        Portal activity will appear here as
+        we begin working together.
+      </p>
+    `;
+
+    return;
+
+  }
+
+
+  recentActivity.className =
+    "client-activity-list";
+
+
+  recentActivity.innerHTML =
+    activityItems
+      .map(
+        (activity) => {
+
+          const icon =
+            getActivityIcon(
+              activity.activity_type
+            );
+
+
+          const time =
+            formatActivityDate(
+              activity.created_at
+            );
+
+
+          return `
+            <div class="client-activity-item">
+
+              <div class="client-activity-icon">
+                ${escapePortalHtml(
+                  icon
+                )}
+              </div>
+
+              <div class="client-activity-copy">
+
+                <strong>
+                  ${escapePortalHtml(
+                    activity.title ||
+                    "Portal activity"
+                  )}
+                </strong>
+
+                ${
+                  activity.description
+                    ? `
+                      <p>
+                        ${escapePortalHtml(
+                          activity.description
+                        )}
+                      </p>
+                    `
+                    : ""
+                }
+
+                <span class="client-activity-time">
+                  ${escapePortalHtml(
+                    time
+                  )}
+                </span>
+
+              </div>
+
+            </div>
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+function getActivityIcon(
+  activityType
+) {
+
+  switch (
+    activityType
+  ) {
+
+    case "content_released":
+      return "↗";
+
+    case "revision_requested":
+      return "↻";
+
+    case "content_returned":
+      return "↗";
+
+    case "content_approved":
+      return "✓";
+
+    case "upload_added":
+      return "↑";
+
+    default:
+      return "•";
+
+  }
+
+}
+
+
+function formatActivityDate(
+  value
+) {
+
+  if (!value) {
+    return "";
+  }
+
+
+  const date =
+    new Date(
+      value
+    );
+
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "";
+  }
+
+
+  return date.toLocaleString(
+    undefined,
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }
+  );
+
+}
 
 // =========================================================
 // INITIALIZE PORTAL
@@ -2673,17 +4630,17 @@ async function initializePortal() {
       null;
 
 
-   if (
-  !session ||
-  !session.user
-) {
+    if (
+      !session ||
+      !session.user
+    ) {
 
-  window.location.href =
-    "client-login.html";
+      window.location.href =
+        "client-login.html";
 
-  return;
+      return;
 
-}
+    }
 
 
     currentUser =
@@ -2722,13 +4679,15 @@ async function initializePortal() {
 
     await loadClientMembership();
 
-
     renderClientIdentity();
 
+    await loadClientContent();
 
     await initializeOnboardingState();
 
     await loadClientUploads();
+
+    await loadRecentActivity();
 
     showPortal();
 
@@ -2754,7 +4713,6 @@ async function initializePortal() {
   }
 
 }
-
 
 // =========================================================
 // START

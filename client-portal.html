@@ -804,7 +804,215 @@
 
   <!-- CLIENT PORTAL -->
 
-  <script
+<!-- CLIENT PORTAL -->
+
+<!-- =====================================================
+     CONTENT APPROVAL MODAL
+====================================================== -->
+
+<div
+  class="revision-modal"
+  id="approvalModal"
+  hidden
+>
+
+  <div
+    class="revision-modal-backdrop"
+    data-close-approval-modal
+  ></div>
+
+  <div
+    class="revision-modal-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="approvalModalTitle"
+  >
+
+    <div class="revision-modal-eyebrow">
+      CONTENT APPROVAL
+    </div>
+
+    <h2 id="approvalModalTitle">
+      APPROVE THIS CONTENT?
+    </h2>
+
+    <p class="revision-modal-copy">
+      You're approving this content as ready to move
+      forward in the publishing workflow.
+    </p>
+
+    <div class="revision-modal-actions">
+
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="approvalModalCancel"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="btn"
+        id="approvalModalSubmit"
+      >
+        Approve Content
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<div
+  class="revision-modal"
+  id="revisionModal"
+  hidden
+
+<div
+  class="revision-modal"
+  id="revisionModal"
+  hidden
+>
+  <div
+    class="revision-modal-backdrop"
+    data-close-revision-modal
+  ></div>
+
+  <div
+    class="revision-modal-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="revisionModalTitle"
+  >
+
+    <div class="revision-modal-eyebrow">
+      CONTENT FEEDBACK
+    </div>
+
+    <h2 id="revisionModalTitle">
+      REQUEST A REVISION
+    </h2>
+
+    <p class="revision-modal-copy">
+      Tell us what you'd like changed.
+      Be as specific as you'd like.
+    </p>
+
+    <label
+      class="revision-modal-label"
+      for="revisionFeedback"
+    >
+      Revision Notes
+    </label>
+
+    <textarea
+      id="revisionFeedback"
+      class="revision-modal-textarea"
+      rows="6"
+      placeholder="Example: Please make the caption shorter and change the opening sentence."
+    ></textarea>
+
+    <div
+      class="revision-modal-error"
+      id="revisionModalError"
+      hidden
+    >
+      Please enter revision feedback.
+    </div>
+
+    <div class="revision-modal-actions">
+
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="revisionModalCancel"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="btn"
+        id="revisionModalSubmit"
+      >
+        Submit Revision Request
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+
+
+<!-- =====================================================
+     CLIENT ACTION MODAL
+====================================================== -->
+
+<div
+  class="revision-modal"
+  id="clientActionModal"
+  hidden
+>
+
+  <div
+    class="revision-modal-backdrop"
+    data-close-client-action-modal
+  ></div>
+
+  <div
+    class="revision-modal-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="clientActionModalTitle"
+  >
+
+    <div
+      class="revision-modal-eyebrow"
+      id="clientActionModalEyebrow"
+    >
+      CONFIRM ACTION
+    </div>
+
+    <h2 id="clientActionModalTitle">
+      ARE YOU SURE?
+    </h2>
+
+    <p
+      class="revision-modal-copy"
+      id="clientActionModalMessage"
+    >
+      Confirm this action to continue.
+    </p>
+
+    <div class="revision-modal-actions">
+
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="clientActionModalCancel"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="btn"
+        id="clientActionModalConfirm"
+      >
+        Confirm
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+ <script
     src="js/client-portal.js"
   ></script>
 

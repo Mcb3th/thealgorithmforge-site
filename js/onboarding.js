@@ -113,6 +113,9 @@ async function initializeClientOnboarding() {
     return;
   }
 
+  currentClientId =
+  membership.client_id;
+
 
   // =======================================================
   // PREFILL KNOWN CLIENT INFORMATION
@@ -155,6 +158,615 @@ if (
       user.email;
 
   }
+
+  if (isEditMode) {
+  await loadExistingOnboardingForEdit();
+}
+
+}
+
+async function loadExistingOnboardingForEdit() {
+
+  if (
+    !isEditMode ||
+    !currentClientId
+  ) {
+    return;
+  }
+
+  const {
+    data,
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "onboarding_submissions"
+      )
+      .select(
+        "id, submitted_at, raw_response"
+      )
+      .eq(
+        "client_id",
+        currentClientId
+      )
+      .order(
+        "submitted_at",
+        {
+          ascending: false,
+        }
+      )
+      .limit(1)
+      .maybeSingle();
+
+
+  if (error) {
+
+    console.error(
+      "Existing onboarding could not be loaded:",
+      error
+    );
+
+    throw new Error(
+      "We couldn't load your existing onboarding information."
+    );
+  }
+
+
+  if (
+    !data ||
+    !data.raw_response
+  ) {
+
+    console.warn(
+      "Edit mode requested, but no previous onboarding submission was found."
+    );
+
+    return;
+  }
+
+
+  currentOnboardingSubmission =
+    data;
+
+  prefillOnboardingForEdit();
+
+
+  console.log(
+    "Existing onboarding loaded for edit:",
+    currentOnboardingSubmission
+  );
+
+}
+
+// =========================================================
+// EDIT MODE PREFILL HELPERS
+// =========================================================
+
+function setFieldValue(
+  id,
+  value
+) {
+
+  const field =
+    document.getElementById(
+      id
+    );
+
+  if (!field) {
+    return;
+  }
+
+  field.value =
+    value ?? "";
+}
+
+
+function setRadioValue(
+  name,
+  value
+) {
+
+  form
+    .querySelectorAll(
+      `input[name="${name}"]`
+    )
+    .forEach(
+      (radio) => {
+
+        radio.checked =
+          radio.value ===
+          String(value ?? "");
+
+      }
+    );
+}
+
+
+function setCheckboxValues(
+  name,
+  values
+) {
+
+  const selectedValues =
+    Array.isArray(values)
+      ? values.map(String)
+      : [];
+
+  form
+    .querySelectorAll(
+      `input[name="${name}"]`
+    )
+    .forEach(
+      (checkbox) => {
+
+        checkbox.checked =
+          selectedValues.includes(
+            checkbox.value
+          );
+
+      }
+    );
+
+  }
+
+    function prefillOnboardingForEdit() {
+
+  const payload =
+    currentOnboardingSubmission
+      ?.raw_response;
+
+  if (!payload) {
+    return;
+  }
+
+
+  const business =
+    payload.business || {};
+
+  const primaryContact =
+    payload.primary_contact || {};
+
+  const brand =
+    payload.brand || {};
+
+  const social =
+    payload.social_media || {};
+
+  const goals =
+    payload.goals || {};
+
+  const content =
+    payload.content || {};
+
+  const requirements =
+    payload.requirements || {};
+
+  const workflow =
+    payload.workflow || {};
+
+
+  // =======================================================
+  // BUSINESS
+  // =======================================================
+
+  setFieldValue(
+    "business_name",
+    business.business_name
+  );
+
+  setFieldValue(
+    "business_website",
+    business.website
+  );
+
+  setFieldValue(
+    "business_description",
+    business.business_description
+  );
+
+  setRadioValue(
+    "operating_scope",
+    business.operating_scope
+  );
+
+  updateServiceArea();
+
+  setFieldValue(
+    "service_area",
+    business.service_area
+  );
+
+  setFieldValue(
+    "priority_products_services",
+    business.priority_products_services
+  );
+
+
+  // =======================================================
+  // PRIMARY CONTACT
+  // =======================================================
+
+  setFieldValue(
+    "contact_name",
+    primaryContact.name
+  );
+
+  setFieldValue(
+    "contact_role",
+    primaryContact.role
+  );
+
+  setFieldValue(
+    "contact_email",
+    primaryContact.email
+  );
+
+  setFieldValue(
+    "contact_phone",
+    primaryContact.phone
+  );
+
+  setFieldValue(
+    "preferred_contact_method",
+    primaryContact.preferred_contact_method
+  );
+
+  updatePreferredContactMethod();
+
+
+  // =======================================================
+  // BRAND
+  // =======================================================
+
+  setFieldValue(
+    "ideal_customer",
+    brand.ideal_customer
+  );
+
+  setFieldValue(
+    "differentiators",
+    brand.differentiators
+  );
+
+  setCheckboxValues(
+    "brand_voice",
+    brand.brand_voice
+  );
+
+  setFieldValue(
+    "brand_voice_notes",
+    brand.brand_voice_notes
+  );
+
+  setFieldValue(
+    "preferred_language",
+    brand.preferred_language
+  );
+
+  setFieldValue(
+    "avoid_language",
+    brand.avoid_language
+  );
+
+  setRadioValue(
+    "brand_guidelines_status",
+    brand.brand_guidelines_status
+  );
+
+  updateBrandMaterials();
+
+  setCheckboxValues(
+    "brand_materials",
+    brand.brand_materials
+  );
+
+
+  // =======================================================
+  // SOCIAL MEDIA
+  // =======================================================
+
+  const existingAccounts =
+    Array.isArray(
+      social.existing_accounts
+    )
+      ? social.existing_accounts
+      : [];
+
+
+  const existingPlatforms =
+    existingAccounts.length
+      ? existingAccounts
+          .map(
+            (account) =>
+              account.platform
+          )
+          .filter(Boolean)
+      : ["none"];
+
+
+  setCheckboxValues(
+    "existing_platforms",
+    existingPlatforms
+  );
+
+  buildPlatformUrlFields();
+
+
+  existingAccounts.forEach(
+    (account) => {
+
+      const urlField =
+        platformUrlFields
+          .querySelector(
+            `[data-platform-url="${account.platform}"]`
+          );
+
+      if (urlField) {
+
+        urlField.value =
+          account.profile_url || "";
+
+      }
+
+    }
+  );
+
+
+  setCheckboxValues(
+    "platforms_to_manage",
+    social.platforms_to_manage
+  );
+
+
+  setFieldValue(
+    "current_social_manager",
+    social.current_social_manager
+  );
+
+
+  if (
+    typeof social
+      .previous_agency_experience ===
+      "boolean"
+  ) {
+
+    setRadioValue(
+      "previous_agency_experience",
+      String(
+        social
+          .previous_agency_experience
+      )
+    );
+
+  }
+
+
+  updatePreviousAgency();
+
+
+  setFieldValue(
+    "previous_agency_notes",
+    social.previous_agency_notes
+  );
+
+
+  updateManagedPlatformQuestions();
+
+
+  setRadioValue(
+    "meta_business_portfolio_status",
+    social.meta_business_portfolio_status
+  );
+
+  updateMetaPortfolioId();
+
+
+  setFieldValue(
+    "meta_business_portfolio_id",
+    social.meta_business_portfolio_id
+  );
+
+
+  setRadioValue(
+    "tiktok_business_center_status",
+    social.tiktok_business_center_status
+  );
+
+
+  // =======================================================
+  // GOALS
+  // =======================================================
+
+  setCheckboxValues(
+    "primary_goals",
+    goals.primary_goals
+  );
+
+  updatePrimaryGoalOptions();
+
+  setFieldValue(
+    "primary_goal",
+    goals.primary_goal
+  );
+
+  setFieldValue(
+    "desired_improvement",
+    goals.desired_improvement
+  );
+
+
+  // =======================================================
+  // CONTENT
+  // =======================================================
+
+  setCheckboxValues(
+    "content_preferences",
+    content.content_preferences
+  );
+
+  setFieldValue(
+    "media_inventory",
+    content.media_inventory
+  );
+
+  setFieldValue(
+    "media_supply_frequency",
+    content.media_supply_frequency
+  );
+
+  setFieldValue(
+    "priority_features",
+    content.priority_features
+  );
+
+  setFieldValue(
+    "testimonials_available",
+    content.testimonials_available
+  );
+
+
+  const hasPromotions =
+    Boolean(
+      content.upcoming_promotions
+    );
+
+  setRadioValue(
+    "has_promotions",
+    hasPromotions
+      ? "yes"
+      : "no"
+  );
+
+  updatePromotions();
+
+  setFieldValue(
+    "upcoming_promotions",
+    content.upcoming_promotions
+  );
+
+  setFieldValue(
+    "content_exclusions",
+    content.content_exclusions
+  );
+
+
+  // =======================================================
+  // REQUIREMENTS
+  // =======================================================
+
+  setFieldValue(
+    "competitor_inspiration",
+    requirements.competitor_inspiration
+  );
+
+  setFieldValue(
+    "competitor_inspiration_notes",
+    requirements
+      .competitor_inspiration_notes
+  );
+
+  setRadioValue(
+    "compliance_status",
+    requirements.compliance_status
+  );
+
+  updateCompliance();
+
+  setFieldValue(
+    "compliance_notes",
+    requirements.compliance_notes
+  );
+
+
+  // =======================================================
+  // WORKFLOW
+  // =======================================================
+
+  setFieldValue(
+    "primary_call_to_action",
+    workflow.primary_call_to_action
+  );
+
+  updateCtaDestination();
+
+  setFieldValue(
+    "call_to_action_destination",
+    workflow.call_to_action_destination
+  );
+
+
+  setRadioValue(
+    "approval_contact",
+    workflow.approval_contact
+  );
+
+  updateApprovalContact();
+
+
+  if (
+    workflow.approval_contact ===
+      "other" &&
+    workflow.approval_contact_details
+  ) {
+
+    const approval =
+      workflow
+        .approval_contact_details;
+
+    setFieldValue(
+      "approval_contact_name",
+      approval.name
+    );
+
+    setFieldValue(
+      "approval_contact_role",
+      approval.role
+    );
+
+    setFieldValue(
+      "approval_contact_email",
+      approval.email
+    );
+
+    setFieldValue(
+      "approval_contact_phone",
+      approval.phone
+    );
+
+    setFieldValue(
+      "approval_contact_method",
+      approval.preferred_contact_method
+    );
+
+  }
+
+
+  setFieldValue(
+    "approval_timing",
+    workflow.approval_timing
+  );
+
+  setFieldValue(
+    "approval_preference",
+    workflow.approval_preference
+  );
+
+  updateApprovalRequirements();
+
+  setFieldValue(
+    "approval_requirements",
+    workflow.approval_requirements
+  );
+
+  setFieldValue(
+    "additional_notes",
+    workflow.additional_notes
+  );
+
+
+  console.log(
+    "Onboarding form prefilled for edit mode."
+  );
 
 }
 
@@ -199,6 +811,42 @@ const progressSteps =
   document.querySelectorAll(
     "[data-step-indicator]"
   );
+
+  progressSteps.forEach(
+  (stepIndicator) => {
+
+    stepIndicator.addEventListener(
+      "click",
+      () => {
+
+        const stepNumber =
+          Number(
+            stepIndicator.dataset
+              .stepIndicator
+          );
+
+        if (
+          !Number.isInteger(
+            stepNumber
+          )
+        ) {
+          return;
+        }
+
+        currentStep =
+          stepNumber;
+
+        showStep(
+          currentStep
+        );
+
+        scrollToTop();
+
+      }
+    );
+
+  }
+);
 
 const formSteps =
   document.querySelectorAll(
@@ -299,9 +947,128 @@ const approvalRequirementsField =
 let currentStep = 1;
 let isSubmitting = false;
 
+let currentClientId = null;
+let currentOnboardingSubmission = null;
+
+const onboardingUrlParams =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const isEditMode =
+  onboardingUrlParams.get("mode") ===
+  "edit";
+
 const totalQuestionSteps = 7;
 const reviewStepNumber = 8;
 
+// =========================================================
+// EDIT MODE UI
+// =========================================================
+
+function applyEditModeUi() {
+
+  if (!isEditMode) {
+    return;
+  }
+
+  const introEyebrow =
+    intro?.querySelector(
+      ".eyebrow"
+    );
+
+  const introHeading =
+    intro?.querySelector(
+      "h1"
+    );
+
+  const introCopy =
+    intro?.querySelector(
+      ".intro-copy"
+    );
+
+
+  if (introEyebrow) {
+    introEyebrow.textContent =
+      "UPDATE YOUR INFORMATION";
+  }
+
+
+  if (introHeading) {
+    introHeading.innerHTML = `
+      REVIEW YOUR BUSINESS
+      <span>IN THE FORGE.</span>
+    `;
+  }
+
+
+  if (introCopy) {
+    introCopy.textContent =
+      "Review the information we already have on file and update anything that has changed.";
+  }
+
+
+  if (startButton) {
+    startButton.textContent =
+      "Edit Information";
+  }
+
+  const submitText =
+  submitButton?.querySelector(
+    ".submit-text"
+  );
+
+if (submitText) {
+  submitText.textContent =
+    "Save Changes";
+}
+
+const successEyebrow =
+  success?.querySelector(
+    ".eyebrow"
+  );
+
+const successHeading =
+  success?.querySelector(
+    "h2"
+  );
+
+const successCopy =
+  success?.querySelector(
+    "p:not(.eyebrow)"
+  );
+
+
+if (successEyebrow) {
+  successEyebrow.textContent =
+    "INFORMATION UPDATED";
+}
+
+
+if (successHeading) {
+  successHeading.innerHTML = `
+    YOUR BUSINESS INFO IS
+    <span>UP TO DATE.</span>
+    🔥
+  `;
+}
+
+
+if (successCopy) {
+  successCopy.textContent =
+    "Your changes have been saved successfully and your latest business information is now on file.";
+}
+
+const nextSteps =
+  success?.querySelector(
+    ".next-steps"
+  );
+
+if (nextSteps) {
+  nextSteps.hidden = true;
+}
+
+}
 
 // =========================================================
 // PLATFORM LABELS
@@ -3885,6 +4652,8 @@ function initializeFormState() {
 
 
 initializeFormState();
+
+applyEditModeUi();
 
 showStep(1);
 
