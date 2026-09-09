@@ -142,7 +142,44 @@ const recentClients =
 const clientsList =
   document.getElementById("clientsList");
 
+const addClientButton =
+  document.getElementById("addClientButton");
 
+const addClientModal =
+  document.getElementById("addClientModal");
+
+const addClientModalBackdrop =
+  document.getElementById("addClientModalBackdrop");
+
+const addClientModalClose =
+  document.getElementById("addClientModalClose");
+
+const addClientForm =
+  document.getElementById("addClientForm");
+
+const addClientBusinessName =
+  document.getElementById("addClientBusinessName");
+
+const addClientWebsite =
+  document.getElementById("addClientWebsite");
+
+const addClientContactName =
+  document.getElementById("addClientContactName");
+
+const addClientContactEmail =
+  document.getElementById("addClientContactEmail");
+
+const addClientContactPhone =
+  document.getElementById("addClientContactPhone");
+
+const addClientStatus =
+  document.getElementById("addClientStatus");
+
+const addClientCancel =
+  document.getElementById("addClientCancel");
+
+const addClientSubmit =
+  document.getElementById("addClientSubmit");
 // =========================================================
 // SETUP TASK ELEMENTS
 // =========================================================
@@ -2846,6 +2883,558 @@ function renderClientDetailError(
 }
 
 
+
+// =========================================================
+// DELETE CLIENT V1
+// =========================================================
+
+const DELETE_CLIENT_PROTECTED_ID =
+  "7084b17c-9073-45b4-bb7b-e09da83064eb";
+
+const deleteClientModal =
+  document.getElementById("deleteClientModal");
+
+const deleteClientModalBackdrop =
+  document.getElementById("deleteClientModalBackdrop");
+
+const deleteClientModalClose =
+  document.getElementById("deleteClientModalClose");
+
+const deleteClientExpectedName =
+  document.getElementById("deleteClientExpectedName");
+
+const deleteClientConfirmation =
+  document.getElementById("deleteClientConfirmation");
+
+const deleteClientPreview =
+  document.getElementById("deleteClientPreview");
+
+const deleteClientStatus =
+  document.getElementById("deleteClientStatus");
+
+const deleteClientCancel =
+  document.getElementById("deleteClientCancel");
+
+const deleteClientConfirm =
+  document.getElementById("deleteClientConfirm");
+
+let deleteClientTarget = null;
+let deleteClientBusy = false;
+
+
+function setDeleteClientStatus(
+  message = "",
+  type = ""
+) {
+
+  if (!deleteClientStatus) {
+    return;
+  }
+
+  deleteClientStatus.hidden =
+    !message;
+
+  deleteClientStatus.className =
+    "delete-client-status";
+
+  if (type) {
+    deleteClientStatus
+      .classList
+      .add(`is-${type}`);
+  }
+
+  deleteClientStatus.textContent =
+    message;
+}
+
+
+function closeDeleteClientModal() {
+
+  if (
+    !deleteClientModal ||
+    deleteClientBusy
+  ) {
+    return;
+  }
+
+  deleteClientModal.hidden =
+    true;
+
+  deleteClientTarget =
+    null;
+
+  if (deleteClientConfirmation) {
+    deleteClientConfirmation.value =
+      "";
+  }
+
+  document.body.style.overflow =
+    "";
+}
+
+
+function renderDeleteClientPreview(
+  data
+) {
+
+  if (!deleteClientPreview) {
+    return;
+  }
+
+  const counts =
+    data?.counts || {};
+
+  const storageCount =
+    Number(
+      data?.storage?.object_count || 0
+    );
+
+  const rows = [
+    ["Contacts", counts.contacts],
+    ["Portal memberships", counts.client_users],
+    ["Services", counts.client_services],
+    ["Client uploads", counts.client_uploads],
+    ["Content items", counts.content_items],
+    ["Content assets", counts.content_assets],
+    ["Content platforms", counts.content_platforms],
+    ["Social accounts", counts.social_accounts],
+    ["Onboarding submissions", counts.onboarding_submissions],
+    ["Onboarding flags", counts.onboarding_flags],
+    ["Activity records", counts.client_activity],
+    ["Storage files", storageCount],
+  ];
+
+  deleteClientPreview.innerHTML =
+    "";
+
+  const heading =
+    document.createElement("p");
+
+  heading.className =
+    "delete-client-preview-title";
+
+  heading.textContent =
+    "DELETION IMPACT";
+
+  deleteClientPreview.appendChild(
+    heading
+  );
+
+  const grid =
+    document.createElement("div");
+
+  grid.className =
+    "delete-client-preview-grid";
+
+  rows.forEach(
+    ([label, value]) => {
+
+      const row =
+        document.createElement("div");
+
+      const name =
+        document.createElement("span");
+
+      const count =
+        document.createElement("strong");
+
+      name.textContent =
+        label;
+
+      count.textContent =
+        String(
+          Number(value || 0)
+        );
+
+      row.appendChild(name);
+      row.appendChild(count);
+      grid.appendChild(row);
+    }
+  );
+
+  deleteClientPreview.appendChild(
+    grid
+  );
+
+  const authNote =
+    document.createElement("p");
+
+  authNote.className =
+    "delete-client-auth-note";
+
+  authNote.textContent =
+    "Auth users will be preserved.";
+
+  deleteClientPreview.appendChild(
+    authNote
+  );
+}
+
+
+async function openDeleteClientModal(
+  client
+) {
+
+  if (
+    !deleteClientModal ||
+    !client?.id ||
+    !client?.business_name
+  ) {
+    return;
+  }
+
+  if (
+    client.id ===
+    DELETE_CLIENT_PROTECTED_ID
+  ) {
+
+    await showAdminMessage({
+      eyebrow: "PROTECTED CLIENT",
+      title: "DELETE BLOCKED",
+      message:
+        "This test client is protected from deletion.",
+      confirmText: "Got It",
+    });
+
+    return;
+  }
+
+  deleteClientTarget = {
+    id: client.id,
+    business_name:
+      client.business_name,
+  };
+
+  deleteClientExpectedName.textContent =
+    client.business_name;
+
+  deleteClientConfirmation.value =
+    "";
+
+  deleteClientConfirm.disabled =
+    true;
+
+  setDeleteClientStatus();
+
+  deleteClientPreview.textContent =
+    "Checking deletion impact...";
+
+  deleteClientModal.hidden =
+    false;
+
+  document.body.style.overflow =
+    "hidden";
+
+  window.setTimeout(
+    () => {
+      deleteClientConfirmation
+        ?.focus();
+    },
+    0
+  );
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient
+        .functions
+        .invoke(
+          "preview-client-deletion",
+          {
+            body: {
+              client_id:
+                client.id,
+            },
+          }
+        );
+
+    if (error) {
+      throw error;
+    }
+
+    if (
+      !data?.success ||
+      data?.client?.id !==
+        client.id
+    ) {
+      throw new Error(
+        data?.error ||
+        "Deletion preview could not be verified."
+      );
+    }
+
+    renderDeleteClientPreview(
+      data
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Delete client preview failed:",
+      error
+    );
+
+    deleteClientPreview.textContent =
+      "Deletion impact could not be verified.";
+
+    setDeleteClientStatus(
+      error?.message ||
+      "The deletion preview could not be loaded. Deletion remains locked.",
+      "error"
+    );
+
+    deleteClientTarget =
+      null;
+  }
+}
+
+
+async function executeSelectedClientDeletion() {
+
+  if (
+    deleteClientBusy ||
+    !deleteClientTarget
+  ) {
+    return;
+  }
+
+  const target = {
+    ...deleteClientTarget,
+  };
+
+  if (
+    deleteClientConfirmation
+      ?.value !==
+    target.business_name
+  ) {
+    return;
+  }
+
+  deleteClientBusy =
+    true;
+
+  deleteClientConfirm.disabled =
+    true;
+
+  deleteClientCancel.disabled =
+    true;
+
+  deleteClientModalClose.disabled =
+    true;
+
+  setDeleteClientStatus(
+    "Preparing permanent deletion...",
+    ""
+  );
+
+  try {
+
+    const {
+      data: prepared,
+      error: prepareError,
+    } =
+      await supabaseClient
+        .functions
+        .invoke(
+          "prepare-client-deletion",
+          {
+            body: {
+              client_id:
+                target.id,
+              business_name:
+                target.business_name,
+            },
+          }
+        );
+
+    if (prepareError) {
+      throw prepareError;
+    }
+
+    if (
+      !prepared?.success ||
+      !prepared?.job_id ||
+      !prepared?.confirmation_token
+    ) {
+      throw new Error(
+        prepared?.error ||
+        "Deletion preparation did not return a valid confirmation."
+      );
+    }
+
+    setDeleteClientStatus(
+      "Deleting client files and records. Do not close this window...",
+      ""
+    );
+
+    const {
+      data: result,
+      error: executeError,
+    } =
+      await supabaseClient
+        .functions
+        .invoke(
+          "execute-client-deletion",
+          {
+            body: {
+              action:
+                "execute",
+              job_id:
+                prepared.job_id,
+              client_id:
+                target.id,
+              business_name:
+                target.business_name,
+              confirmation_token:
+                prepared.confirmation_token,
+            },
+          }
+        );
+
+    if (executeError) {
+      throw executeError;
+    }
+
+    if (!result?.success) {
+      throw new Error(
+        result?.error ||
+        "Client deletion did not complete."
+      );
+    }
+
+    setDeleteClientStatus(
+      "Client permanently deleted. Auth users were preserved.",
+      "success"
+    );
+
+    clientsLoaded =
+      false;
+
+    dashboardLoaded =
+      false;
+
+    setupTasksLoaded =
+      false;
+
+    contentLoaded =
+      false;
+
+    cachedClients =
+      [];
+
+    selectedClientId =
+      null;
+
+    selectedClientData =
+      null;
+
+    window.setTimeout(
+      async () => {
+
+        deleteClientBusy =
+          false;
+
+        deleteClientCancel.disabled =
+          false;
+
+        deleteClientModalClose.disabled =
+          false;
+
+        deleteClientModal.hidden =
+          true;
+
+        document.body.style.overflow =
+          "";
+
+        await loadClients();
+        showClientsList();
+
+      },
+      850
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Permanent client deletion failed:",
+      error
+    );
+
+    setDeleteClientStatus(
+      error?.message ||
+      "Deletion did not complete. The deletion job can be safely retried.",
+      "error"
+    );
+
+    deleteClientBusy =
+      false;
+
+    deleteClientCancel.disabled =
+      false;
+
+    deleteClientModalClose.disabled =
+      false;
+
+    deleteClientConfirm.disabled =
+      deleteClientConfirmation
+        ?.value !==
+      target.business_name;
+  }
+}
+
+
+deleteClientConfirmation
+  ?.addEventListener(
+    "input",
+    () => {
+
+      if (
+        !deleteClientTarget ||
+        deleteClientBusy
+      ) {
+        deleteClientConfirm.disabled =
+          true;
+        return;
+      }
+
+      deleteClientConfirm.disabled =
+        deleteClientConfirmation.value !==
+        deleteClientTarget.business_name;
+    }
+  );
+
+
+deleteClientConfirm
+  ?.addEventListener(
+    "click",
+    executeSelectedClientDeletion
+  );
+
+
+deleteClientCancel
+  ?.addEventListener(
+    "click",
+    closeDeleteClientModal
+  );
+
+
+deleteClientModalClose
+  ?.addEventListener(
+    "click",
+    closeDeleteClientModal
+  );
+
+
+deleteClientModalBackdrop
+  ?.addEventListener(
+    "click",
+    closeDeleteClientModal
+  );
+
+
 // =========================================================
 // CLIENT COMMAND CENTER
 // =========================================================
@@ -3028,11 +3617,124 @@ function renderClientCommandCenter(
   );
 
 
+  clientsList.appendChild(
+    createClientDangerZone(
+      client
+    )
+  );
+
+
   window.scrollTo({
     top: 0,
     behavior: "smooth",
   });
 }
+
+
+// =========================================================
+// CLIENT DANGER ZONE
+// =========================================================
+
+function createClientDangerZone(
+  client
+) {
+
+  const section =
+    document.createElement(
+      "section"
+    );
+
+  section.className =
+    "client-danger-zone";
+
+  const copy =
+    document.createElement(
+      "div"
+    );
+
+  const eyebrow =
+    document.createElement(
+      "p"
+    );
+
+  eyebrow.className =
+    "eyebrow";
+
+  eyebrow.textContent =
+    "DANGER ZONE";
+
+  const title =
+    document.createElement(
+      "h3"
+    );
+
+  title.textContent =
+    "DELETE CLIENT";
+
+  const description =
+    document.createElement(
+      "p"
+    );
+
+  description.textContent =
+    "Permanently remove this client's portal data, content records, uploads, and private Storage files. Auth users are preserved.";
+
+  copy.appendChild(
+    eyebrow
+  );
+
+  copy.appendChild(
+    title
+  );
+
+  copy.appendChild(
+    description
+  );
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+  button.type =
+    "button";
+
+  button.className =
+    "client-delete-button";
+
+  button.textContent =
+    client.id ===
+    DELETE_CLIENT_PROTECTED_ID
+      ? "Protected Client"
+      : "Delete Client";
+
+  button.disabled =
+    client.id ===
+    DELETE_CLIENT_PROTECTED_ID;
+
+  if (!button.disabled) {
+
+    button.addEventListener(
+      "click",
+      () => {
+        openDeleteClientModal(
+          client
+        );
+      }
+    );
+  }
+
+  section.appendChild(
+    copy
+  );
+
+  section.appendChild(
+    button
+  );
+
+  return section;
+}
+
 
 // =========================================================
 // CLIENT PORTAL ACCESS
@@ -11013,3 +11715,344 @@ supabaseClient
 // =========================================================
 
 restoreSession();
+
+// =========================================================
+// ADD CLIENT MODAL
+// =========================================================
+
+function resetAddClientForm() {
+
+  if (addClientForm) {
+    addClientForm.reset();
+  }
+
+
+  if (addClientStatus) {
+
+    addClientStatus.hidden =
+      true;
+
+    addClientStatus.className =
+      "add-client-status";
+
+    addClientStatus.textContent =
+      "";
+
+  }
+
+
+  if (addClientSubmit) {
+
+    addClientSubmit.disabled =
+      false;
+
+    addClientSubmit.textContent =
+      "Create Client";
+
+  }
+
+}
+
+
+function openAddClientModal() {
+
+  if (!addClientModal) {
+    return;
+  }
+
+
+  resetAddClientForm();
+
+
+  addClientModal.hidden =
+    false;
+
+
+  window.setTimeout(
+    () => {
+
+      addClientBusinessName?.focus();
+
+    },
+    0
+  );
+
+}
+
+
+function closeAddClientModal() {
+
+  if (!addClientModal) {
+    return;
+  }
+
+
+  addClientModal.hidden =
+    true;
+
+
+  resetAddClientForm();
+
+}
+
+
+if (addClientButton) {
+
+  addClientButton.addEventListener(
+    "click",
+    openAddClientModal
+  );
+
+}
+
+
+if (addClientModalClose) {
+
+  addClientModalClose.addEventListener(
+    "click",
+    closeAddClientModal
+  );
+
+}
+
+
+if (addClientCancel) {
+
+  addClientCancel.addEventListener(
+    "click",
+    closeAddClientModal
+  );
+
+}
+
+
+if (addClientModalBackdrop) {
+
+  addClientModalBackdrop.addEventListener(
+    "click",
+    closeAddClientModal
+  );
+
+}
+
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key === "Escape" &&
+      addClientModal &&
+      !addClientModal.hidden
+    ) {
+
+      closeAddClientModal();
+
+    }
+
+  }
+);
+
+
+// =========================================================
+// CREATE CLIENT
+// =========================================================
+
+if (addClientForm) {
+
+  addClientForm.addEventListener(
+    "submit",
+    async (event) => {
+
+      event.preventDefault();
+
+
+      const businessName =
+        addClientBusinessName
+          ?.value
+          .trim() || "";
+
+      const website =
+        addClientWebsite
+          ?.value
+          .trim() || "";
+
+      const contactName =
+        addClientContactName
+          ?.value
+          .trim() || "";
+
+      const contactEmail =
+        addClientContactEmail
+          ?.value
+          .trim()
+          .toLowerCase() || "";
+
+      const contactPhone =
+        addClientContactPhone
+          ?.value
+          .trim() || "";
+
+
+      if (
+        !businessName ||
+        !contactName ||
+        !contactEmail
+      ) {
+
+        return;
+
+      }
+
+
+      if (addClientSubmit) {
+
+        addClientSubmit.disabled =
+          true;
+
+        addClientSubmit.textContent =
+          "Creating Client...";
+
+      }
+
+
+      if (addClientStatus) {
+
+        addClientStatus.hidden =
+          false;
+
+        addClientStatus.className =
+          "add-client-status";
+
+        addClientStatus.textContent =
+          "Forging client record...";
+
+      }
+
+
+      try {
+
+        const {
+          data,
+          error,
+        } =
+          await supabaseClient
+            .functions
+            .invoke(
+              "create-client",
+              {
+                body: {
+                  business_name:
+                    businessName,
+
+                  website,
+
+                  contact_name:
+                    contactName,
+
+                  contact_email:
+                    contactEmail,
+
+                  contact_phone:
+                    contactPhone,
+                },
+              }
+            );
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        if (
+          !data?.success ||
+          !data?.client_id
+        ) {
+
+          throw new Error(
+            data?.error ||
+            "The client could not be created."
+          );
+
+        }
+
+
+        if (addClientStatus) {
+
+          addClientStatus.classList.add(
+            "is-success"
+          );
+
+          addClientStatus.textContent =
+            data.message ||
+            `${businessName} was created successfully.`;
+
+        }
+
+
+        clientsLoaded =
+          false;
+
+        dashboardLoaded =
+          false;
+
+        tasksLoaded =
+          false;
+
+
+        const newClientId =
+          data.client_id;
+
+
+        window.setTimeout(
+          async () => {
+
+            closeAddClientModal();
+
+            await openClient(
+              newClientId
+            );
+
+          },
+          500
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Create client failed:",
+          error
+        );
+
+
+        if (addClientStatus) {
+
+          addClientStatus.classList.add(
+            "is-error"
+          );
+
+          addClientStatus.textContent =
+            error?.message ||
+            "The client could not be created.";
+
+        }
+
+
+        if (addClientSubmit) {
+
+          addClientSubmit.disabled =
+            false;
+
+          addClientSubmit.textContent =
+            "Create Client";
+
+        }
+
+      }
+
+    }
+  );
+
+}

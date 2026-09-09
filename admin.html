@@ -653,19 +653,28 @@
 
         <div class="view-heading">
 
-          <div>
+  <div>
 
-            <p class="eyebrow">
-              CLIENT MANAGEMENT
-            </p>
+    <p class="eyebrow">
+      CLIENT MANAGEMENT
+    </p>
 
-            <h2>
-              CLIENTS
-            </h2>
+    <h2>
+      CLIENTS
+    </h2>
 
-          </div>
+  </div>
 
-        </div>
+
+  <button
+    type="button"
+    class="btn"
+    id="addClientButton"
+  >
+    + Add Client
+  </button>
+
+</div>
 
 
         <div
@@ -679,7 +688,204 @@
 
         </div>
 
-      </section>
+            </section>
+
+
+      <!-- =================================================
+           ADD CLIENT MODAL
+      ================================================== -->
+
+      <div
+        class="admin-modal"
+        id="addClientModal"
+        hidden
+      >
+
+        <div
+          class="admin-modal-backdrop"
+          id="addClientModalBackdrop"
+        ></div>
+
+
+        <section
+          class="admin-modal-panel"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="addClientModalTitle"
+        >
+
+          <div class="admin-modal-header">
+
+            <div>
+
+              <p class="eyebrow">
+                CLIENT MANAGEMENT
+              </p>
+
+              <h2 id="addClientModalTitle">
+                ADD CLIENT
+              </h2>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="admin-modal-close"
+              id="addClientModalClose"
+              aria-label="Close Add Client"
+            >
+              ×
+            </button>
+
+          </div>
+
+
+          <div class="admin-modal-body">
+
+  <p class="admin-modal-description">
+    Create the client record and primary contact.
+    Portal access can be invited after the client is created.
+  </p>
+
+
+  <form
+    class="add-client-form"
+    id="addClientForm"
+  >
+
+    <div class="add-client-section">
+
+      <p class="add-client-section-label">
+        BUSINESS
+      </p>
+
+
+      <label class="add-client-field">
+
+        <span>
+          Business Name *
+        </span>
+
+        <input
+          type="text"
+          id="addClientBusinessName"
+          autocomplete="organization"
+          required
+        />
+
+      </label>
+
+
+      <label class="add-client-field">
+
+        <span>
+          Website
+        </span>
+
+        <input
+          type="url"
+          id="addClientWebsite"
+          autocomplete="url"
+          placeholder="https://"
+        />
+
+      </label>
+
+    </div>
+
+
+    <div class="add-client-section">
+
+      <p class="add-client-section-label">
+        PRIMARY CONTACT
+      </p>
+
+
+      <label class="add-client-field">
+
+        <span>
+          Name *
+        </span>
+
+        <input
+          type="text"
+          id="addClientContactName"
+          autocomplete="name"
+          required
+        />
+
+      </label>
+
+
+      <label class="add-client-field">
+
+        <span>
+          Email *
+        </span>
+
+        <input
+          type="email"
+          id="addClientContactEmail"
+          autocomplete="email"
+          required
+        />
+
+      </label>
+
+
+      <label class="add-client-field">
+
+        <span>
+          Phone
+        </span>
+
+        <input
+          type="tel"
+          id="addClientContactPhone"
+          autocomplete="tel"
+        />
+
+      </label>
+
+    </div>
+
+
+    <p
+      class="add-client-status"
+      id="addClientStatus"
+      hidden
+    ></p>
+
+
+    <div class="add-client-actions">
+
+      <button
+        type="button"
+        class="add-client-cancel"
+        id="addClientCancel"
+      >
+        Cancel
+      </button>
+
+
+      <button
+        type="submit"
+        class="btn"
+        id="addClientSubmit"
+      >
+        Create Client
+      </button>
+
+    </div>
+
+  </form>
+
+</div>
+
+        </section>
+
+      </div>
 
 
     <!-- =================================================
@@ -1771,6 +1977,102 @@
 
   </section>
 
+</div>
+
+
+<!-- =====================================================
+     DELETE CLIENT MODAL
+====================================================== -->
+
+<div
+  class="delete-client-modal"
+  id="deleteClientModal"
+  hidden
+>
+  <div
+    class="delete-client-overlay"
+    id="deleteClientModalBackdrop"
+  ></div>
+
+  <section
+    class="delete-client-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="deleteClientModalTitle"
+  >
+    <div class="delete-client-header">
+      <div>
+        <p class="eyebrow">DANGER ZONE</p>
+        <h3 id="deleteClientModalTitle">DELETE CLIENT</h3>
+      </div>
+
+      <button
+        type="button"
+        class="delete-client-close"
+        id="deleteClientModalClose"
+        aria-label="Close Delete Client"
+      >
+        ×
+      </button>
+    </div>
+
+    <div class="delete-client-body">
+      <div class="delete-client-warning">
+        <strong>THIS ACTION IS PERMANENT.</strong>
+        <p>
+          Client database records and files in this client's private
+          Storage folder will be permanently deleted. Supabase Auth users
+          are preserved.
+        </p>
+      </div>
+
+      <div
+        class="delete-client-preview"
+        id="deleteClientPreview"
+      >
+        Checking deletion impact...
+      </div>
+
+      <label class="delete-client-field">
+        <span>
+          Type the exact business name to confirm:
+          <strong id="deleteClientExpectedName"></strong>
+        </span>
+
+        <input
+          type="text"
+          id="deleteClientConfirmation"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </label>
+
+      <p
+        class="delete-client-status"
+        id="deleteClientStatus"
+        hidden
+      ></p>
+
+      <div class="delete-client-actions">
+        <button
+          type="button"
+          class="delete-client-cancel"
+          id="deleteClientCancel"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="delete-client-confirm"
+          id="deleteClientConfirm"
+          disabled
+        >
+          Permanently Delete Client
+        </button>
+      </div>
+    </div>
+  </section>
 </div>
 
 <!-- =====================================================
