@@ -1080,6 +1080,51 @@ const platformLabels = {
   tiktok: "TikTok",
 };
 
+const platformUrlHelp = {
+  facebook: {
+    app: [
+      "Open the Facebook app and go to your business Page.",
+      "Tap Share. If you do not see it right away, open the Page menu or More options.",
+      "Choose Copy link.",
+      "Return here and paste the link into the Facebook field.",
+    ],
+    computer: [
+      "Open Facebook in your web browser and go to your business Page.",
+      "Click the browser address bar at the top of the window.",
+      "Copy the full web address.",
+      "Return here and paste it into the Facebook field.",
+    ],
+  },
+  instagram: {
+    app: [
+      "Open the Instagram app and go to your business profile.",
+      "Tap Share profile.",
+      "Choose Copy link.",
+      "Return here and paste the link into the Instagram field.",
+    ],
+    computer: [
+      "Open Instagram in your web browser and go to your business profile.",
+      "Click the browser address bar at the top of the window.",
+      "Copy the full web address.",
+      "Return here and paste it into the Instagram field.",
+    ],
+  },
+  tiktok: {
+    app: [
+      "Open the TikTok app and go to your business profile.",
+      "Tap Share profile or the Share button.",
+      "Choose Copy link.",
+      "Return here and paste the link into the TikTok field.",
+    ],
+    computer: [
+      "Open TikTok in your web browser and go to your business profile.",
+      "Click the browser address bar at the top of the window.",
+      "Copy the full web address.",
+      "Return here and paste it into the TikTok field.",
+    ],
+  },
+};
+
 
 // =========================================================
 // START ONBOARDING
@@ -1510,21 +1555,76 @@ function buildPlatformUrlFields() {
 
   selected.forEach(
     (platform) => {
+      const field =
+        document.createElement(
+          "div"
+        );
+
+      field.className =
+        "field platform-url-field";
+
+      const labelRow =
+        document.createElement(
+          "div"
+        );
+
+      labelRow.className =
+        "platform-url-label-row";
+
       const label =
         document.createElement(
           "label"
         );
 
-      label.className =
-        "field";
+      const inputId =
+        `profile_url_${platform}`;
 
-      const text =
+      label.htmlFor = inputId;
+      label.textContent =
+        `${getPlatformLabel(platform)} profile URL`;
+
+      const helpButton =
         document.createElement(
-          "span"
+          "button"
         );
 
-      text.textContent =
-        `${getPlatformLabel(platform)} profile URL`;
+      helpButton.type = "button";
+      helpButton.className =
+        "platform-url-help-button";
+      helpButton.setAttribute(
+        "aria-label",
+        `How to find your ${getPlatformLabel(platform)} profile URL`
+      );
+      helpButton.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+      helpButton.textContent = "i";
+
+      const helpPanel =
+        buildPlatformUrlHelpPanel(
+          platform
+        );
+
+      helpButton.setAttribute(
+        "aria-controls",
+        helpPanel.id
+      );
+
+      helpButton.addEventListener(
+        "click",
+        () => {
+          togglePlatformUrlHelp(
+            helpButton,
+            helpPanel
+          );
+        }
+      );
+
+      labelRow.appendChild(label);
+      labelRow.appendChild(
+        helpButton
+      );
 
       const input =
         document.createElement(
@@ -1532,34 +1632,149 @@ function buildPlatformUrlFields() {
         );
 
       input.type = "url";
-
+      input.id = inputId;
       input.placeholder =
         "https://";
-
-      input.name =
-        `profile_url_${platform}`;
-
+      input.name = inputId;
       input.dataset.platformUrl =
         platform;
-
       input.value =
-        existingValues[
-          platform
-        ] || "";
+        existingValues[platform] ||
+        "";
 
-      label.appendChild(
-        text
-      );
-
-      label.appendChild(
-        input
-      );
+      field.appendChild(labelRow);
+      field.appendChild(input);
+      field.appendChild(helpPanel);
 
       platformUrlFields
-        .appendChild(
-          label
-        );
+        .appendChild(field);
     }
+  );
+}
+
+function buildPlatformUrlHelpPanel(
+  platform
+) {
+  const panel =
+    document.createElement(
+      "div"
+    );
+
+  panel.id =
+    `platformUrlHelp_${platform}`;
+  panel.className =
+    "platform-url-help-panel";
+  panel.hidden = true;
+
+  const help =
+    platformUrlHelp[platform];
+
+  if (!help) {
+    return panel;
+  }
+
+  const title =
+    document.createElement("strong");
+
+  title.className =
+    "platform-url-help-title";
+  title.textContent =
+    `How to find your ${getPlatformLabel(platform)} link`;
+
+  panel.appendChild(title);
+
+  [
+    ["On the mobile app", help.app],
+    ["On a computer", help.computer],
+  ].forEach(
+    ([heading, steps]) => {
+      const section =
+        document.createElement(
+          "div"
+        );
+
+      section.className =
+        "platform-url-help-section";
+
+      const sectionTitle =
+        document.createElement(
+          "span"
+        );
+
+      sectionTitle.className =
+        "platform-url-help-section-title";
+      sectionTitle.textContent =
+        heading;
+
+      const list =
+        document.createElement("ol");
+
+      steps.forEach(
+        (step) => {
+          const item =
+            document.createElement(
+              "li"
+            );
+
+          item.textContent = step;
+          list.appendChild(item);
+        }
+      );
+
+      section.appendChild(
+        sectionTitle
+      );
+      section.appendChild(list);
+      panel.appendChild(section);
+    }
+  );
+
+  const note =
+    document.createElement("p");
+
+  note.className =
+    "platform-url-help-note";
+  note.textContent =
+    "Buttons can look a little different depending on your app version. If you see a Share option, look for Copy link.";
+
+  panel.appendChild(note);
+
+  return panel;
+}
+
+function togglePlatformUrlHelp(
+  button,
+  panel
+) {
+  const willOpen = panel.hidden;
+
+  platformUrlFields
+    .querySelectorAll(
+      ".platform-url-help-panel"
+    )
+    .forEach(
+      (otherPanel) => {
+        otherPanel.hidden = true;
+      }
+    );
+
+  platformUrlFields
+    .querySelectorAll(
+      ".platform-url-help-button"
+    )
+    .forEach(
+      (otherButton) => {
+        otherButton.setAttribute(
+          "aria-expanded",
+          "false"
+        );
+      }
+    );
+
+  panel.hidden = !willOpen;
+  button.setAttribute(
+    "aria-expanded",
+    String(willOpen)
   );
 }
 
