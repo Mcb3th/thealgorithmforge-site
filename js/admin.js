@@ -627,6 +627,73 @@ const contentDetailEdit =
     "contentDetailEdit"
   );
 
+const contentDetailDelete =
+  document.getElementById(
+    "contentDetailDelete"
+  );
+
+
+const deleteContentModal =
+  document.getElementById(
+    "deleteContentModal"
+  );
+
+
+const deleteContentModalBackdrop =
+  document.getElementById(
+    "deleteContentModalBackdrop"
+  );
+
+
+const deleteContentModalClose =
+  document.getElementById(
+    "deleteContentModalClose"
+  );
+
+
+const deleteContentExpectedTitle =
+  document.getElementById(
+    "deleteContentExpectedTitle"
+  );
+
+
+const deleteContentConfirmation =
+  document.getElementById(
+    "deleteContentConfirmation"
+  );
+
+
+const deleteContentPreview =
+  document.getElementById(
+    "deleteContentPreview"
+  );
+
+
+const deleteContentStatus =
+  document.getElementById(
+    "deleteContentStatus"
+  );
+
+
+const deleteContentCancel =
+  document.getElementById(
+    "deleteContentCancel"
+  );
+
+
+const deleteContentConfirm =
+  document.getElementById(
+    "deleteContentConfirm"
+  );
+
+
+let deleteContentTarget =
+  null;
+
+
+let deleteContentBusy =
+  false;
+
 const contentDetailStatusValue =
   document.getElementById(
     "contentDetailStatusValue"
@@ -2882,7 +2949,1517 @@ function renderClientDetailError(
   );
 }
 
+// =========================================================
+// OFFBOARD CLIENT V1
+// =========================================================
 
+const offboardClientModal =
+  document.getElementById(
+    "offboardClientModal"
+  );
+
+const offboardClientModalBackdrop =
+  document.getElementById(
+    "offboardClientModalBackdrop"
+  );
+
+const offboardClientModalClose =
+  document.getElementById(
+    "offboardClientModalClose"
+  );
+
+const offboardClientExpectedName =
+  document.getElementById(
+    "offboardClientExpectedName"
+  );
+
+const offboardClientConfirmation =
+  document.getElementById(
+    "offboardClientConfirmation"
+  );
+
+const offboardClientPreview =
+  document.getElementById(
+    "offboardClientPreview"
+  );
+
+const offboardClientStatus =
+  document.getElementById(
+    "offboardClientStatus"
+  );
+
+const offboardClientCancel =
+  document.getElementById(
+    "offboardClientCancel"
+  );
+
+const offboardClientConfirm =
+  document.getElementById(
+    "offboardClientConfirm"
+  );
+
+let offboardClientTarget = null;
+let offboardClientBusy = false;
+let offboardClientPreviewReady = false;
+
+
+// =========================================================
+// OFFBOARD STATUS
+// =========================================================
+
+function setOffboardClientStatus(
+  message = "",
+  type = ""
+) {
+
+  if (!offboardClientStatus) {
+    return;
+  }
+
+
+  offboardClientStatus.hidden =
+    !message;
+
+  offboardClientStatus.classList
+    .toggle(
+      "error",
+      type === "error"
+    );
+
+  offboardClientStatus.classList
+    .toggle(
+      "success",
+      type === "success"
+    );
+
+  offboardClientStatus.textContent =
+    message;
+}
+
+
+// =========================================================
+// CLOSE OFFBOARD MODAL
+// =========================================================
+
+function closeOffboardClientModal() {
+
+  if (
+    !offboardClientModal ||
+    offboardClientBusy
+  ) {
+    return;
+  }
+
+
+  offboardClientModal.hidden =
+    true;
+
+  offboardClientTarget =
+    null;
+
+  offboardClientPreviewReady =
+  false;
+
+  if (offboardClientConfirmation) {
+
+    offboardClientConfirmation.value =
+      "";
+
+  }
+
+
+  if (offboardClientConfirm) {
+
+    offboardClientConfirm.disabled =
+      true;
+
+  }
+
+
+  setOffboardClientStatus();
+
+
+  document.body.style.overflow =
+    "";
+}
+
+// =========================================================
+// RENDER OFFBOARDING IMPACT
+// =========================================================
+
+function renderOffboardClientPreview(
+  data
+) {
+
+  if (!offboardClientPreview) {
+    return;
+  }
+
+
+  const impact =
+    data?.impact || {};
+
+
+  const rows = [
+
+    [
+      "Portal memberships",
+      impact.active_portal_memberships,
+    ],
+
+    [
+      "Open services",
+      impact.open_services,
+    ],
+
+    [
+      "Active content items",
+      impact.active_content,
+    ],
+
+    [
+      "Scheduled content",
+      impact.scheduled_content,
+    ],
+
+    [
+      "Connected social accounts",
+      impact.connected_social_accounts,
+    ],
+
+  ];
+
+
+  offboardClientPreview.innerHTML =
+    "";
+
+
+  const heading =
+    document.createElement(
+      "p"
+    );
+
+  heading.className =
+    "delete-client-preview-title";
+
+  heading.textContent =
+    "OFFBOARDING IMPACT";
+
+
+  offboardClientPreview.appendChild(
+    heading
+  );
+
+
+  const grid =
+    document.createElement(
+      "div"
+    );
+
+  grid.className =
+    "delete-client-preview-grid";
+
+
+  rows.forEach(
+    ([label, value]) => {
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "delete-client-preview-row";
+
+
+      const labelElement =
+        document.createElement(
+          "span"
+        );
+
+      labelElement.textContent =
+        label;
+
+
+      const valueElement =
+        document.createElement(
+          "strong"
+        );
+
+      valueElement.textContent =
+        String(
+          Number(value || 0)
+        );
+
+
+      row.appendChild(
+        labelElement
+      );
+
+      row.appendChild(
+        valueElement
+      );
+
+      grid.appendChild(
+        row
+      );
+
+    }
+  );
+
+
+  offboardClientPreview.appendChild(
+    grid
+  );
+
+  const activeContentCount =
+  Number(
+    impact.active_content || 0
+  );
+
+  const scheduledCount =
+    Number(
+      impact.scheduled_content || 0
+    );
+
+  const serviceCount =
+    Number(
+      impact.open_services || 0
+    );
+
+  const connectedCount =
+    Number(
+      impact.connected_social_accounts || 0
+    );
+
+
+ if (
+  activeContentCount > 0 ||
+  scheduledCount > 0 ||
+  serviceCount > 0 ||
+  connectedCount > 0
+) {
+
+    const warning =
+      document.createElement(
+        "p"
+      );
+
+    warning.className =
+      "delete-client-auth-note";
+
+    warning.textContent =
+  "Review active content, scheduled content, open services, and connected social-account access before completing offboarding.";
+
+    offboardClientPreview.appendChild(
+      warning
+    );
+
+  } else {
+
+    const ready =
+      document.createElement(
+        "p"
+      );
+
+    ready.className =
+      "delete-client-auth-note";
+
+    ready.textContent =
+      "No scheduled content, open services, or connected social-account access was found.";
+
+    offboardClientPreview.appendChild(
+      ready
+    );
+  }
+}
+
+// =========================================================
+// OPEN OFFBOARD MODAL
+// =========================================================
+
+async function openOffboardClientModal(
+  client
+) {
+
+  if (
+    !offboardClientModal ||
+    !client?.id ||
+    !client?.business_name
+  ) {
+    return;
+  }
+
+
+  if (
+    client.status ===
+    "offboarded"
+  ) {
+
+    await showAdminMessage({
+
+      eyebrow:
+        "CLIENT LIFECYCLE",
+
+      title:
+        "ALREADY OFFBOARDED",
+
+      message:
+        `${client.business_name} is already marked as offboarded.`,
+
+      confirmText:
+        "Got It",
+
+    });
+
+    return;
+  }
+
+
+  offboardClientTarget = {
+
+    id:
+      client.id,
+
+    business_name:
+      client.business_name,
+
+    status:
+      client.status,
+
+  };
+
+
+  offboardClientPreviewReady =
+    false;
+
+
+  offboardClientExpectedName.textContent =
+    client.business_name;
+
+  offboardClientConfirmation.value =
+    "";
+
+  offboardClientConfirm.disabled =
+    true;
+
+  setOffboardClientStatus();
+
+
+  offboardClientPreview.textContent =
+    "Checking offboarding impact...";
+
+
+  offboardClientModal.hidden =
+    false;
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  window.setTimeout(
+    () => {
+
+      offboardClientConfirmation
+        ?.focus();
+
+    },
+    0
+  );
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient
+        .rpc(
+          "preview_client_offboarding",
+          {
+            p_client_id:
+              client.id,
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (!data?.success) {
+
+      throw new Error(
+        "The offboarding impact could not be verified."
+      );
+
+    }
+
+
+    offboardClientPreviewReady =
+      true;
+
+
+    renderOffboardClientPreview(
+      data
+    );
+
+
+    offboardClientConfirm.disabled =
+      offboardClientConfirmation
+        ?.value !==
+      client.business_name;
+
+
+  } catch (error) {
+
+    console.error(
+      "Offboard client preview failed:",
+      error
+    );
+
+
+    offboardClientPreviewReady =
+      false;
+
+    offboardClientConfirm.disabled =
+      true;
+
+    offboardClientPreview.textContent =
+      "Offboarding impact could not be verified.";
+
+
+    setOffboardClientStatus(
+      error?.message ||
+      "The offboarding preview could not be loaded. Offboarding remains locked.",
+      "error"
+    );
+  }
+}
+
+// =========================================================
+// EXECUTE CLIENT OFFBOARDING
+// =========================================================
+
+async function executeSelectedClientOffboarding() {
+
+  if (
+    offboardClientBusy ||
+    !offboardClientPreviewReady ||
+    !offboardClientTarget
+  ) {
+    return;
+  }
+
+
+  const target = {
+    ...offboardClientTarget,
+  };
+
+
+  if (
+    offboardClientConfirmation
+      ?.value !==
+    target.business_name
+  ) {
+    return;
+  }
+
+
+  offboardClientBusy =
+    true;
+
+  offboardClientConfirm.disabled =
+    true;
+
+  offboardClientCancel.disabled =
+    true;
+
+  offboardClientModalClose.disabled =
+    true;
+
+
+  setOffboardClientStatus(
+    "Offboarding client and disabling portal access...",
+    ""
+  );
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient
+        .rpc(
+          "offboard_client",
+          {
+            p_client_id:
+              target.id,
+
+            p_confirmation_name:
+              target.business_name,
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (!data?.success) {
+
+      throw new Error(
+        "Client offboarding did not complete."
+      );
+
+    }
+
+
+    const membershipsDeactivated =
+      Number(
+        data.memberships_deactivated || 0
+      );
+
+
+    setOffboardClientStatus(
+      membershipsDeactivated === 1
+        ? "Client offboarded successfully. One portal membership was deactivated."
+        : `Client offboarded successfully. ${membershipsDeactivated} portal memberships were deactivated.`,
+      "success"
+    );
+
+
+    clientsLoaded =
+      false;
+
+    dashboardLoaded =
+      false;
+
+    setupTasksLoaded =
+      false;
+
+    contentLoaded =
+      false;
+
+    cachedClients =
+      [];
+
+    selectedClientId =
+      null;
+
+    selectedClientData =
+      null;
+
+
+    window.setTimeout(
+      async () => {
+
+        offboardClientBusy =
+          false;
+
+        offboardClientCancel.disabled =
+          false;
+
+        offboardClientModalClose.disabled =
+          false;
+
+        offboardClientModal.hidden =
+          true;
+
+        offboardClientTarget =
+          null;
+
+        offboardClientPreviewReady =
+          false;
+
+        document.body.style.overflow =
+          "";
+
+
+        await loadClients();
+
+        showClientsList();
+
+      },
+      1000
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Client offboarding failed:",
+      error
+    );
+
+
+    setOffboardClientStatus(
+      error?.message ||
+      "Client offboarding did not complete.",
+      "error"
+    );
+
+
+    offboardClientBusy =
+      false;
+
+    offboardClientCancel.disabled =
+      false;
+
+    offboardClientModalClose.disabled =
+      false;
+
+    offboardClientConfirm.disabled =
+      !offboardClientPreviewReady ||
+      offboardClientConfirmation
+        ?.value !==
+      target.business_name;
+  }
+}
+
+// =========================================================
+// OFFBOARD CONFIRMATION INPUT
+// =========================================================
+
+if (offboardClientConfirmation) {
+
+  offboardClientConfirmation
+    .addEventListener(
+      "input",
+      () => {
+
+        const expectedName =
+          offboardClientTarget
+            ?.business_name || "";
+
+        const enteredName =
+          offboardClientConfirmation
+            .value;
+
+
+        offboardClientConfirm.disabled =
+  offboardClientBusy ||
+  !offboardClientPreviewReady ||
+  !expectedName ||
+  enteredName !==
+    expectedName;
+
+      }
+    );
+}
+
+// =========================================================
+// OFFBOARD CONFIRM BUTTON
+// =========================================================
+
+if (offboardClientConfirm) {
+
+  offboardClientConfirm
+    .addEventListener(
+      "click",
+      executeSelectedClientOffboarding
+    );
+}
+
+// =========================================================
+// OFFBOARD MODAL CLOSE CONTROLS
+// =========================================================
+
+if (offboardClientModalBackdrop) {
+
+  offboardClientModalBackdrop
+    .addEventListener(
+      "click",
+      closeOffboardClientModal
+    );
+}
+
+
+if (offboardClientModalClose) {
+
+  offboardClientModalClose
+    .addEventListener(
+      "click",
+      closeOffboardClientModal
+    );
+}
+
+
+if (offboardClientCancel) {
+
+  offboardClientCancel
+    .addEventListener(
+      "click",
+      closeOffboardClientModal
+    );
+}
+
+
+// =========================================================
+// OFFBOARD MODAL ESCAPE KEY
+// =========================================================
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key === "Escape" &&
+      offboardClientModal &&
+      !offboardClientModal.hidden
+    ) {
+
+      closeOffboardClientModal();
+
+    }
+  }
+);
+
+// =========================================================
+// REACTIVATE CLIENT V1
+// =========================================================
+
+const reactivateClientModal =
+  document.getElementById(
+    "reactivateClientModal"
+  );
+
+const reactivateClientModalBackdrop =
+  document.getElementById(
+    "reactivateClientModalBackdrop"
+  );
+
+const reactivateClientModalClose =
+  document.getElementById(
+    "reactivateClientModalClose"
+  );
+
+const reactivateClientExpectedName =
+  document.getElementById(
+    "reactivateClientExpectedName"
+  );
+
+const reactivateClientConfirmation =
+  document.getElementById(
+    "reactivateClientConfirmation"
+  );
+
+const reactivateClientPreview =
+  document.getElementById(
+    "reactivateClientPreview"
+  );
+
+const reactivateClientStatus =
+  document.getElementById(
+    "reactivateClientStatus"
+  );
+
+const reactivateClientCancel =
+  document.getElementById(
+    "reactivateClientCancel"
+  );
+
+const reactivateClientConfirm =
+  document.getElementById(
+    "reactivateClientConfirm"
+  );
+
+let reactivateClientTarget =
+  null;
+
+let reactivateClientBusy =
+  false;
+
+let reactivateClientPreviewReady =
+  false;
+
+
+// =========================================================
+// REACTIVATE STATUS
+// =========================================================
+
+function setReactivateClientStatus(
+  message = "",
+  type = ""
+) {
+
+  if (!reactivateClientStatus) {
+    return;
+  }
+
+
+  reactivateClientStatus.hidden =
+    !message;
+
+  reactivateClientStatus.classList
+    .toggle(
+      "error",
+      type === "error"
+    );
+
+  reactivateClientStatus.classList
+    .toggle(
+      "success",
+      type === "success"
+    );
+
+  reactivateClientStatus.textContent =
+    message;
+}
+
+
+// =========================================================
+// CLOSE REACTIVATE MODAL
+// =========================================================
+
+function closeReactivateClientModal() {
+
+  if (
+    !reactivateClientModal ||
+    reactivateClientBusy
+  ) {
+    return;
+  }
+
+
+  reactivateClientModal.hidden =
+    true;
+
+  reactivateClientTarget =
+    null;
+
+  reactivateClientPreviewReady =
+    false;
+
+
+  if (reactivateClientConfirmation) {
+
+    reactivateClientConfirmation.value =
+      "";
+
+  }
+
+
+  if (reactivateClientConfirm) {
+
+    reactivateClientConfirm.disabled =
+      true;
+
+  }
+
+
+  setReactivateClientStatus();
+
+
+  document.body.style.overflow =
+    "";
+}
+
+
+// =========================================================
+// RENDER REACTIVATION PREVIEW
+// =========================================================
+
+function renderReactivateClientPreview(
+  data
+) {
+
+  if (!reactivateClientPreview) {
+    return;
+  }
+
+
+  const client =
+    data?.client || {};
+
+  const impact =
+    data?.impact || {};
+
+
+  const restoredStatus =
+    formatStatus(
+      client.restored_status ||
+      "active"
+    );
+
+  const memberships =
+    Number(
+      impact.memberships_to_restore || 0
+    );
+
+
+  reactivateClientPreview.innerHTML =
+    "";
+
+
+  const heading =
+    document.createElement(
+      "p"
+    );
+
+  heading.className =
+    "delete-client-preview-title";
+
+  heading.textContent =
+    "REACTIVATION IMPACT";
+
+
+  reactivateClientPreview.appendChild(
+    heading
+  );
+
+
+  const grid =
+    document.createElement(
+      "div"
+    );
+
+  grid.className =
+    "delete-client-preview-grid";
+
+
+  const rows = [
+
+    [
+      "Status to restore",
+      restoredStatus,
+    ],
+
+    [
+      "Portal memberships",
+      memberships,
+    ],
+
+    [
+      "Records and files",
+      "Preserved",
+    ],
+
+  ];
+
+
+  rows.forEach(
+    ([label, value]) => {
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "delete-client-preview-row";
+
+
+      const labelElement =
+        document.createElement(
+          "span"
+        );
+
+      labelElement.textContent =
+        label;
+
+
+      const valueElement =
+        document.createElement(
+          "strong"
+        );
+
+      valueElement.textContent =
+        String(value);
+
+
+      row.appendChild(
+        labelElement
+      );
+
+      row.appendChild(
+        valueElement
+      );
+
+      grid.appendChild(
+        row
+      );
+
+    }
+  );
+
+
+  reactivateClientPreview.appendChild(
+    grid
+  );
+
+
+  const note =
+    document.createElement(
+      "p"
+    );
+
+  note.className =
+    "delete-client-auth-note";
+
+  note.textContent =
+    memberships > 0
+      ? "Portal memberships disabled by offboarding will be restored."
+      : "No portal memberships are currently marked for automatic restoration.";
+
+
+  reactivateClientPreview.appendChild(
+    note
+  );
+}
+
+
+// =========================================================
+// OPEN REACTIVATE MODAL
+// =========================================================
+
+async function openReactivateClientModal(
+  client
+) {
+
+  if (
+    !reactivateClientModal ||
+    !client?.id ||
+    !client?.business_name
+  ) {
+    return;
+  }
+
+
+  if (
+    client.status !==
+    "offboarded"
+  ) {
+
+    await showAdminMessage({
+
+      eyebrow:
+        "CLIENT LIFECYCLE",
+
+      title:
+        "CLIENT IS ACTIVE",
+
+      message:
+        `${client.business_name} is not currently offboarded.`,
+
+      confirmText:
+        "Got It",
+
+    });
+
+    return;
+  }
+
+
+  reactivateClientTarget = {
+
+    id:
+      client.id,
+
+    business_name:
+      client.business_name,
+
+  };
+
+
+  reactivateClientPreviewReady =
+    false;
+
+
+  reactivateClientExpectedName.textContent =
+    client.business_name;
+
+  reactivateClientConfirmation.value =
+    "";
+
+  reactivateClientConfirm.disabled =
+    true;
+
+  setReactivateClientStatus();
+
+
+  reactivateClientPreview.textContent =
+    "Checking reactivation details...";
+
+
+  reactivateClientModal.hidden =
+    false;
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  window.setTimeout(
+    () => {
+
+      reactivateClientConfirmation
+        ?.focus();
+
+    },
+    0
+  );
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient
+        .rpc(
+          "preview_client_reactivation",
+          {
+            p_client_id:
+              client.id,
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (!data?.success) {
+
+      throw new Error(
+        "The reactivation details could not be verified."
+      );
+
+    }
+
+
+    reactivateClientPreviewReady =
+      true;
+
+
+    renderReactivateClientPreview(
+      data
+    );
+
+
+    reactivateClientConfirm.disabled =
+      reactivateClientConfirmation
+        ?.value !==
+      client.business_name;
+
+
+  } catch (error) {
+
+    console.error(
+      "Reactivate client preview failed:",
+      error
+    );
+
+
+    reactivateClientPreviewReady =
+      false;
+
+    reactivateClientConfirm.disabled =
+      true;
+
+    reactivateClientPreview.textContent =
+      "Reactivation details could not be verified.";
+
+
+    setReactivateClientStatus(
+      error?.message ||
+      "The reactivation preview could not be loaded. Reactivation remains locked.",
+      "error"
+    );
+  }
+}
+
+// =========================================================
+// EXECUTE CLIENT REACTIVATION
+// =========================================================
+
+async function executeSelectedClientReactivation() {
+
+  if (
+    reactivateClientBusy ||
+    !reactivateClientPreviewReady ||
+    !reactivateClientTarget
+  ) {
+    return;
+  }
+
+
+  const target = {
+    ...reactivateClientTarget,
+  };
+
+
+  if (
+    reactivateClientConfirmation
+      ?.value !==
+    target.business_name
+  ) {
+    return;
+  }
+
+
+  reactivateClientBusy =
+    true;
+
+  reactivateClientConfirm.disabled =
+    true;
+
+  reactivateClientCancel.disabled =
+    true;
+
+  reactivateClientModalClose.disabled =
+    true;
+
+
+  setReactivateClientStatus(
+    "Reactivating client and restoring portal access...",
+    ""
+  );
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient
+        .rpc(
+          "reactivate_client",
+          {
+            p_client_id:
+              target.id,
+
+            p_confirmation_name:
+              target.business_name,
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (!data?.success) {
+
+      throw new Error(
+        "Client reactivation did not complete."
+      );
+
+    }
+
+
+    const membershipsReactivated =
+      Number(
+        data.memberships_reactivated || 0
+      );
+
+    const restoredStatus =
+      formatStatus(
+        data.restored_status ||
+        "active"
+      );
+
+
+    setReactivateClientStatus(
+      membershipsReactivated === 1
+        ? `Client restored to ${restoredStatus}. One portal membership was reactivated.`
+        : `Client restored to ${restoredStatus}. ${membershipsReactivated} portal memberships were reactivated.`,
+      "success"
+    );
+
+
+    clientsLoaded =
+      false;
+
+    dashboardLoaded =
+      false;
+
+    setupTasksLoaded =
+      false;
+
+    contentLoaded =
+      false;
+
+    cachedClients =
+      [];
+
+    selectedClientId =
+      null;
+
+    selectedClientData =
+      null;
+
+
+    window.setTimeout(
+      async () => {
+
+        reactivateClientBusy =
+          false;
+
+        reactivateClientCancel.disabled =
+          false;
+
+        reactivateClientModalClose.disabled =
+          false;
+
+        reactivateClientModal.hidden =
+          true;
+
+        reactivateClientTarget =
+          null;
+
+        reactivateClientPreviewReady =
+          false;
+
+        document.body.style.overflow =
+          "";
+
+
+        await loadClients();
+
+        showClientsList();
+
+      },
+      1000
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Client reactivation failed:",
+      error
+    );
+
+
+    setReactivateClientStatus(
+      error?.message ||
+      "Client reactivation did not complete.",
+      "error"
+    );
+
+
+    reactivateClientBusy =
+      false;
+
+    reactivateClientCancel.disabled =
+      false;
+
+    reactivateClientModalClose.disabled =
+      false;
+
+    reactivateClientConfirm.disabled =
+      !reactivateClientPreviewReady ||
+      reactivateClientConfirmation
+        ?.value !==
+      target.business_name;
+  }
+}
+
+// =========================================================
+// REACTIVATE CONFIRMATION INPUT
+// =========================================================
+
+if (reactivateClientConfirmation) {
+
+  reactivateClientConfirmation
+    .addEventListener(
+      "input",
+      () => {
+
+        const expectedName =
+          reactivateClientTarget
+            ?.business_name || "";
+
+        const enteredName =
+          reactivateClientConfirmation
+            .value;
+
+
+        reactivateClientConfirm.disabled =
+          reactivateClientBusy ||
+          !reactivateClientPreviewReady ||
+          !expectedName ||
+          enteredName !==
+            expectedName;
+
+      }
+    );
+}
+
+// =========================================================
+// REACTIVATE CONFIRM BUTTON
+// =========================================================
+
+if (reactivateClientConfirm) {
+
+  reactivateClientConfirm
+    .addEventListener(
+      "click",
+      executeSelectedClientReactivation
+    );
+}
+
+// =========================================================
+// REACTIVATE MODAL CLOSE CONTROLS
+// =========================================================
+
+if (reactivateClientModalBackdrop) {
+
+  reactivateClientModalBackdrop
+    .addEventListener(
+      "click",
+      closeReactivateClientModal
+    );
+}
+
+
+if (reactivateClientModalClose) {
+
+  reactivateClientModalClose
+    .addEventListener(
+      "click",
+      closeReactivateClientModal
+    );
+}
+
+
+if (reactivateClientCancel) {
+
+  reactivateClientCancel
+    .addEventListener(
+      "click",
+      closeReactivateClientModal
+    );
+}
+
+
+// =========================================================
+// REACTIVATE MODAL ESCAPE KEY
+// =========================================================
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key === "Escape" &&
+      reactivateClientModal &&
+      !reactivateClientModal.hidden
+    ) {
+
+      closeReactivateClientModal();
+
+    }
+  }
+);
 
 // =========================================================
 // DELETE CLIENT V1
@@ -3443,6 +5020,15 @@ function renderClientCommandCenter(
   data
 ) {
 
+  if (addClientButton) {
+
+    addClientButton.hidden =
+      true;
+
+  }
+
+
+
   const client =
     data.client || {};
 
@@ -3539,6 +5125,8 @@ function renderClientCommandCenter(
 );
 
 
+
+
   const grid =
     document.createElement(
       "div"
@@ -3616,6 +5204,12 @@ function renderClientCommandCenter(
     grid
   );
 
+   clientsList.appendChild(
+  createClientLifecycleZone(
+    client
+  )
+);
+
 
   clientsList.appendChild(
     createClientDangerZone(
@@ -3630,6 +5224,140 @@ function renderClientCommandCenter(
   });
 }
 
+// =========================================================
+// CLIENT LIFECYCLE ZONE
+// =========================================================
+
+function createClientLifecycleZone(
+  client
+) {
+
+  const section =
+    document.createElement(
+      "section"
+    );
+
+  section.className =
+    "client-danger-zone client-lifecycle-zone";
+
+
+  const copy =
+    document.createElement(
+      "div"
+    );
+
+
+  const eyebrow =
+    document.createElement(
+      "p"
+    );
+
+  eyebrow.className =
+    "eyebrow";
+
+  eyebrow.textContent =
+    "CLIENT LIFECYCLE";
+
+
+  const title =
+    document.createElement(
+      "h3"
+    );
+
+  title.textContent =
+    client.status ===
+    "offboarded"
+      ? "CLIENT OFFBOARDED"
+      : "OFFBOARD CLIENT";
+
+
+  const description =
+    document.createElement(
+      "p"
+    );
+
+  description.textContent =
+    client.status ===
+    "offboarded"
+      ? "This client is no longer active. Their records, content history, uploads, and stored files remain preserved."
+      : "End active service and disable portal access while preserving the client's records, content history, uploads, and stored files.";
+
+
+  copy.appendChild(
+    eyebrow
+  );
+
+  copy.appendChild(
+    title
+  );
+
+  copy.appendChild(
+    description
+  );
+
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+  button.type =
+    "button";
+
+  button.className =
+  client.status ===
+  "offboarded"
+    ? "client-delete-button client-reactivate-button"
+    : "client-delete-button client-offboard-button";
+
+
+button.textContent =
+  client.status ===
+  "offboarded"
+    ? "Reactivate Client"
+    : "Offboard Client";
+
+
+button.disabled =
+  false;
+
+
+button.addEventListener(
+  "click",
+  () => {
+
+    if (
+      client.status ===
+      "offboarded"
+    ) {
+
+      openReactivateClientModal(
+        client
+      );
+
+      return;
+    }
+
+
+    openOffboardClientModal(
+      client
+    );
+
+  }
+);
+
+
+  section.appendChild(
+    copy
+  );
+
+  section.appendChild(
+    button
+  );
+
+
+  return section;
+}
 
 // =========================================================
 // CLIENT DANGER ZONE
@@ -3740,6 +5468,283 @@ function createClientDangerZone(
 // CLIENT PORTAL ACCESS
 // =========================================================
 
+async function loadClientPortalUsers(
+  clientId,
+  container
+) {
+
+  if (
+    !clientId ||
+    !container
+  ) {
+    return;
+  }
+
+
+  container.innerHTML =
+    "";
+
+  container.className =
+    "client-portal-users is-loading";
+
+
+  const loading =
+    document.createElement(
+      "p"
+    );
+
+  loading.className =
+    "client-portal-users-message";
+
+  loading.textContent =
+    "Loading portal users...";
+
+
+  container.appendChild(
+    loading
+  );
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient
+        .rpc(
+          "get_admin_client_portal_users",
+          {
+            p_client_id:
+              clientId,
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    const users =
+      Array.isArray(data)
+        ? data
+        : [];
+
+
+    container.innerHTML =
+      "";
+
+    container.className =
+      "client-portal-users";
+
+
+    const heading =
+      document.createElement(
+        "p"
+      );
+
+    heading.className =
+      "client-portal-users-heading";
+
+    heading.textContent =
+      "CURRENT PORTAL USERS";
+
+
+    container.appendChild(
+      heading
+    );
+
+
+    if (!users.length) {
+
+      const empty =
+        document.createElement(
+          "p"
+        );
+
+      empty.className =
+        "client-portal-users-message";
+
+      empty.textContent =
+        "No portal users have been added for this client.";
+
+
+      container.appendChild(
+        empty
+      );
+
+      return;
+    }
+
+
+    const list =
+      document.createElement(
+        "div"
+      );
+
+    list.className =
+      "client-portal-users-list";
+
+
+    users.forEach(
+      (user) => {
+
+        const row =
+          document.createElement(
+            "article"
+          );
+
+        row.className =
+          "client-portal-user-row";
+
+
+        const identity =
+          document.createElement(
+            "div"
+          );
+
+        identity.className =
+          "client-portal-user-identity";
+
+
+        const name =
+          document.createElement(
+            "strong"
+          );
+
+        name.textContent =
+          user.contact_name ||
+          user.email ||
+          "Portal User";
+
+
+        identity.appendChild(
+          name
+        );
+
+
+        if (
+          user.contact_name &&
+          user.email
+        ) {
+
+          const email =
+            document.createElement(
+              "span"
+            );
+
+          email.textContent =
+            user.email;
+
+          identity.appendChild(
+            email
+          );
+        }
+
+
+        const details =
+          document.createElement(
+            "div"
+          );
+
+        details.className =
+          "client-portal-user-details";
+
+
+        const role =
+          document.createElement(
+            "span"
+          );
+
+        role.className =
+          "client-portal-user-role";
+
+        role.textContent =
+          formatStatus(
+            user.portal_role ||
+            "member"
+          );
+
+
+        const status =
+          document.createElement(
+            "span"
+          );
+
+        status.className =
+          user.is_active
+            ? "client-portal-user-status is-active"
+            : "client-portal-user-status is-inactive";
+
+        status.textContent =
+          user.is_active
+            ? "Active"
+            : "Inactive";
+
+
+        details.appendChild(
+          role
+        );
+
+        details.appendChild(
+          status
+        );
+
+
+        row.appendChild(
+          identity
+        );
+
+        row.appendChild(
+          details
+        );
+
+        list.appendChild(
+          row
+        );
+
+      }
+    );
+
+
+    container.appendChild(
+      list
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Portal users could not be loaded:",
+      error
+    );
+
+
+    container.innerHTML =
+      "";
+
+    container.className =
+      "client-portal-users";
+
+
+    const errorMessage =
+      document.createElement(
+        "p"
+      );
+
+    errorMessage.className =
+      "client-portal-users-message is-error";
+
+    errorMessage.textContent =
+      "Portal users could not be loaded.";
+
+
+    container.appendChild(
+      errorMessage
+    );
+  }
+}
+
 function createPortalAccessSection(
   client,
   primaryContact
@@ -3799,7 +5804,10 @@ function createPortalAccessSection(
     "client-portal-description";
 
   description.textContent =
-    "Invite an authorized client contact to create their portal account.";
+  client.status ===
+  "offboarded"
+    ? "Portal access is disabled while this client is offboarded."
+    : "Invite an authorized client contact to create their portal account.";
 
 
   headingText.appendChild(
@@ -3821,160 +5829,450 @@ function createPortalAccessSection(
 
 
   section.appendChild(
-    heading
+  heading
+);
+
+
+const portalUsers =
+  document.createElement(
+    "div"
+  );
+
+portalUsers.className =
+  "client-portal-users";
+
+
+section.appendChild(
+  portalUsers
+);
+
+
+loadClientPortalUsers(
+  client.id,
+  portalUsers
+);
+
+
+// Offboarded clients must be reactivated through the
+// lifecycle workflow before portal access can be restored.
+
+if (
+  client.status ===
+  "offboarded"
+) {
+
+  const offboardedNotice =
+    document.createElement(
+      "div"
+    );
+
+  offboardedNotice.className =
+    "client-portal-status is-error";
+
+  offboardedNotice.hidden =
+    false;
+
+  offboardedNotice.textContent =
+    "Portal access is inactive. Reactivate this client through the Client Lifecycle controls before restoring access.";
+
+
+  section.appendChild(
+    offboardedNotice
   );
 
 
-  const form =
-    document.createElement(
-      "form"
-    );
-
-  form.className =
-    "client-portal-form";
+  return section;
+}
 
 
-  const emailField =
-    document.createElement(
-      "label"
-    );
 
-  emailField.className =
-    "client-portal-field";
-
-
-  const emailLabel =
-    document.createElement(
-      "span"
-    );
-
-  emailLabel.textContent =
-    "EMAIL ADDRESS";
-
-
-  const emailInput =
-    document.createElement(
-      "input"
-    );
-
-  emailInput.type =
-    "email";
-
-  emailInput.placeholder =
-    "client@example.com";
-
-  emailInput.required =
-    true;
-
-  emailInput.value =
-    primaryContact?.email ||
-    "";
-
-
-  emailField.appendChild(
-    emailLabel
+ const form =
+  document.createElement(
+    "form"
   );
 
-  emailField.appendChild(
-    emailInput
+form.className =
+  "client-portal-form client-portal-user-form";
+
+
+const formHeading =
+  document.createElement(
+    "div"
+  );
+
+formHeading.className =
+  "client-portal-form-heading";
+
+
+const formEyebrow =
+  document.createElement(
+    "p"
+  );
+
+formEyebrow.className =
+  "eyebrow";
+
+formEyebrow.textContent =
+  "ADD PORTAL ACCESS";
+
+
+const formTitle =
+  document.createElement(
+    "h4"
+  );
+
+formTitle.textContent =
+  "INVITE ANOTHER PORTAL USER";
+
+
+formHeading.appendChild(
+  formEyebrow
+);
+
+formHeading.appendChild(
+  formTitle
+);
+
+
+const fields =
+  document.createElement(
+    "div"
+  );
+
+fields.className =
+  "client-portal-user-fields";
+
+
+// =======================================================
+// CONTACT NAME
+// =======================================================
+
+const nameField =
+  document.createElement(
+    "label"
+  );
+
+nameField.className =
+  "client-portal-field";
+
+
+const nameLabel =
+  document.createElement(
+    "span"
+  );
+
+nameLabel.textContent =
+  "CONTACT NAME";
+
+
+const nameInput =
+  document.createElement(
+    "input"
+  );
+
+nameInput.type =
+  "text";
+
+nameInput.placeholder =
+  "Full name";
+
+nameInput.autocomplete =
+  "name";
+
+nameInput.required =
+  true;
+
+
+nameField.appendChild(
+  nameLabel
+);
+
+nameField.appendChild(
+  nameInput
+);
+
+
+// =======================================================
+// CONTACT ROLE
+// =======================================================
+
+const contactRoleField =
+  document.createElement(
+    "label"
+  );
+
+contactRoleField.className =
+  "client-portal-field";
+
+
+const contactRoleLabel =
+  document.createElement(
+    "span"
+  );
+
+contactRoleLabel.textContent =
+  "JOB TITLE / CONTACT ROLE";
+
+
+const contactRoleInput =
+  document.createElement(
+    "input"
+  );
+
+contactRoleInput.type =
+  "text";
+
+contactRoleInput.placeholder =
+  "Owner, Marketing Manager, Assistant...";
+
+contactRoleInput.autocomplete =
+  "organization-title";
+
+
+contactRoleField.appendChild(
+  contactRoleLabel
+);
+
+contactRoleField.appendChild(
+  contactRoleInput
+);
+
+
+// =======================================================
+// EMAIL
+// =======================================================
+
+const emailField =
+  document.createElement(
+    "label"
+  );
+
+emailField.className =
+  "client-portal-field";
+
+
+const emailLabel =
+  document.createElement(
+    "span"
+  );
+
+emailLabel.textContent =
+  "EMAIL ADDRESS";
+
+
+const emailInput =
+  document.createElement(
+    "input"
+  );
+
+emailInput.type =
+  "email";
+
+emailInput.placeholder =
+  "person@example.com";
+
+emailInput.autocomplete =
+  "email";
+
+emailInput.required =
+  true;
+
+
+emailField.appendChild(
+  emailLabel
+);
+
+emailField.appendChild(
+  emailInput
+);
+
+
+// =======================================================
+// PHONE
+// =======================================================
+
+const phoneField =
+  document.createElement(
+    "label"
+  );
+
+phoneField.className =
+  "client-portal-field";
+
+
+const phoneLabel =
+  document.createElement(
+    "span"
+  );
+
+phoneLabel.textContent =
+  "PHONE";
+
+
+const phoneInput =
+  document.createElement(
+    "input"
+  );
+
+phoneInput.type =
+  "tel";
+
+phoneInput.placeholder =
+  "Optional";
+
+phoneInput.autocomplete =
+  "tel";
+
+
+phoneField.appendChild(
+  phoneLabel
+);
+
+phoneField.appendChild(
+  phoneInput
+);
+
+
+// =======================================================
+// PORTAL ROLE
+// =======================================================
+
+const roleField =
+  document.createElement(
+    "label"
+  );
+
+roleField.className =
+  "client-portal-field";
+
+
+const roleLabel =
+  document.createElement(
+    "span"
+  );
+
+roleLabel.textContent =
+  "PORTAL ROLE";
+
+
+const roleSelect =
+  document.createElement(
+    "select"
   );
 
 
-  const roleField =
-    document.createElement(
-      "label"
-    );
-
-  roleField.className =
-    "client-portal-field";
-
-
-  const roleLabel =
-    document.createElement(
-      "span"
-    );
-
-  roleLabel.textContent =
-    "PORTAL ROLE";
-
-
-  const roleSelect =
-    document.createElement(
-      "select"
-    );
-
-
-  const ownerOption =
-    document.createElement(
-      "option"
-    );
-
-  ownerOption.value =
-    "owner";
-
-  ownerOption.textContent =
-    "Owner";
-
-
-  const managerOption =
-    document.createElement(
-      "option"
-    );
-
-  managerOption.value =
-    "manager";
-
-  managerOption.textContent =
-    "Manager";
-
-
-  const memberOption =
-    document.createElement(
-      "option"
-    );
-
-  memberOption.value =
-    "member";
-
-  memberOption.textContent =
-    "Member";
-
-
-  roleSelect.appendChild(
-    ownerOption
+const ownerOption =
+  document.createElement(
+    "option"
   );
 
-  roleSelect.appendChild(
-    managerOption
+ownerOption.value =
+  "owner";
+
+ownerOption.textContent =
+  "Owner";
+
+
+const managerOption =
+  document.createElement(
+    "option"
   );
 
-  roleSelect.appendChild(
-    memberOption
+managerOption.value =
+  "manager";
+
+managerOption.textContent =
+  "Manager";
+
+
+const memberOption =
+  document.createElement(
+    "option"
   );
 
+memberOption.value =
+  "member";
 
-  roleField.appendChild(
-    roleLabel
+memberOption.textContent =
+  "Member";
+
+memberOption.selected =
+  true;
+
+
+roleSelect.appendChild(
+  ownerOption
+);
+
+roleSelect.appendChild(
+  managerOption
+);
+
+roleSelect.appendChild(
+  memberOption
+);
+
+
+roleField.appendChild(
+  roleLabel
+);
+
+roleField.appendChild(
+  roleSelect
+);
+
+
+// =======================================================
+// INVITE BUTTON
+// =======================================================
+
+const inviteButton =
+  document.createElement(
+    "button"
   );
 
-  roleField.appendChild(
-    roleSelect
-  );
+inviteButton.type =
+  "submit";
+
+inviteButton.className =
+  "btn client-portal-invite-button";
+
+inviteButton.textContent =
+  "Invite Portal User";
 
 
-  const inviteButton =
-    document.createElement(
-      "button"
-    );
+fields.appendChild(
+  nameField
+);
 
-  inviteButton.type =
-    "submit";
+fields.appendChild(
+  contactRoleField
+);
 
-  inviteButton.className =
-    "btn client-portal-invite-button";
+fields.appendChild(
+  emailField
+);
 
-  inviteButton.textContent =
-    "Invite to Portal";
+fields.appendChild(
+  phoneField
+);
+
+fields.appendChild(
+  roleField
+);
+
+
+form.appendChild(
+  formHeading
+);
+
+form.appendChild(
+  fields
+);
+
+form.appendChild(
+  inviteButton
+);
 
 
   const status =
@@ -3988,14 +6286,6 @@ function createPortalAccessSection(
   status.hidden =
     true;
 
-
-  form.appendChild(
-    emailField
-  );
-
-  form.appendChild(
-    roleField
-  );
 
   form.appendChild(
     inviteButton
@@ -4018,19 +6308,37 @@ function createPortalAccessSection(
       event.preventDefault();
 
 
-      const email =
-        emailInput
-          .value
-          .trim()
-          .toLowerCase();
+      const contactName =
+  nameInput
+    .value
+    .trim();
 
-      const role =
-        roleSelect.value;
+const contactRole =
+  contactRoleInput
+    .value
+    .trim();
+
+const email =
+  emailInput
+    .value
+    .trim()
+    .toLowerCase();
+
+const contactPhone =
+  phoneInput
+    .value
+    .trim();
+
+const role =
+  roleSelect.value;
 
 
-      if (!email) {
-        return;
-      }
+if (
+  !contactName ||
+  !email
+) {
+  return;
+}
 
 
       inviteButton.disabled =
@@ -4062,18 +6370,55 @@ function createPortalAccessSection(
               "invite-client",
               {
                 body: {
-                  email,
-                  client_id:
-                    client.id,
-                  role,
-                },
+  client_id:
+    client.id,
+
+  contact_name:
+    contactName,
+
+  contact_role:
+    contactRole,
+
+  email,
+
+  contact_phone:
+    contactPhone,
+
+  role,
+},
               }
             );
 
 
         if (error) {
-          throw error;
-        }
+  let functionMessage = "";
+
+  if (
+    error.context &&
+    typeof error.context.json === "function"
+  ) {
+    try {
+      const errorBody =
+        await error.context.json();
+
+      functionMessage =
+        errorBody?.error ||
+        errorBody?.message ||
+        "";
+    } catch (parseError) {
+      console.error(
+        "Invite error response could not be parsed:",
+        parseError
+      );
+    }
+  }
+
+  throw new Error(
+    functionMessage ||
+    error.message ||
+    "The portal invitation could not be created."
+  );
+}
 
 
         if (
@@ -4088,13 +6433,35 @@ function createPortalAccessSection(
         }
 
 
-        status.classList.add(
-          "is-success"
-        );
+       status.classList.add(
+  "is-success"
+);
 
-        status.textContent =
-          data.message ||
-          `Invitation sent to ${email}.`;
+status.textContent =
+  data.message ||
+  `Invitation sent to ${email}.`;
+
+
+nameInput.value =
+  "";
+
+contactRoleInput.value =
+  "";
+
+emailInput.value =
+  "";
+
+phoneInput.value =
+  "";
+
+roleSelect.value =
+  "member";
+
+
+await loadClientPortalUsers(
+  client.id,
+  portalUsers
+);
 
 
       } catch (error) {
@@ -4119,7 +6486,7 @@ function createPortalAccessSection(
           false;
 
         inviteButton.textContent =
-          "Invite to Portal";
+  "Invite Portal User";
 
       }
 
@@ -6031,6 +8398,14 @@ function createDetailEmpty(
 // =========================================================
 
 function showClientsList() {
+
+  if (addClientButton) {
+
+    addClientButton.hidden =
+      false;
+
+  }
+
 
   selectedClientId =
     null;
@@ -9698,6 +12073,577 @@ if (
 }
 
 // =========================================================
+// DELETE CONTENT
+// =========================================================
+
+function setDeleteContentStatus(
+  message = "",
+  type = ""
+) {
+
+  if (!deleteContentStatus) {
+    return;
+  }
+
+
+  deleteContentStatus.hidden =
+    !message;
+
+
+  deleteContentStatus.className =
+    "delete-client-status";
+
+
+  if (type) {
+
+    deleteContentStatus
+      .classList
+      .add(
+        `is-${type}`
+      );
+
+  }
+
+
+  deleteContentStatus.textContent =
+    message;
+
+}
+
+
+function closeDeleteContentModal() {
+
+  if (
+    !deleteContentModal ||
+    deleteContentBusy
+  ) {
+    return;
+  }
+
+
+  deleteContentModal.hidden =
+    true;
+
+
+  deleteContentTarget =
+    null;
+
+
+  if (
+    deleteContentConfirmation
+  ) {
+
+    deleteContentConfirmation.value =
+      "";
+
+  }
+
+
+  setDeleteContentStatus();
+
+
+  document.body.style.overflow =
+    "";
+
+}
+
+
+function renderDeleteContentPreview(
+  data
+) {
+
+  if (!deleteContentPreview) {
+    return;
+  }
+
+
+  const counts =
+    data?.counts || {};
+
+
+  const rows = [
+
+    [
+      "Platform records",
+      counts.platforms ?? 0,
+    ],
+
+    [
+      "Media asset records",
+      counts.assets ?? 0,
+    ],
+
+    [
+      "Private Storage files",
+      counts.storage_files ?? 0,
+    ],
+
+    [
+      "Activity records preserved",
+      counts.activity_records_preserved ?? 0,
+    ],
+
+  ];
+
+
+  deleteContentPreview.innerHTML =
+    "";
+
+
+  const heading =
+    document.createElement(
+      "p"
+    );
+
+
+  heading.className =
+    "delete-client-preview-title";
+
+
+  heading.textContent =
+    "DELETION IMPACT";
+
+
+  deleteContentPreview.appendChild(
+    heading
+  );
+
+
+  const grid =
+    document.createElement(
+      "div"
+    );
+
+
+  grid.className =
+    "delete-client-preview-grid";
+
+
+  rows.forEach(
+    ([label, value]) => {
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+
+      row.className =
+        "delete-client-preview-row";
+
+
+      const labelElement =
+        document.createElement(
+          "span"
+        );
+
+
+      labelElement.textContent =
+        label;
+
+
+      const valueElement =
+        document.createElement(
+          "strong"
+        );
+
+
+      valueElement.textContent =
+        String(value);
+
+
+      row.appendChild(
+        labelElement
+      );
+
+
+      row.appendChild(
+        valueElement
+      );
+
+
+      grid.appendChild(
+        row
+      );
+
+    }
+  );
+
+
+  deleteContentPreview.appendChild(
+    grid
+  );
+
+
+  const note =
+    document.createElement(
+      "p"
+    );
+
+
+  note.className =
+    "delete-client-auth-note";
+
+
+  note.textContent =
+    "Client activity history will remain preserved.";
+
+
+  deleteContentPreview.appendChild(
+    note
+  );
+
+}
+
+
+async function openDeleteContentModal() {
+
+  const content =
+    selectedContentData?.content ||
+    {};
+
+
+  if (
+    !deleteContentModal ||
+    !content.id ||
+    !content.title
+  ) {
+    return;
+  }
+
+
+  deleteContentTarget = {
+    id:
+      content.id,
+    title:
+      content.title,
+  };
+
+
+  deleteContentExpectedTitle.textContent =
+    content.title;
+
+
+  deleteContentConfirmation.value =
+    "";
+
+
+  deleteContentConfirm.disabled =
+    true;
+
+
+  setDeleteContentStatus();
+
+
+  deleteContentPreview.textContent =
+    "Checking deletion impact...";
+
+
+  deleteContentModal.hidden =
+    false;
+
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  window.setTimeout(
+    () => {
+
+      deleteContentConfirmation
+        ?.focus();
+
+    },
+    0
+  );
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient
+        .rpc(
+          "preview_content_deletion",
+          {
+            p_content_item_id:
+              content.id,
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (
+      !data?.success ||
+      data?.content?.id !==
+        content.id
+    ) {
+
+      throw new Error(
+        data?.error ||
+        "Deletion preview could not be verified."
+      );
+
+    }
+
+
+    renderDeleteContentPreview(
+      data
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Delete content preview failed:",
+      error
+    );
+
+
+    deleteContentPreview.textContent =
+      "Deletion impact could not be verified.";
+
+
+    setDeleteContentStatus(
+      error?.message ||
+      "The deletion preview could not be loaded. Deletion remains locked.",
+      "error"
+    );
+
+
+    deleteContentTarget =
+      null;
+
+  }
+
+}
+
+async function executeSelectedContentDeletion() {
+
+  if (
+    deleteContentBusy ||
+    !deleteContentTarget
+  ) {
+    return;
+  }
+
+
+  const target = {
+    ...deleteContentTarget,
+  };
+
+
+  if (
+    deleteContentConfirmation
+      ?.value !==
+    target.title
+  ) {
+    return;
+  }
+
+
+  deleteContentBusy =
+    true;
+
+
+  deleteContentConfirm.disabled =
+    true;
+
+
+  deleteContentCancel.disabled =
+    true;
+
+
+  deleteContentModalClose.disabled =
+    true;
+
+
+  setDeleteContentStatus(
+    "Deleting content files and records. Do not close this window..."
+  );
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient
+        .functions
+        .invoke(
+          "delete-content-item",
+          {
+            body: {
+              action:
+                "execute",
+              content_item_id:
+                target.id,
+              title:
+                target.title,
+            },
+          }
+        );
+
+
+    if (error) {
+
+      let functionMessage =
+        "";
+
+
+      if (
+        error.context &&
+        typeof error.context.json ===
+          "function"
+      ) {
+
+        try {
+
+          const errorBody =
+            await error.context.json();
+
+
+         functionMessage =
+  errorBody?.diagnostic
+    ?.message ||
+  errorBody?.error ||
+  "";
+
+        } catch (parseError) {
+
+          console.error(
+            "Delete content error response could not be parsed:",
+            parseError
+          );
+
+        }
+
+      }
+
+
+      throw new Error(
+        functionMessage ||
+        error.message ||
+        "The content item could not be deleted."
+      );
+
+    }
+
+
+    if (!data?.success) {
+
+      throw new Error(
+        data?.error ||
+        "Content deletion did not complete."
+      );
+
+    }
+
+
+    setDeleteContentStatus(
+      "Content permanently deleted.",
+      "success"
+    );
+
+
+    contentLoaded =
+      false;
+
+
+    cachedContent =
+      [];
+
+
+    await loadContent(
+      true
+    );
+
+
+    deleteContentBusy =
+      false;
+
+
+    deleteContentModal.hidden =
+      true;
+
+
+    deleteContentTarget =
+      null;
+
+
+    deleteContentConfirmation.value =
+      "";
+
+
+    document.body.style.overflow =
+      "";
+
+
+    deleteContentCancel.disabled =
+      false;
+
+
+    deleteContentModalClose.disabled =
+      false;
+
+
+    showContentQueue();
+
+
+    await showAdminMessage({
+      eyebrow:
+        "CONTENT OPERATIONS",
+      title:
+        "CONTENT DELETED",
+      message:
+        `${target.title} and its attached files were permanently deleted. Client activity history was preserved.`,
+      confirmText:
+        "Got It",
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Permanent content deletion failed:",
+      error
+    );
+
+
+    setDeleteContentStatus(
+      error?.message ||
+      "Deletion did not complete. It can be safely retried.",
+      "error"
+    );
+
+
+    deleteContentBusy =
+      false;
+
+
+    deleteContentCancel.disabled =
+      false;
+
+
+    deleteContentModalClose.disabled =
+      false;
+
+
+    deleteContentConfirm.disabled =
+      deleteContentConfirmation
+        ?.value !==
+      target.title;
+
+  }
+
+}
+
+// =========================================================
 // CONTENT COMMAND CENTER BUTTONS
 // =========================================================
 
@@ -9721,6 +12667,70 @@ if (
     openContentEditPanel
   );
 }
+
+if (
+  contentDetailDelete
+) {
+
+  contentDetailDelete.addEventListener(
+    "click",
+    openDeleteContentModal
+  );
+
+}
+
+
+deleteContentConfirmation
+  ?.addEventListener(
+    "input",
+    () => {
+
+      if (
+        !deleteContentTarget ||
+        deleteContentBusy
+      ) {
+
+        deleteContentConfirm.disabled =
+          true;
+
+        return;
+
+      }
+
+
+      deleteContentConfirm.disabled =
+        deleteContentConfirmation.value !==
+        deleteContentTarget.title;
+
+    }
+  );
+
+  deleteContentConfirm
+  ?.addEventListener(
+    "click",
+    executeSelectedContentDeletion
+  );
+
+
+deleteContentCancel
+  ?.addEventListener(
+    "click",
+    closeDeleteContentModal
+  );
+
+
+deleteContentModalClose
+  ?.addEventListener(
+    "click",
+    closeDeleteContentModal
+  );
+
+
+deleteContentModalBackdrop
+  ?.addEventListener(
+    "click",
+    closeDeleteContentModal
+  );
 
 if (
   contentAssetUploadButton &&

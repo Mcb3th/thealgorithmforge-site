@@ -6235,3 +6235,554 @@ img {
     width: 100%;
   }
 }
+
+
+/* =========================================================
+   CLIENT LIFECYCLE / OFFBOARDING
+   ========================================================= */
+
+.client-lifecycle-zone {
+  border-color:
+    rgba(232, 93, 36, 0.35);
+
+  background:
+    rgba(232, 93, 36, 0.06);
+}
+
+
+.client-lifecycle-zone .eyebrow {
+  color:
+    var(--ember);
+}
+
+
+.client-offboard-button {
+  border-color:
+    var(--ember);
+
+  color:
+    var(--white);
+
+  background:
+    var(--ember);
+}
+
+
+.client-offboard-button:hover:not(:disabled) {
+  border-color:
+    var(--hot-ember);
+
+  background:
+    var(--hot-ember);
+
+  transform:
+    translateY(-1px);
+}
+
+
+.client-offboard-button:disabled {
+  cursor:
+    not-allowed;
+
+  opacity:
+    0.55;
+
+  transform:
+    none;
+}
+
+/* =========================================================
+   CLIENT REACTIVATION
+   ========================================================= */
+
+.client-delete-button.client-reactivate-button {
+  border-color:
+    #2f7d4a;
+
+  color:
+    var(--white);
+
+  background:
+    #2f7d4a;
+}
+
+
+.client-delete-button.client-reactivate-button:hover {
+  border-color:
+    #25663c;
+
+  background:
+    #25663c;
+
+  transform:
+    translateY(-1px);
+}
+
+.client-delete-button.client-reactivate-button:disabled {
+  border-color:
+    #2f7d4a;
+
+  background:
+    #2f7d4a;
+
+  opacity:
+    0.55;
+}
+
+
+.reactivate-client-notice {
+  border-color:
+    rgba(72, 170, 108, 0.5);
+
+  background:
+    rgba(47, 125, 74, 0.14);
+}
+
+
+.reactivate-client-notice strong {
+  color:
+    #73cf94;
+}
+
+/* =========================================================
+   OFFBOARDED STATUS EMPHASIS
+   ========================================================= */
+
+.client-status.status-offboarded {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  min-height:
+    26px;
+
+  padding:
+    5px
+    11px;
+
+  border:
+    1px
+    solid
+    var(--ember);
+
+  border-radius:
+    999px;
+
+  color:
+    var(--white);
+
+  background:
+    var(--ember);
+
+  box-shadow:
+    0 4px 12px
+    rgba(232, 93, 36, 0.22);
+
+  font-size:
+    0.72rem;
+
+  font-weight:
+    800;
+
+  line-height:
+    1;
+
+  letter-spacing:
+    0.07em;
+
+  text-transform:
+    uppercase;
+}
+
+/* Whatever your current final rule is */
+.some-existing-selector {
+  /* existing styles */
+}
+
+
+/* Force Reactivate button text above inherited button styles. */
+
+.client-danger-zone
+.client-delete-button.client-reactivate-button {
+  color:
+    #ffffff !important;
+
+  -webkit-text-fill-color:
+    #ffffff;
+}
+
+
+.client-danger-zone
+.client-delete-button.client-reactivate-button:hover,
+.client-danger-zone
+.client-delete-button.client-reactivate-button:focus,
+.client-danger-zone
+.client-delete-button.client-reactivate-button:active {
+  color:
+    #ffffff !important;
+
+  -webkit-text-fill-color:
+    #ffffff;
+}
+
+/* =========================================================
+   CLIENT PORTAL USERS
+   ========================================================= */
+
+.client-portal-users {
+  margin:
+    22px
+    0;
+
+  padding:
+    18px;
+
+  border:
+    1px
+    solid
+    rgba(35, 35, 35, 0.12);
+
+  border-radius:
+    12px;
+
+  background:
+    rgba(35, 35, 35, 0.035);
+}
+
+
+.client-portal-users-heading {
+  margin:
+    0
+    0
+    12px;
+
+  color:
+    var(--ember);
+
+  font-size:
+    0.74rem;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    0.1em;
+}
+
+
+.client-portal-users-message {
+  margin:
+    0;
+
+  color:
+    var(--muted);
+}
+
+
+.client-portal-users-message.is-error {
+  color:
+    #b83b3b;
+}
+
+
+.client-portal-users-list {
+  display:
+    grid;
+
+  gap:
+    10px;
+}
+
+
+.client-portal-user-row {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    18px;
+
+  padding:
+    13px
+    15px;
+
+  border:
+    1px
+    solid
+    rgba(35, 35, 35, 0.1);
+
+  border-radius:
+    10px;
+
+  background:
+    var(--white);
+}
+
+
+.client-portal-user-identity {
+  display:
+    grid;
+
+  gap:
+    4px;
+}
+
+
+.client-portal-user-identity span {
+  color:
+    var(--muted);
+
+  font-size:
+    0.86rem;
+}
+
+
+.client-portal-user-details {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    8px;
+}
+
+
+.client-portal-user-role,
+.client-portal-user-status {
+  padding:
+    5px
+    9px;
+
+  border-radius:
+    999px;
+
+  font-size:
+    0.7rem;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    0.05em;
+}
+
+
+.client-portal-user-role {
+  color:
+    var(--charcoal);
+
+  background:
+    rgba(35, 35, 35, 0.08);
+}
+
+
+.client-portal-user-status.is-active {
+  color:
+    #25663c;
+
+  background:
+    rgba(47, 125, 74, 0.14);
+}
+
+
+.client-portal-user-status.is-inactive {
+  color:
+    #a33c3c;
+
+  background:
+    rgba(184, 59, 59, 0.14);
+}
+
+
+@media (max-width: 640px) {
+
+  .client-portal-user-row {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+  }
+}
+
+/* =========================================================
+   INVITE PORTAL USER FORM
+   ========================================================= */
+
+.client-portal-user-form {
+  display:
+    grid;
+
+      grid-template-columns:
+    minmax(0, 1fr);
+
+  align-items:
+    stretch;
+
+  gap:
+    18px;
+
+  margin-top:
+    24px;
+
+  padding-top:
+    22px;
+
+  border-top:
+    1px
+    solid
+    rgba(35, 35, 35, 0.12);
+}
+
+
+.client-portal-form-heading {
+  display:
+    grid;
+
+  gap:
+    4px;
+}
+
+
+.client-portal-form-heading .eyebrow {
+  margin:
+    0;
+}
+
+
+.client-portal-form-heading h4 {
+  margin:
+    0;
+
+  font-family:
+    Anton,
+    sans-serif;
+
+  font-size:
+    1.25rem;
+
+  font-weight:
+    400;
+
+  letter-spacing:
+    0.02em;
+}
+
+
+.client-portal-user-fields {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    16px;
+}
+
+
+.client-portal-user-form
+.client-portal-invite-button {
+  justify-self:
+    end;
+}
+
+
+@media (max-width: 760px) {
+
+  .client-portal-user-fields {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .client-portal-user-form
+  .client-portal-invite-button {
+    justify-self:
+      stretch;
+  }
+}
+
+.client-portal-user-fields
+> .client-portal-field:last-child {
+  grid-column:
+    1 / -1;
+}
+
+/* =========================================================
+   CONTENT DELETION
+   ========================================================= */
+
+.content-detail-actions {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    flex-end;
+
+  gap:
+    10px;
+
+  flex-wrap:
+    wrap;
+}
+
+
+.content-detail-actions
+.content-detail-delete-button {
+  border-color:
+    #b63d43;
+
+  background:
+    #b63d43;
+
+  color:
+    var(--white);
+}
+
+
+.content-detail-actions
+.content-detail-delete-button:hover {
+  border-color:
+    #963238;
+
+  background:
+    #963238;
+
+  color:
+    var(--white);
+
+  transform:
+    translateY(-1px);
+}
+
+
+@media (max-width: 640px) {
+
+  .content-detail-actions {
+    justify-content:
+      flex-start;
+
+    width:
+      100%;
+  }
+
+}

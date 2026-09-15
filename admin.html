@@ -1254,13 +1254,25 @@
       </div>
 
 
-      <button
-        type="button"
-        class="btn"
-        id="contentDetailEdit"
-      >
-        Edit Content
-      </button>
+      <div class="content-detail-actions">
+
+  <button
+    type="button"
+    class="btn content-detail-delete-button"
+    id="contentDetailDelete"
+  >
+    Delete Content
+  </button>
+
+  <button
+    type="button"
+    class="btn"
+    id="contentDetailEdit"
+  >
+    Edit Content
+  </button>
+
+</div>
 
     </header>
 
@@ -1508,6 +1520,125 @@
   </div>
 
 </section>
+
+<!-- =================================================
+     DELETE CONTENT MODAL
+================================================== -->
+
+<div
+  class="delete-client-modal"
+  id="deleteContentModal"
+  hidden
+>
+
+  <div
+    class="delete-client-overlay"
+    id="deleteContentModalBackdrop"
+  ></div>
+
+  <section
+    class="delete-client-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="deleteContentModalTitle"
+  >
+
+    <div class="delete-client-header">
+
+      <div>
+
+        <p class="eyebrow">
+          DANGER ZONE
+        </p>
+
+        <h3 id="deleteContentModalTitle">
+          DELETE CONTENT
+        </h3>
+
+      </div>
+
+      <button
+        type="button"
+        class="delete-client-close"
+        id="deleteContentModalClose"
+        aria-label="Close Delete Content"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="delete-client-body">
+
+      <div class="delete-client-warning">
+
+        <strong>
+          THIS ACTION IS PERMANENT.
+        </strong>
+
+        <p>
+          This content item, its platform records, and all attached
+          private Storage files will be permanently deleted. Client
+          activity history will be preserved.
+        </p>
+
+      </div>
+
+      <div
+        class="delete-client-preview"
+        id="deleteContentPreview"
+      >
+        Checking deletion impact...
+      </div>
+
+      <label class="delete-client-field">
+
+        <span>
+          Type the exact content title to confirm:
+          <strong id="deleteContentExpectedTitle"></strong>
+        </span>
+
+        <input
+          type="text"
+          id="deleteContentConfirmation"
+          autocomplete="off"
+          spellcheck="false"
+        />
+
+      </label>
+
+      <p
+        class="delete-client-status"
+        id="deleteContentStatus"
+        hidden
+      ></p>
+
+      <div class="delete-client-actions">
+
+        <button
+          type="button"
+          class="delete-client-cancel"
+          id="deleteContentCancel"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="delete-client-confirm"
+          id="deleteContentConfirm"
+          disabled
+        >
+          Permanently Delete Content
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
 
  <!-- =================================================
      NEW CONTENT PANEL
@@ -1969,6 +2100,252 @@
           id="contentSendApprovalModalConfirm"
         >
           Send Back for Approval
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+<!-- =====================================================
+     OFFBOARD CLIENT MODAL
+====================================================== -->
+
+<div
+  class="delete-client-modal"
+  id="offboardClientModal"
+  hidden
+>
+  <div
+    class="delete-client-overlay"
+    id="offboardClientModalBackdrop"
+  ></div>
+
+  <section
+    class="delete-client-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="offboardClientModalTitle"
+  >
+    <div class="delete-client-header">
+
+      <div>
+
+        <p class="eyebrow">
+          CLIENT LIFECYCLE
+        </p>
+
+        <h3 id="offboardClientModalTitle">
+          OFFBOARD CLIENT
+        </h3>
+
+      </div>
+
+      <button
+        type="button"
+        class="delete-client-close"
+        id="offboardClientModalClose"
+        aria-label="Close Offboard Client"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="delete-client-body">
+
+      <div class="delete-client-warning">
+
+        <strong>
+          THIS WILL END ACTIVE CLIENT ACCESS.
+        </strong>
+
+        <p>
+          The client record, content history, uploads,
+          and stored files will be preserved. Portal
+          memberships will be deactivated and the client
+          will be marked as offboarded.
+        </p>
+
+      </div>
+
+      <div
+        class="delete-client-preview"
+        id="offboardClientPreview"
+      >
+        Offboarding impact will appear here.
+      </div>
+
+      <label
+        class="delete-client-confirmation"
+        for="offboardClientConfirmation"
+      >
+
+        <span>
+          Type
+          <strong id="offboardClientExpectedName"></strong>
+          to confirm:
+        </span>
+
+        <input
+          type="text"
+          id="offboardClientConfirmation"
+          autocomplete="off"
+          spellcheck="false"
+        />
+
+      </label>
+
+      <div
+        class="delete-client-status"
+        id="offboardClientStatus"
+        role="status"
+        aria-live="polite"
+      ></div>
+
+      <div class="delete-client-actions">
+
+        <button
+          type="button"
+          class="delete-client-cancel"
+          id="offboardClientCancel"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="delete-client-confirm"
+          id="offboardClientConfirm"
+          disabled
+        >
+          Offboard Client
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+<!-- =====================================================
+     REACTIVATE CLIENT MODAL
+====================================================== -->
+
+<div
+  class="delete-client-modal"
+  id="reactivateClientModal"
+  hidden
+>
+  <div
+    class="delete-client-overlay"
+    id="reactivateClientModalBackdrop"
+  ></div>
+
+  <section
+    class="delete-client-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="reactivateClientModalTitle"
+  >
+    <div class="delete-client-header">
+
+      <div>
+
+        <p class="eyebrow">
+          CLIENT LIFECYCLE
+        </p>
+
+        <h3 id="reactivateClientModalTitle">
+          REACTIVATE CLIENT
+        </h3>
+
+      </div>
+
+      <button
+        type="button"
+        class="delete-client-close"
+        id="reactivateClientModalClose"
+        aria-label="Close Reactivate Client"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="delete-client-body">
+
+      <div class="delete-client-warning reactivate-client-notice">
+
+        <strong>
+          THIS WILL RESTORE ACTIVE CLIENT ACCESS.
+        </strong>
+
+        <p>
+          The client will return to their previous lifecycle
+          status. Portal memberships disabled by offboarding
+          will be restored without changing preserved records,
+          content, uploads, or stored files.
+        </p>
+
+      </div>
+
+      <div
+        class="delete-client-preview"
+        id="reactivateClientPreview"
+      >
+        Reactivation details will appear here.
+      </div>
+
+      <label
+        class="delete-client-confirmation"
+        for="reactivateClientConfirmation"
+      >
+
+        <span>
+          Type
+          <strong id="reactivateClientExpectedName"></strong>
+          to confirm:
+        </span>
+
+        <input
+          type="text"
+          id="reactivateClientConfirmation"
+          autocomplete="off"
+          spellcheck="false"
+        />
+
+      </label>
+
+      <div
+        class="delete-client-status"
+        id="reactivateClientStatus"
+        role="status"
+        aria-live="polite"
+      ></div>
+
+      <div class="delete-client-actions">
+
+        <button
+          type="button"
+          class="delete-client-cancel"
+          id="reactivateClientCancel"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="delete-client-confirm reactivate-client-confirm"
+          id="reactivateClientConfirm"
+          disabled
+        >
+          Reactivate Client
         </button>
 
       </div>
