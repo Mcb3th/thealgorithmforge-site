@@ -57,6 +57,66 @@ const portalAccessErrorMessage =
     "portalAccessErrorMessage"
   );
 
+// =========================================================
+// MEDIA VIEWER ELEMENTS
+// =========================================================
+
+const portalMediaModal =
+  document.getElementById(
+    "portalMediaModal"
+  );
+
+
+const portalMediaBackdrop =
+  document.getElementById(
+    "portalMediaBackdrop"
+  );
+
+
+const portalMediaClose =
+  document.getElementById(
+    "portalMediaClose"
+  );
+
+
+const portalMediaCancel =
+  document.getElementById(
+    "portalMediaCancel"
+  );
+
+
+const portalMediaTitle =
+  document.getElementById(
+    "portalMediaTitle"
+  );
+
+
+const portalMediaBody =
+  document.getElementById(
+    "portalMediaBody"
+  );
+
+
+const portalMediaMessage =
+  document.getElementById(
+    "portalMediaMessage"
+  );
+
+
+const portalMediaDownload =
+  document.getElementById(
+    "portalMediaDownload"
+  );
+
+
+const portalMediaExternal =
+  document.getElementById(
+    "portalMediaExternal"
+  );
+
+
+let activePortalMediaUrl =
+  null;
 
 // =========================================================
 // ACCOUNT ELEMENTS
@@ -219,6 +279,74 @@ let currentOnboardingSubmission =
 
 let currentView =
   "dashboard";
+
+const validPortalViews =
+  new Set([
+    "dashboard",
+    "content",
+    "uploads",
+    "onboarding",
+  ]);
+
+
+function getPortalViewFromHash() {
+
+  const route =
+    window.location.hash
+      .replace(
+        /^#/,
+        ""
+      )
+      .split("/")[0]
+      .trim()
+      .toLowerCase();
+
+
+  return validPortalViews.has(
+    route
+  )
+    ? route
+    : "dashboard";
+
+}
+
+
+function updatePortalViewHash(
+  viewName,
+  replace = false
+) {
+
+  const nextHash =
+    `#${viewName}`;
+
+
+  if (
+    window.location.hash ===
+    nextHash
+  ) {
+    return;
+  }
+
+
+  if (replace) {
+
+    window.history.replaceState(
+      null,
+      "",
+      nextHash
+    );
+
+    return;
+  }
+
+
+  window.history.pushState(
+    null,
+    "",
+    nextHash
+  );
+
+}
 
   let selectedClientUploadFiles =
   [];
@@ -1507,6 +1635,418 @@ function getClientContentStatusClass(
 }
 
 // =========================================================
+// PORTAL MEDIA VIEWER
+// =========================================================
+
+function getPortalMediaKind(
+  type = "",
+  fileName = ""
+) {
+
+  const normalizedType =
+    String(type)
+      .trim()
+      .toLowerCase();
+
+
+  const normalizedName =
+    String(fileName)
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    normalizedType ===
+      "image" ||
+    normalizedType.startsWith(
+      "image/"
+    ) ||
+    /\.(png|jpe?g|gif|webp|svg|avif)$/i
+      .test(normalizedName)
+  ) {
+    return "image";
+  }
+
+
+  if (
+    normalizedType ===
+      "video" ||
+    normalizedType.startsWith(
+      "video/"
+    ) ||
+    /\.(mp4|webm|mov|m4v|ogg)$/i
+      .test(normalizedName)
+  ) {
+    return "video";
+  }
+
+
+  if (
+    normalizedType ===
+      "pdf" ||
+    normalizedType ===
+      "application/pdf" ||
+    /\.pdf$/i.test(
+      normalizedName
+    )
+  ) {
+    return "pdf";
+  }
+
+
+  return "file";
+
+}
+
+
+function setPortalMediaMessage(
+  message = ""
+) {
+
+  if (!portalMediaMessage) {
+    return;
+  }
+
+
+  portalMediaMessage.hidden =
+    !message;
+
+
+  portalMediaMessage.textContent =
+    message;
+
+}
+
+
+function closePortalMediaViewer() {
+
+  if (!portalMediaModal) {
+    return;
+  }
+
+
+  const video =
+    portalMediaBody
+      ?.querySelector(
+        "video"
+      );
+
+
+  if (video) {
+
+    video.pause();
+
+    video.removeAttribute(
+      "src"
+    );
+
+  }
+
+
+  portalMediaBody.innerHTML =
+    "";
+
+
+  portalMediaModal.hidden =
+    true;
+
+
+  portalMediaDownload.href =
+    "#";
+
+
+  portalMediaExternal.href =
+    "#";
+
+
+  activePortalMediaUrl =
+    null;
+
+
+  setPortalMediaMessage();
+
+
+  document.body.style.overflow =
+    "";
+
+}
+
+
+function openPortalMediaViewer({
+  url,
+  fileName =
+    "File Preview",
+  type =
+    "file",
+} = {}) {
+
+  if (
+    !portalMediaModal ||
+    !portalMediaBody ||
+    !url
+  ) {
+    return;
+  }
+
+
+  closePortalMediaViewer();
+
+
+  const mediaKind =
+    getPortalMediaKind(
+      type,
+      fileName
+    );
+
+
+  activePortalMediaUrl =
+    url;
+
+
+  portalMediaTitle.textContent =
+    fileName;
+
+
+  portalMediaDownload.href =
+    url;
+
+
+  portalMediaDownload.setAttribute(
+    "download",
+    fileName
+  );
+
+
+  portalMediaExternal.href =
+    url;
+
+
+  setPortalMediaMessage();
+
+
+  if (
+    mediaKind ===
+    "image"
+  ) {
+
+    const image =
+      document.createElement(
+        "img"
+      );
+
+
+    image.className =
+      "portal-media-image";
+
+
+    image.src =
+      url;
+
+
+    image.alt =
+      fileName;
+
+
+    image.addEventListener(
+      "error",
+      () => {
+
+        setPortalMediaMessage(
+          "This image could not be displayed. Try Download or Open Externally."
+        );
+
+      }
+    );
+
+
+    portalMediaBody.appendChild(
+      image
+    );
+
+  } else if (
+    mediaKind ===
+    "video"
+  ) {
+
+    const video =
+      document.createElement(
+        "video"
+      );
+
+
+    video.className =
+      "portal-media-video";
+
+
+    video.src =
+      url;
+
+
+    video.controls =
+      true;
+
+
+    video.preload =
+      "metadata";
+
+
+    video.playsInline =
+      true;
+
+
+    video.addEventListener(
+      "error",
+      () => {
+
+        setPortalMediaMessage(
+          "This video could not be played. Try Download or Open Externally."
+        );
+
+      }
+    );
+
+
+    portalMediaBody.appendChild(
+      video
+    );
+
+  } else if (
+    mediaKind ===
+    "pdf"
+  ) {
+
+    const frame =
+      document.createElement(
+        "iframe"
+      );
+
+
+    frame.className =
+      "portal-media-frame";
+
+
+    frame.src =
+      url;
+
+
+    frame.title =
+      fileName;
+
+
+    portalMediaBody.appendChild(
+      frame
+    );
+
+  } else {
+
+    const fallback =
+      document.createElement(
+        "div"
+      );
+
+
+    fallback.className =
+      "portal-media-file-fallback";
+
+
+    const heading =
+      document.createElement(
+        "strong"
+      );
+
+
+    heading.textContent =
+      fileName;
+
+
+    const description =
+      document.createElement(
+        "p"
+      );
+
+
+    description.textContent =
+      "This file type does not have an in-portal preview. Use Download or Open Externally.";
+
+
+    fallback.appendChild(
+      heading
+    );
+
+
+    fallback.appendChild(
+      description
+    );
+
+
+    portalMediaBody.appendChild(
+      fallback
+    );
+
+  }
+
+
+  portalMediaModal.hidden =
+    false;
+
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  window.setTimeout(
+    () => {
+
+      portalMediaClose
+        ?.focus();
+
+    },
+    0
+  );
+
+}
+
+
+portalMediaBackdrop
+  ?.addEventListener(
+    "click",
+    closePortalMediaViewer
+  );
+
+
+portalMediaClose
+  ?.addEventListener(
+    "click",
+    closePortalMediaViewer
+  );
+
+
+portalMediaCancel
+  ?.addEventListener(
+    "click",
+    closePortalMediaViewer
+  );
+
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key ===
+        "Escape" &&
+      portalMediaModal &&
+      !portalMediaModal.hidden
+    ) {
+
+      closePortalMediaViewer();
+
+    }
+
+  }
+);
+
+// =========================================================
 // RENDER CLIENT CONTENT ASSETS
 // =========================================================
 
@@ -1586,13 +2126,20 @@ function renderClientContentAssets(
             <div class="client-content-asset is-image">
 
               <a
-                href="${escapePortalHtml(
-                  signedUrl
-                )}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="client-content-image-link"
-              >
+  href="${escapePortalHtml(
+    signedUrl
+  )}"
+  class="client-content-image-link"
+  data-portal-media-url="${escapePortalHtml(
+    signedUrl
+  )}"
+  data-portal-media-type="${escapePortalHtml(
+    assetType
+  )}"
+  data-portal-media-name="${escapePortalHtml(
+    fileName
+  )}"
+>
 
                 <img
                   src="${escapePortalHtml(
@@ -1655,14 +2202,21 @@ function renderClientContentAssets(
         return `
           <div class="client-content-asset is-file">
 
-            <a
-              href="${escapePortalHtml(
-                signedUrl
-              )}"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="client-content-file-preview"
-            >
+           <a
+  href="${escapePortalHtml(
+    signedUrl
+  )}"
+  class="client-content-file-preview"
+  data-portal-media-url="${escapePortalHtml(
+    signedUrl
+  )}"
+  data-portal-media-type="${escapePortalHtml(
+    assetType
+  )}"
+  data-portal-media-name="${escapePortalHtml(
+    fileName
+  )}"
+>
 
               <span class="client-content-file-type">
                 ${escapePortalHtml(
@@ -1951,6 +2505,41 @@ function renderClientContent() {
       }
     );
 
+  clientContentList
+  .querySelectorAll(
+    "[data-portal-media-url]"
+  )
+  .forEach(
+    (link) => {
+
+      link.addEventListener(
+        "click",
+        (event) => {
+
+          event.preventDefault();
+
+
+          openPortalMediaViewer({
+            url:
+              link.dataset
+                .portalMediaUrl,
+
+            type:
+              link.dataset
+                .portalMediaType,
+
+            fileName:
+              link.dataset
+                .portalMediaName ||
+              "File Preview",
+          });
+
+        }
+      );
+
+    }
+  );
+
 }
 
 
@@ -2070,11 +2659,34 @@ function getInitials(
 // =========================================================
 
 function showPortalView(
-  viewName
+  viewName,
+  options = {}
 ) {
 
   currentView =
-    viewName;
+    validPortalViews.has(
+      viewName
+    )
+      ? viewName
+      : "dashboard";
+
+
+  if (
+    options.syncHash !==
+    false
+  ) {
+
+    updatePortalViewHash(
+      currentView,
+      options.replaceHash ===
+        true
+    );
+
+  }
+
+
+  viewName =
+    currentView;
 
 
   portalViews.forEach(
@@ -2118,6 +2730,46 @@ function showPortalView(
 
 }
 
+window.addEventListener(
+  "hashchange",
+  () => {
+
+    if (
+      !portalApp ||
+      portalApp.hidden
+    ) {
+      return;
+    }
+
+
+    const nextView =
+      getPortalViewFromHash();
+
+
+    if (
+      nextView ===
+        "onboarding" &&
+      !currentOnboardingSubmission
+    ) {
+
+      window.location.href =
+        "onboarding.html";
+
+      return;
+
+    }
+
+
+    showPortalView(
+      nextView,
+      {
+        syncHash:
+          false,
+      }
+    );
+
+  }
+);
 
 // =========================================================
 // NAVIGATION EVENTS
@@ -3899,11 +4551,18 @@ async function openClientUpload(
   }
 
 
-  window.open(
+openPortalMediaViewer({
+  url:
     data.signedUrl,
-    "_blank",
-    "noopener,noreferrer"
-  );
+
+  fileName:
+    upload.file_name ||
+    "Client Upload",
+
+  type:
+    upload.mime_type ||
+    "file",
+});
 
 }
 
@@ -4690,6 +5349,36 @@ async function initializePortal() {
     await loadRecentActivity();
 
     showPortal();
+
+
+currentView =
+  getPortalViewFromHash();
+
+
+if (
+  currentView ===
+    "onboarding" &&
+  !currentOnboardingSubmission
+) {
+
+  window.location.href =
+    "onboarding.html";
+
+  return;
+
+}
+
+
+showPortalView(
+  currentView,
+  {
+    syncHash:
+      !window.location.hash,
+
+    replaceHash:
+      !window.location.hash,
+  }
+);
 
 
     showPortalView(

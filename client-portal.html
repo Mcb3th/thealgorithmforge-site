@@ -956,6 +956,98 @@
   </div>
 </div>
 
+<!-- =====================================================
+     MEDIA VIEWER MODAL
+====================================================== -->
+
+<div
+  class="portal-media-modal"
+  id="portalMediaModal"
+  hidden
+>
+
+  <div
+    class="portal-media-backdrop"
+    id="portalMediaBackdrop"
+  ></div>
+
+  <section
+    class="portal-media-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="portalMediaTitle"
+  >
+
+    <header class="portal-media-header">
+
+      <div>
+
+        <p class="eyebrow">
+          MEDIA VIEWER
+        </p>
+
+        <h2 id="portalMediaTitle">
+          FILE PREVIEW
+        </h2>
+
+      </div>
+
+      <button
+        type="button"
+        class="portal-media-close"
+        id="portalMediaClose"
+        aria-label="Close media viewer"
+      >
+        ×
+      </button>
+
+    </header>
+
+    <div
+      class="portal-media-body"
+      id="portalMediaBody"
+    ></div>
+
+    <p
+      class="portal-media-message"
+      id="portalMediaMessage"
+      hidden
+    ></p>
+
+    <footer class="portal-media-actions">
+
+      <button
+        type="button"
+        class="btn btn-secondary"
+        id="portalMediaCancel"
+      >
+        Close
+      </button>
+
+      <a
+        class="btn btn-secondary"
+        id="portalMediaDownload"
+        href="#"
+        download
+      >
+        Download
+      </a>
+
+      <a
+        class="btn"
+        id="portalMediaExternal"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Open Externally
+      </a>
+
+    </footer>
+
+  </section>
+
+</div>
 
 
 <!-- =====================================================

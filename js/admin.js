@@ -964,6 +964,176 @@ let currentUser = null;
 let currentView =
   "dashboard";
 
+const validAdminViews =
+  new Set([
+    "dashboard",
+    "clients",
+    "tasks",
+    "content",
+  ]);
+
+
+function getAdminViewFromHash() {
+
+  const route =
+    window.location.hash
+      .replace(
+        /^#/,
+        ""
+      )
+      .split("/")[0]
+      .trim()
+      .toLowerCase();
+
+
+  return validAdminViews.has(
+    route
+  )
+    ? route
+    : "dashboard";
+
+}
+
+
+function updateAdminViewHash(
+  viewName,
+  replace = false
+) {
+
+  const nextHash =
+    `#${viewName}`;
+
+
+  if (
+    window.location.hash ===
+    nextHash
+  ) {
+    return;
+  }
+
+
+  if (replace) {
+
+    window.history.replaceState(
+      null,
+      "",
+      nextHash
+    );
+
+    return;
+  }
+
+
+  window.history.pushState(
+    null,
+    "",
+    nextHash
+  );
+
+}
+
+function getAdminDetailIdFromHash(
+  expectedView
+) {
+
+  const routeParts =
+    window.location.hash
+      .replace(
+        /^#/,
+        ""
+      )
+      .split("/")
+      .filter(Boolean);
+
+
+  if (
+    routeParts[0] !==
+      expectedView ||
+    !routeParts[1]
+  ) {
+    return null;
+  }
+
+
+  return routeParts[1];
+
+}
+
+
+function updateAdminDetailHash(
+  viewName,
+  recordId
+) {
+
+  if (!recordId) {
+    return;
+  }
+
+
+  const nextHash =
+    `#${viewName}/${recordId}`;
+
+
+  if (
+    window.location.hash ===
+    nextHash
+  ) {
+    return;
+  }
+
+
+  window.history.pushState(
+    null,
+    "",
+    nextHash
+  );
+
+}
+
+
+async function restoreAdminNestedRoute() {
+
+  const clientId =
+    getAdminDetailIdFromHash(
+      "clients"
+    );
+
+
+  if (clientId) {
+
+    await openClient(
+      clientId,
+      {
+        syncHash:
+          false,
+      }
+    );
+
+    return;
+
+  }
+
+
+  const contentItemId =
+    getAdminDetailIdFromHash(
+      "content"
+    );
+
+
+  if (contentItemId) {
+
+    await openContentItem(
+      contentItemId,
+      {
+        syncHash:
+          false,
+      }
+    );
+
+  }
+
+}
+
 let authBusy =
   false;
 
@@ -1100,11 +1270,25 @@ function showAdmin() {
     false;
 
   adminUserEmail.textContent =
-    currentUser?.email || "";
+  currentUser?.email || "";
 
-  showAdminView(
-    currentView
-  );
+
+currentView =
+  getAdminViewFromHash();
+
+
+showAdminView(
+  currentView,
+  {
+    syncHash:
+      !window.location.hash,
+
+    replaceHash:
+      !window.location.hash,
+  }
+);
+
+restoreAdminNestedRoute();
 
   loadDashboardSummary();
 }
@@ -2692,7 +2876,8 @@ function createOpenClientButton(
 
 
 async function openClient(
-  clientId
+  clientId,
+  options = {}
 ) {
 
   if (!clientId) {
@@ -2704,6 +2889,17 @@ async function openClient(
     return;
   }
 
+  if (
+  options.syncHash !==
+  false
+) {
+
+  updateAdminDetailHash(
+    "clients",
+    clientId
+  );
+
+}
 
   selectedClientId =
     clientId;
@@ -2713,12 +2909,15 @@ async function openClient(
 
 
   showAdminView(
-    "clients",
-    {
-      skipClientListLoad: true,
-    }
-  );
+  "clients",
+  {
+    skipClientListLoad:
+      true,
 
+    syncHash:
+      false,
+  }
+);
 
   renderClientDetailLoading();
 
@@ -8651,6 +8850,10 @@ function createDetailEmpty(
 
 function showClientsList() {
 
+    updateAdminViewHash(
+    "clients"
+  );
+
   if (addClientButton) {
 
     addClientButton.hidden =
@@ -10874,7 +11077,8 @@ actions.appendChild(
 // =========================================================
 
 async function openContentItem(
-  contentItemId
+  contentItemId,
+  options = {}
 ) {
 
   if (!contentItemId) {
@@ -10886,6 +11090,17 @@ async function openContentItem(
     return;
   }
 
+  if (
+  options.syncHash !==
+  false
+) {
+
+  updateAdminDetailHash(
+    "content",
+    contentItemId
+  );
+
+}
 
   selectedContentId =
     contentItemId;
@@ -11795,6 +12010,10 @@ async function deleteContentAsset(
 // =========================================================
 
 function showContentQueue() {
+
+    updateAdminViewHash(
+    "content"
+  );
 
   selectedContentId =
     null;
@@ -14688,10 +14907,32 @@ function showAdminView(
 ) {
 
   currentView =
-    viewName;
+  validAdminViews.has(
+    viewName
+  )
+    ? viewName
+    : "dashboard";
 
 
-  adminViews.forEach(
+if (
+  options.syncHash !==
+  false
+) {
+
+  updateAdminViewHash(
+    currentView,
+    options.replaceHash ===
+      true
+  );
+
+}
+
+
+viewName =
+  currentView;
+
+
+adminViews.forEach(
     (view) => {
 
       const matches =
@@ -14736,15 +14977,18 @@ function showAdminView(
 
 
   if (
-    viewName ===
-      "clients" &&
-    !options.skipClientListLoad &&
-    !selectedClientId
-  ) {
+  viewName ===
+    "clients" &&
+  !options.skipClientListLoad &&
+  !selectedClientId &&
+  !getAdminDetailIdFromHash(
+    "clients"
+  )
+) {
 
-    loadClients();
+  loadClients();
 
-  }
+}
 
 
   if (
@@ -14768,6 +15012,115 @@ function showAdminView(
 
 }
 
+window.addEventListener(
+  "hashchange",
+  async () => {
+
+    if (
+      !adminApp ||
+      adminApp.hidden
+    ) {
+      return;
+    }
+
+
+    const nextView =
+      getAdminViewFromHash();
+
+
+    const clientId =
+      getAdminDetailIdFromHash(
+        "clients"
+      );
+
+
+    const contentItemId =
+      getAdminDetailIdFromHash(
+        "content"
+      );
+
+
+    selectedClientId =
+      null;
+
+
+    selectedClientData =
+      null;
+
+
+    selectedContentId =
+      null;
+
+
+    selectedContentData =
+      null;
+
+
+    showAdminView(
+      nextView,
+      {
+        syncHash:
+          false,
+
+        skipClientListLoad:
+          Boolean(clientId),
+      }
+    );
+
+
+    if (clientId) {
+
+      await openClient(
+        clientId,
+        {
+          syncHash:
+            false,
+        }
+      );
+
+      return;
+
+    }
+
+
+    if (
+      nextView ===
+      "clients"
+    ) {
+
+      showClientsList();
+
+      return;
+
+    }
+
+
+    if (contentItemId) {
+
+      await openContentItem(
+        contentItemId,
+        {
+          syncHash:
+            false,
+        }
+      );
+
+      return;
+
+    }
+
+
+    if (
+      nextView ===
+      "content"
+    ) {
+
+      showContentQueue();
+
+    }
+
+  }
+);
 
 // =========================================================
 // VIEW TITLE
