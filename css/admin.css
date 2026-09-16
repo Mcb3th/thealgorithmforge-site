@@ -6786,3 +6786,79 @@ img {
   }
 
 }
+
+/* =========================================================
+   PORTAL INVITATION RESEND
+   ========================================================= */
+
+.client-portal-user-status.is-pending {
+  color:
+    #9a5a16;
+
+  background:
+    rgba(232, 145, 48, 0.16);
+
+  border:
+    1px solid
+    rgba(232, 145, 48, 0.32);
+}
+
+
+.client-portal-resend-button {
+  border:
+    1px solid
+    var(--ember-orange);
+
+  border-radius:
+    8px;
+
+  padding:
+    7px 11px;
+
+  color:
+    var(--ember-orange);
+
+  background:
+    transparent;
+
+  font:
+    inherit;
+
+  font-size:
+    0.78rem;
+
+  font-weight:
+    700;
+
+  cursor:
+    pointer;
+
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+
+.client-portal-resend-button:hover {
+  color:
+    var(--white);
+
+  background:
+    var(--ember-orange);
+
+  transform:
+    translateY(-1px);
+}
+
+
+.client-portal-resend-button:disabled {
+  opacity:
+    0.55;
+
+  cursor:
+    wait;
+
+  transform:
+    none;
+}

@@ -5468,6 +5468,193 @@ function createClientDangerZone(
 // CLIENT PORTAL ACCESS
 // =========================================================
 
+async function resendClientPortalInvitation(
+  clientId,
+  user,
+  container,
+  button
+) {
+
+  if (
+    !clientId ||
+    !user?.user_id ||
+    !user?.email ||
+    !container ||
+    !button
+  ) {
+    return;
+  }
+
+
+  const confirmed =
+    await showAdminConfirm({
+      eyebrow:
+        "PORTAL ACCESS",
+
+      title:
+        "RESEND INVITATION?",
+
+      message:
+        `Replace the unused invitation for ${user.email} and send a fresh portal invitation?`,
+
+      confirmText:
+        "Resend Invitation",
+    });
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  button.disabled =
+    true;
+
+
+  button.textContent =
+    "Sending...";
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient
+        .functions
+        .invoke(
+          "resend-client-invitation",
+          {
+            body: {
+              client_id:
+                clientId,
+
+              user_id:
+                user.user_id,
+
+              email:
+                user.email,
+            },
+          }
+        );
+
+
+    if (error) {
+
+      let functionMessage =
+        "";
+
+
+      if (
+        error.context &&
+        typeof error.context.json ===
+          "function"
+      ) {
+
+        try {
+
+          const errorBody =
+            await error.context.json();
+
+
+          functionMessage =
+            errorBody?.diagnostic
+              ?.message ||
+            errorBody?.error ||
+            "";
+
+        } catch (parseError) {
+
+          console.error(
+            "Resend invitation error response could not be parsed:",
+            parseError
+          );
+
+        }
+
+      }
+
+
+      throw new Error(
+        functionMessage ||
+        error.message ||
+        "The invitation could not be resent."
+      );
+
+    }
+
+
+    if (!data?.success) {
+
+      throw new Error(
+        data?.error ||
+        "The invitation could not be resent."
+      );
+
+    }
+
+
+    await loadClientPortalUsers(
+      clientId,
+      container
+    );
+
+
+    await showAdminMessage({
+      eyebrow:
+        "PORTAL ACCESS",
+
+      title:
+        "INVITATION RESENT",
+
+      message:
+        data.message ||
+        `A fresh invitation was sent to ${user.email}.`,
+
+      confirmText:
+        "Got It",
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Portal invitation resend failed:",
+      error
+    );
+
+
+    await showAdminMessage({
+      eyebrow:
+        "PORTAL ACCESS",
+
+      title:
+        "INVITATION NOT SENT",
+
+      message:
+        error?.message ||
+        "The invitation could not be resent.",
+
+      confirmText:
+        "Got It",
+    });
+
+
+    if (button.isConnected) {
+
+      button.disabled =
+        false;
+
+
+      button.textContent =
+        "Resend Invitation";
+
+    }
+
+  }
+
+}
+
 async function loadClientPortalUsers(
   clientId,
   container
@@ -5667,20 +5854,44 @@ async function loadClientPortalUsers(
           );
 
 
-        const status =
-          document.createElement(
-            "span"
-          );
+        const invitationPending =
+  !user.email_confirmed_at &&
+  !user.last_sign_in_at;
 
-        status.className =
-          user.is_active
-            ? "client-portal-user-status is-active"
-            : "client-portal-user-status is-inactive";
 
-        status.textContent =
-          user.is_active
-            ? "Active"
-            : "Inactive";
+const status =
+  document.createElement(
+    "span"
+  );
+
+
+if (invitationPending) {
+
+  status.className =
+    "client-portal-user-status is-pending";
+
+  status.textContent =
+    "Pending Invitation";
+
+} else if (
+  user.is_active
+) {
+
+  status.className =
+    "client-portal-user-status is-active";
+
+  status.textContent =
+    "Active";
+
+} else {
+
+  status.className =
+    "client-portal-user-status is-inactive";
+
+  status.textContent =
+    "Inactive";
+
+}
 
 
         details.appendChild(
@@ -5690,6 +5901,47 @@ async function loadClientPortalUsers(
         details.appendChild(
           status
         );
+
+        if (invitationPending) {
+
+  const resendButton =
+    document.createElement(
+      "button"
+    );
+
+
+  resendButton.type =
+    "button";
+
+
+  resendButton.className =
+    "client-portal-resend-button";
+
+
+  resendButton.textContent =
+    "Resend Invitation";
+
+
+  resendButton.addEventListener(
+    "click",
+    async () => {
+
+      await resendClientPortalInvitation(
+        clientId,
+        user,
+        container,
+        resendButton
+      );
+
+    }
+  );
+
+
+  details.appendChild(
+    resendButton
+  );
+
+}
 
 
         row.appendChild(
@@ -5922,7 +6174,7 @@ const formTitle =
   );
 
 formTitle.textContent =
-  "INVITE ANOTHER PORTAL USER";
+  "INVITE PORTAL USER";
 
 
 formHeading.appendChild(
