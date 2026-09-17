@@ -2854,7 +2854,7 @@ function renderOnboardingRequired() {
 
 
   onboardingDescription.textContent =
-    "Complete your onboarding so we can learn about your business, brand, audience, and content goals.";
+  "Your answers help us represent your business accurately, create content in your voice, follow your requirements, and focus on the goals that matter most.";
 
 
   onboardingAction.textContent =
@@ -2889,8 +2889,8 @@ function renderOnboardingComplete() {
     "status-pill is-complete";
 
 
-  onboardingDescription.textContent =
-    "Your onboarding information has been submitted.";
+ onboardingDescription.textContent =
+  "Your onboarding information is on file and guides your content strategy, brand voice, priorities, and approval process.";
 
 
   onboardingAction.textContent =

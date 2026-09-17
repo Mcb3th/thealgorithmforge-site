@@ -833,14 +833,15 @@ const progressSteps =
           return;
         }
 
-        currentStep =
-          stepNumber;
+        editingFromReview =
+  false;
 
-        showStep(
-          currentStep
-        );
+currentStep =
+  stepNumber;
 
-        scrollToTop();
+showStep(
+  currentStep
+);
 
       }
     );
@@ -946,6 +947,7 @@ const approvalRequirementsField =
 
 let currentStep = 1;
 let isSubmitting = false;
+let editingFromReview = false;
 
 let currentClientId = null;
 let currentOnboardingSubmission = null;
@@ -1201,6 +1203,24 @@ nextButton.addEventListener(
     }
 
     if (
+      editingFromReview
+    ) {
+
+      editingFromReview =
+        false;
+
+      currentStep =
+        reviewStepNumber;
+
+      showStep(
+        currentStep
+      );
+
+      return;
+
+    }
+
+    if (
       currentStep <
       reviewStepNumber
     ) {
@@ -1217,6 +1237,26 @@ nextButton.addEventListener(
 backButton.addEventListener(
   "click",
   () => {
+
+    if (
+      editingFromReview &&
+      !isSubmitting
+    ) {
+
+      editingFromReview =
+        false;
+
+      currentStep =
+        reviewStepNumber;
+
+      showStep(
+        currentStep
+      );
+
+      return;
+
+    }
+
     if (
       currentStep > 1 &&
       !isSubmitting
@@ -1232,13 +1272,26 @@ backButton.addEventListener(
 
 
 function updateNavigation() {
-  backButton.disabled =
-    currentStep === 1 ||
-    isSubmitting;
-
   const isReview =
     currentStep ===
     reviewStepNumber;
+
+  backButton.disabled =
+    (
+      currentStep === 1 &&
+      !editingFromReview
+    ) ||
+    isSubmitting;
+
+  backButton.textContent =
+    editingFromReview
+      ? "Cancel"
+      : "Back";
+
+  nextButton.textContent =
+    editingFromReview
+      ? "Save & Return to Review"
+      : "Continue";
 
   nextButton.hidden =
     isReview;
@@ -1631,11 +1684,13 @@ function buildPlatformUrlFields() {
           "input"
         );
 
-      input.type = "url";
-      input.id = inputId;
-      input.placeholder =
-        "https://";
-      input.name = inputId;
+      input.type = "text";
+input.inputMode = "url";
+input.autocomplete = "url";
+input.id = inputId;
+input.placeholder =
+  "facebook.com/your-page";
+input.name = inputId;
       input.dataset.platformUrl =
         platform;
       input.value =
@@ -1899,6 +1954,44 @@ function getNewAccountsNeeded() {
 // META BUSINESS PORTFOLIO ID
 // =========================================================
 
+const metaPortfolioHelpButton =
+  document.getElementById(
+    "metaPortfolioHelpButton"
+  );
+
+const metaPortfolioHelpPanel =
+  document.getElementById(
+    "metaPortfolioHelpPanel"
+  );
+
+
+if (
+  metaPortfolioHelpButton &&
+  metaPortfolioHelpPanel
+) {
+
+  metaPortfolioHelpButton.addEventListener(
+    "click",
+    () => {
+
+      const willOpen =
+        metaPortfolioHelpPanel.hidden;
+
+      metaPortfolioHelpPanel.hidden =
+        !willOpen;
+
+      metaPortfolioHelpButton.setAttribute(
+        "aria-expanded",
+        String(
+          willOpen
+        )
+      );
+
+    }
+  );
+
+}
+
 document
   .querySelectorAll(
     'input[name="meta_business_portfolio_status"]'
@@ -2001,7 +2094,7 @@ function updateGoals(event) {
     );
 
   if (
-    selected.length > 3
+    selected.length > 4
   ) {
     event.target.checked =
       false;
@@ -2109,7 +2202,7 @@ function showTemporaryGoalMessage() {
       "field-error";
 
     message.textContent =
-      "Choose up to 3 goals.";
+      "Choose up to 4 goals.";
 
     goalChoices
       .insertAdjacentElement(
@@ -2649,18 +2742,18 @@ function validateSocial(
     )
     .forEach(
       (input) => {
-        if (
-          input.value.trim() &&
-          !isValidHttpUrl(
-            input.value
-          )
-        ) {
-          addFieldError(
-            input,
-            "Please enter a valid profile URL.",
-            errors
-          );
-        }
+       if (
+  input.value.trim() &&
+  !normalizeWebsiteUrl(
+    input.value
+  )
+) {
+  addFieldError(
+    input,
+    "Please enter a valid profile address, like facebook.com/your-page.",
+    errors
+  );
+}
       }
     );
 
@@ -2767,14 +2860,14 @@ function validateGoals(
   }
 
   if (
-    goals.length > 3
-  ) {
-    addGroupError(
-      "primary_goals",
-      "Choose no more than 3 goals.",
-      errors
-    );
-  }
+  goals.length > 4
+) {
+  addGroupError(
+    "primary_goals",
+    "Choose no more than 4 goals.",
+    errors
+  );
+}
 
   if (
     !primaryGoalSelect.value
@@ -3116,38 +3209,74 @@ function validateOptionalUrl(
 
   if (
     value &&
-    !isValidHttpUrl(
+    !normalizeWebsiteUrl(
       value
     )
   ) {
     addFieldError(
       field,
-      "Please enter a valid website URL beginning with http:// or https://.",
+      "Please enter a valid website address, like yourbusiness.com.",
       errors
     );
   }
 }
 
 
-function isValidHttpUrl(
+function normalizeWebsiteUrl(
   value
 ) {
+  const trimmedValue =
+    String(
+      value || ""
+    ).trim();
+
+  if (!trimmedValue) {
+    return null;
+  }
+
+  const urlValue =
+    /^https?:\/\//i.test(
+      trimmedValue
+    )
+      ? trimmedValue
+      : `https://${trimmedValue}`;
+
   try {
+
     const url =
       new URL(
-        value
+        urlValue
       );
 
-    return (
-      url.protocol ===
-        "http:" ||
-      url.protocol ===
-        "https:"
-    );
+    const validProtocol =
+      url.protocol === "http:" ||
+      url.protocol === "https:";
+
+    const validHostname =
+      Boolean(
+        url.hostname
+      ) &&
+      url.hostname.includes(
+        "."
+      );
+
+    if (
+      !validProtocol ||
+      !validHostname
+    ) {
+      return null;
+    }
+
+    return url.href;
+
   } catch {
-    return false;
+
+    return null;
+
   }
 }
+
+
 
 
 function addFieldError(
@@ -3360,9 +3489,10 @@ function buildPayload() {
             );
 
         const profileUrl =
-          urlField
-            ?.value
-            ?.trim() || "";
+  normalizeWebsiteUrl(
+    urlField
+      ?.value || ""
+  );
 
         return {
           platform,
@@ -3415,9 +3545,11 @@ function buildPayload() {
         ),
 
       website:
-        getNullableTextValue(
-          "business_website"
-        ),
+  normalizeWebsiteUrl(
+    getNullableTextValue(
+      "business_website"
+    )
+  ),
 
       business_description:
         getTextValue(
@@ -3767,6 +3899,7 @@ function buildReview() {
 
     {
       title: "Business",
+      step: 1,
 
       fields: [
         [
@@ -3829,6 +3962,7 @@ function buildReview() {
 
     {
       title: "Brand",
+      step: 2,
 
       fields: [
         [
@@ -3877,6 +4011,7 @@ function buildReview() {
     {
       title:
         "Social Media",
+      step: 3,
 
       fields: [
         [
@@ -3924,6 +4059,7 @@ function buildReview() {
 
     {
       title: "Goals",
+      step: 4,
 
       fields: [
         [
@@ -3946,6 +4082,7 @@ function buildReview() {
 
     {
       title: "Content",
+      step: 5,
 
       fields: [
         [
@@ -3994,6 +4131,8 @@ function buildReview() {
       title:
         "Requirements",
 
+      step: 6,
+
       fields: [
         [
           "Competitors / inspiration",
@@ -4021,6 +4160,8 @@ function buildReview() {
     {
       title:
         "Working Together",
+
+      step: 7,
 
       fields: [
         [
@@ -4073,17 +4214,73 @@ function buildReview() {
         "review-section";
 
 
-      const heading =
-        document.createElement(
-          "h3"
-        );
+     const sectionHeader =
+  document.createElement(
+    "div"
+  );
 
-      heading.textContent =
-        section.title;
+sectionHeader.className =
+  "review-section-header";
 
-      sectionElement.appendChild(
-        heading
-      );
+
+const heading =
+  document.createElement(
+    "h3"
+  );
+
+heading.textContent =
+  section.title;
+
+
+const editButton =
+  document.createElement(
+    "button"
+  );
+
+editButton.type =
+  "button";
+
+editButton.className =
+  "review-edit-button";
+
+editButton.textContent =
+  "Edit";
+
+editButton.setAttribute(
+  "aria-label",
+  `Edit ${section.title}`
+);
+
+
+editButton.addEventListener(
+  "click",
+  () => {
+
+    editingFromReview =
+      true;
+
+    currentStep =
+      section.step;
+
+    showStep(
+      currentStep
+    );
+
+  }
+);
+
+
+sectionHeader.appendChild(
+  heading
+);
+
+sectionHeader.appendChild(
+  editButton
+);
+
+sectionElement.appendChild(
+  sectionHeader
+);
 
 
       section.fields.forEach(

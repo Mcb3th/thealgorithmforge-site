@@ -2040,3 +2040,157 @@ a {
   }
 
 }
+
+
+.meta-portfolio-help-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 16px;
+  padding: 10px 14px;
+
+  color: var(--white);
+  background: var(--ember);
+
+  border-radius: var(--radius-small);
+
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-decoration: none;
+
+  transition:
+    background var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.meta-portfolio-help-link:hover,
+.meta-portfolio-help-link:focus-visible {
+  background: var(--charcoal);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(32, 33, 36, 0.18);
+}
+
+.review-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 14px;
+}
+
+.review-section-header h3 {
+  margin: 0;
+}
+
+.review-edit-button {
+  flex: 0 0 auto;
+  padding: 7px 13px;
+
+  color: var(--ember);
+  background: transparent;
+
+  border: 1px solid rgba(232, 93, 36, 0.55);
+  border-radius: 999px;
+
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  transition:
+    color var(--transition),
+    background var(--transition),
+    border-color var(--transition),
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.review-edit-button:hover,
+.review-edit-button:focus-visible {
+  color: var(--white);
+  background: var(--ember);
+  border-color: var(--ember);
+
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(232, 93, 36, 0.2);
+}
+
+.onboarding-purpose-note {
+  max-width: 760px;
+
+  margin:
+    26px
+    auto
+    0;
+
+  padding:
+    18px
+    20px;
+
+  text-align: left;
+
+  background:
+    rgba(232, 93, 36, 0.06);
+
+  border:
+    1px solid
+    rgba(232, 93, 36, 0.22);
+
+  border-radius:
+    var(--radius-small);
+}
+
+.onboarding-purpose-note strong,
+.contact-use-note strong {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: var(--ember);
+
+  font-size: 0.78rem;
+  font-weight: 800;
+
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.onboarding-purpose-note p,
+.contact-use-note p {
+  margin: 0;
+
+  color: var(--steel);
+
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+
+.contact-use-note {
+  margin:
+    -2px
+    0
+    28px;
+
+  padding:
+    16px
+    18px;
+
+  background:
+    #f5f0e7;
+
+  border-left:
+    3px solid
+    var(--ember);
+
+  border-radius:
+    0
+    var(--radius-small)
+    var(--radius-small)
+    0;
+}

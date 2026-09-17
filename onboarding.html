@@ -63,11 +63,11 @@
 
     <div class="onboarding-shell onboarding-header-inner">
 
-      <a
-        href="index.html"
-        class="onboarding-brand"
-        aria-label="The Algorithm Forge home"
-      >
+     <a
+  href="client-portal.html"
+  class="onboarding-brand"
+  aria-label="Return to client portal"
+>
 
         <img
           src="assets/images/af-logo.png"
@@ -125,6 +125,23 @@
           and goals so we can prepare your content
           strategy and account setup.
         </p>
+
+        <div class="onboarding-purpose-note">
+
+  <strong>
+    Why do we need this?
+  </strong>
+
+  <p>
+    Your answers give us the context needed to
+    represent your business accurately, create content
+    in your voice, follow any industry requirements,
+    and focus on the goals that matter most to you.
+    It also means fewer repeated questions once content
+    creation begins.
+  </p>
+
+</div>
 
         <div class="intro-meta">
 
@@ -400,17 +417,34 @@
                   Business website
                 </span>
 
-                <input
-                  type="url"
-                  name="business_website"
-                  id="business_website"
-                  placeholder="https://"
-                />
+               <input
+  type="text"
+  name="business_website"
+  id="business_website"
+  inputmode="url"
+  autocomplete="url"
+  placeholder="yourbusiness.com"
+/>
 
               </label>
 
             </div>
 
+            <div class="contact-use-note">
+
+  <strong>
+    How we use your contact information
+  </strong>
+
+  <p>
+    We use these details to communicate about your
+    account, onboarding, content questions and approvals,
+    requested services, and important portal or feature
+    updates. Your contact information is not displayed
+    publicly.
+  </p>
+
+</div>
 
             <fieldset class="field-group">
 
@@ -1055,23 +1089,87 @@
               </fieldset>
 
 
-              <label
-                class="field conditional-field"
-                id="metaPortfolioIdField"
-                hidden
-              >
+              <div
+  class="field conditional-field"
+  id="metaPortfolioIdField"
+  hidden
+>
 
-                <span>
-                  Business Portfolio ID, if you know it
-                </span>
+  <div class="platform-url-label-row">
 
-                <input
-                  type="text"
-                  name="meta_business_portfolio_id"
-                  id="meta_business_portfolio_id"
-                />
+    <label for="meta_business_portfolio_id">
+      Business Portfolio ID, if you know it
+    </label>
 
-              </label>
+    <button
+      class="platform-url-help-button"
+      id="metaPortfolioHelpButton"
+      type="button"
+      aria-label="How to find your Meta Business Portfolio ID"
+      aria-controls="metaPortfolioHelpPanel"
+      aria-expanded="false"
+    >
+      i
+    </button>
+
+  </div>
+
+  <input
+    type="text"
+    name="meta_business_portfolio_id"
+    id="meta_business_portfolio_id"
+    inputmode="numeric"
+  />
+
+  <div
+    class="platform-url-help-panel"
+    id="metaPortfolioHelpPanel"
+    hidden
+  >
+
+    <strong class="platform-url-help-title">
+      How to find your Business Portfolio ID
+    </strong>
+
+    <div class="platform-url-help-section">
+
+      <ol>
+        <li>
+          Open Meta Business Settings.
+        </li>
+
+        <li>
+          Select the correct business portfolio.
+        </li>
+
+        <li>
+          Open Business portfolio info.
+        </li>
+
+        <li>
+          Copy the ID shown beneath your business portfolio name.
+        </li>
+      </ol>
+
+    </div>
+
+    <a
+      class="meta-portfolio-help-link"
+      href="https://business.facebook.com/settings/info"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Open Meta Business Settings
+    </a>
+
+    <p class="platform-url-help-note">
+      If you cannot find the ID, leave this field blank.
+      We can help locate it later.
+    </p>
+
+  </div>
+
+</div>
 
             </div>
 
@@ -1163,7 +1261,7 @@
               </legend>
 
               <p class="field-help">
-                Choose up to 3.
+                Choose up to 4.
               </p>
 
               <div
