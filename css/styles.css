@@ -194,6 +194,51 @@ textarea {
   color: var(--white);
 }
 
+.main-nav .nav-login {
+  padding:
+    8px
+    14px;
+
+  color:
+    var(--white);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.38);
+
+  border-radius:
+    4px;
+
+  font-size:
+    0.82rem;
+
+  font-weight:
+    700;
+
+  white-space:
+    nowrap;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.main-nav .nav-login:hover,
+.main-nav .nav-login:focus-visible {
+  color:
+    var(--white);
+
+  background:
+    var(--ember);
+
+  border-color:
+    var(--ember);
+
+  transform:
+    translateY(-1px);
+}
 
 /* ========================================
    BUTTONS
@@ -1962,6 +2007,27 @@ textarea {
   .main-nav a:last-child {
     border-bottom: 0;
   }
+
+  .main-nav .nav-login {
+  margin-top:
+    12px;
+
+  padding:
+    12px
+    14px;
+
+  color:
+    var(--white);
+
+  background:
+    var(--ember);
+
+  border-color:
+    var(--ember);
+
+  text-align:
+    center;
+}
 
   .nav-cta {
     display: none;
