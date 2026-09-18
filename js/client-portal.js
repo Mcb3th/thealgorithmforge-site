@@ -162,6 +162,94 @@ const welcomeHeading =
     "welcomeHeading"
   );
 
+  // =========================================================
+// SETTINGS ELEMENTS
+// =========================================================
+
+const profileSettingsForm =
+  document.getElementById(
+    "profileSettingsForm"
+  );
+
+const settingsFullName =
+  document.getElementById(
+    "settingsFullName"
+  );
+
+const profileSettingsSubmit =
+  document.getElementById(
+    "profileSettingsSubmit"
+  );
+
+const profileSettingsStatus =
+  document.getElementById(
+    "profileSettingsStatus"
+  );
+
+
+const emailSettingsForm =
+  document.getElementById(
+    "emailSettingsForm"
+  );
+
+const settingsCurrentEmail =
+  document.getElementById(
+    "settingsCurrentEmail"
+  );
+
+const settingsNewEmail =
+  document.getElementById(
+    "settingsNewEmail"
+  );
+
+const emailSettingsSubmit =
+  document.getElementById(
+    "emailSettingsSubmit"
+  );
+
+const emailSettingsStatus =
+  document.getElementById(
+    "emailSettingsStatus"
+  );
+
+
+const passwordSettingsForm =
+  document.getElementById(
+    "passwordSettingsForm"
+  );
+
+const settingsCurrentPassword =
+  document.getElementById(
+    "settingsCurrentPassword"
+  );
+
+const settingsNewPassword =
+  document.getElementById(
+    "settingsNewPassword"
+  );
+
+const settingsConfirmPassword =
+  document.getElementById(
+    "settingsConfirmPassword"
+  );
+
+const passwordSettingsSubmit =
+  document.getElementById(
+    "passwordSettingsSubmit"
+  );
+
+const passwordSettingsStatus =
+  document.getElementById(
+    "passwordSettingsStatus"
+  );
+
+
+const settingsAccountRole =
+  document.getElementById(
+    "settingsAccountRole"
+  );
+
+
 
 // =========================================================
 // ONBOARDING ELEMENTS
@@ -286,6 +374,7 @@ const validPortalViews =
     "content",
     "uploads",
     "onboarding",
+    "settings",
   ]);
 
 
@@ -2601,8 +2690,1205 @@ function renderClientIdentity() {
   welcomeHeading.textContent =
     `LET'S GET TO WORK.`;
 
+  renderAccountSettings();
+
 }
 
+function renderAccountSettings() {
+
+  const metadata =
+    currentUser?.user_metadata ||
+    {};
+
+  const businessName =
+    currentClient?.business_name ||
+    metadata.business_name ||
+    "";
+
+  const displayName =
+    metadata.full_name ||
+    metadata.name ||
+    businessName;
+
+
+  if (settingsFullName) {
+
+    settingsFullName.value =
+      displayName;
+
+  }
+
+
+  if (settingsCurrentEmail) {
+
+    settingsCurrentEmail.value =
+      currentUser?.email ||
+      "";
+
+  }
+
+
+  if (settingsNewEmail) {
+
+    settingsNewEmail.value =
+      "";
+
+  }
+
+
+  if (settingsAccountRole) {
+
+    const role =
+      String(
+        currentMembership?.role ||
+        "member"
+      )
+        .replaceAll(
+          "_",
+          " "
+        )
+        .replace(
+          /\b\w/g,
+          (letter) =>
+            letter.toUpperCase()
+        );
+
+    settingsAccountRole.textContent =
+      role;
+
+  }
+
+
+  if (ownershipTransferButton) {
+
+    ownershipTransferButton.hidden =
+      currentMembership?.role !==
+      "owner";
+
+  }
+
+}
+
+// =========================================================
+// SETTINGS STATUS
+// =========================================================
+
+function showSettingsStatus(
+  element,
+  message,
+  type
+) {
+
+  if (!element) {
+    return;
+  }
+
+
+  element.textContent =
+    message;
+
+  element.className =
+    `settings-status is-${type}`;
+
+  element.hidden =
+    false;
+
+}
+
+
+function clearSettingsStatus(
+  element
+) {
+
+  if (!element) {
+    return;
+  }
+
+
+  element.textContent =
+    "";
+
+  element.className =
+    "settings-status";
+
+  element.hidden =
+    true;
+
+}
+
+
+// =========================================================
+// UPDATE PROFILE NAME
+// =========================================================
+
+if (profileSettingsForm) {
+
+  profileSettingsForm.addEventListener(
+    "submit",
+    async (event) => {
+
+      event.preventDefault();
+
+      clearSettingsStatus(
+        profileSettingsStatus
+      );
+
+
+      const fullName =
+        settingsFullName
+          ?.value
+          ?.trim() ||
+        "";
+
+
+      if (
+        fullName.length < 2
+      ) {
+
+        showSettingsStatus(
+          profileSettingsStatus,
+          "Please enter your full name.",
+          "error"
+        );
+
+        settingsFullName?.focus();
+
+        return;
+
+      }
+
+
+      profileSettingsSubmit.disabled =
+        true;
+
+      profileSettingsSubmit.textContent =
+        "Saving...";
+
+
+      try {
+
+        const existingMetadata =
+          currentUser?.user_metadata ||
+          {};
+
+
+        const {
+          data,
+          error,
+        } =
+          await supabaseClient
+            .auth
+            .updateUser({
+              data: {
+                ...existingMetadata,
+
+                full_name:
+                  fullName,
+              },
+            });
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        if (
+          !data?.user
+        ) {
+
+          throw new Error(
+            "The updated account could not be loaded."
+          );
+
+        }
+
+
+        currentUser =
+          data.user;
+
+        renderClientIdentity();
+
+
+        showSettingsStatus(
+          profileSettingsStatus,
+          "Your name has been updated.",
+          "success"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Profile name update failed:",
+          error
+        );
+
+
+        showSettingsStatus(
+          profileSettingsStatus,
+          error?.message ||
+          "We couldn't update your name.",
+          "error"
+        );
+
+
+      } finally {
+
+        profileSettingsSubmit.disabled =
+          false;
+
+        profileSettingsSubmit.textContent =
+          "Save Name";
+
+      }
+
+    }
+  );
+
+}
+
+// =========================================================
+// UPDATE EMAIL ADDRESS
+// =========================================================
+
+if (emailSettingsForm) {
+
+  emailSettingsForm.addEventListener(
+    "submit",
+    async (event) => {
+
+      event.preventDefault();
+
+      clearSettingsStatus(
+        emailSettingsStatus
+      );
+
+      const currentEmail =
+        currentUser
+          ?.email
+          ?.trim()
+          ?.toLowerCase() ||
+        "";
+
+      const newEmail =
+        settingsNewEmail
+          ?.value
+          ?.trim()
+          ?.toLowerCase() ||
+        "";
+
+      const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+      if (
+        !emailPattern.test(
+          newEmail
+        )
+      ) {
+
+        showSettingsStatus(
+          emailSettingsStatus,
+          "Please enter a valid email address.",
+          "error"
+        );
+
+        settingsNewEmail?.focus();
+
+        return;
+
+      }
+
+
+      if (
+        newEmail ===
+        currentEmail
+      ) {
+
+        showSettingsStatus(
+          emailSettingsStatus,
+          "Please enter a different email address.",
+          "error"
+        );
+
+        settingsNewEmail?.focus();
+
+        return;
+
+      }
+
+
+      emailSettingsSubmit.disabled =
+        true;
+
+      emailSettingsSubmit.textContent =
+        "Sending...";
+
+
+      try {
+
+        const redirectUrl =
+          `${window.location.origin}${window.location.pathname}#settings`;
+
+        const {
+          data,
+          error,
+        } =
+          await supabaseClient
+            .auth
+            .updateUser(
+              {
+                email:
+                  newEmail,
+              },
+              {
+                emailRedirectTo:
+                  redirectUrl,
+              }
+            );
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        if (
+          data?.user
+        ) {
+
+          currentUser =
+            data.user;
+
+        }
+
+
+        settingsNewEmail.value =
+          "";
+
+
+        showSettingsStatus(
+          emailSettingsStatus,
+          "Confirmation instructions have been sent. Open the message and confirm the new email address to finish the change.",
+          "success"
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Email update failed:",
+          error
+        );
+
+
+        showSettingsStatus(
+          emailSettingsStatus,
+          error?.message ||
+          "We couldn't begin the email change.",
+          "error"
+        );
+
+      } finally {
+
+        emailSettingsSubmit.disabled =
+          false;
+
+        emailSettingsSubmit.textContent =
+          "Change Email";
+
+      }
+
+    }
+  );
+
+}
+
+// =========================================================
+// PASSWORD VISIBILITY
+// =========================================================
+
+const passwordVisibilityToggles =
+  document.querySelectorAll(
+    "[data-password-toggle]"
+  );
+
+
+function resetPasswordVisibility() {
+
+  passwordVisibilityToggles.forEach(
+    (toggleButton) => {
+
+      const inputId =
+        toggleButton.dataset
+          .passwordToggle;
+
+      const passwordInput =
+        document.getElementById(
+          inputId
+        );
+
+
+      if (passwordInput) {
+
+        passwordInput.type =
+          "password";
+
+      }
+
+
+      toggleButton.classList.remove(
+        "is-visible"
+      );
+
+      toggleButton.setAttribute(
+        "aria-pressed",
+        "false"
+      );
+
+
+      const currentLabel =
+        toggleButton.getAttribute(
+          "aria-label"
+        ) ||
+        "Show password";
+
+      toggleButton.setAttribute(
+        "aria-label",
+        currentLabel.replace(
+          /^Hide/,
+          "Show"
+        )
+      );
+
+    }
+  );
+
+}
+
+
+passwordVisibilityToggles.forEach(
+  (toggleButton) => {
+
+    toggleButton.addEventListener(
+      "click",
+      () => {
+
+        const inputId =
+          toggleButton.dataset
+            .passwordToggle;
+
+        const passwordInput =
+          document.getElementById(
+            inputId
+          );
+
+
+        if (!passwordInput) {
+          return;
+        }
+
+
+        const willShow =
+          passwordInput.type ===
+          "password";
+
+
+        passwordInput.type =
+          willShow
+            ? "text"
+            : "password";
+
+
+        toggleButton.classList.toggle(
+          "is-visible",
+          willShow
+        );
+
+
+        toggleButton.setAttribute(
+          "aria-pressed",
+          String(willShow)
+        );
+
+
+        const currentLabel =
+          toggleButton.getAttribute(
+            "aria-label"
+          ) ||
+          "Show password";
+
+        toggleButton.setAttribute(
+          "aria-label",
+          willShow
+            ? currentLabel.replace(
+                /^Show/,
+                "Hide"
+              )
+            : currentLabel.replace(
+                /^Hide/,
+                "Show"
+              )
+        );
+
+      }
+    );
+
+  }
+);
+
+
+// =========================================================
+// OWNERSHIP TRANSFER MODAL
+// =========================================================
+
+function openOwnershipTransferModal() {
+
+  if (
+    !ownershipTransferModal ||
+    currentMembership?.role !==
+      "owner"
+  ) {
+    return;
+  }
+
+
+  ownershipTransferForm?.reset();
+
+  ownershipTransferSubmit.disabled =
+  false;
+
+ownershipTransferSubmit.textContent =
+  "Send Transfer Invitation";
+
+  clearSettingsStatus(
+    ownershipTransferStatus
+  );
+
+  resetPasswordVisibility();
+
+
+  ownershipTransferModal.hidden =
+    false;
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  requestAnimationFrame(
+    () => {
+
+      ownershipTransferName?.focus();
+
+    }
+  );
+
+}
+
+
+function closeOwnershipTransferModal() {
+
+  if (!ownershipTransferModal) {
+    return;
+  }
+
+
+  ownershipTransferModal.hidden =
+    true;
+
+  document.body.style.overflow =
+    "";
+
+  ownershipTransferForm?.reset();
+
+  clearSettingsStatus(
+    ownershipTransferStatus
+  );
+
+  resetPasswordVisibility();
+
+  ownershipTransferButton?.focus();
+
+}
+
+
+ownershipTransferButton
+  ?.addEventListener(
+    "click",
+    openOwnershipTransferModal
+  );
+
+
+ownershipTransferCancel
+  ?.addEventListener(
+    "click",
+    closeOwnershipTransferModal
+  );
+
+
+ownershipTransferModal
+  ?.querySelectorAll(
+    "[data-close-ownership-transfer-modal]"
+  )
+  .forEach(
+    (element) => {
+
+      element.addEventListener(
+        "click",
+        closeOwnershipTransferModal
+      );
+
+    }
+  );
+
+
+ownershipTransferForm
+  ?.addEventListener(
+    "submit",
+    async (event) => {
+
+      event.preventDefault();
+
+      clearSettingsStatus(
+        ownershipTransferStatus
+      );
+
+
+      const replacementName =
+        ownershipTransferName
+          ?.value
+          ?.trim() ||
+        "";
+
+      const replacementEmail =
+        ownershipTransferEmail
+          ?.value
+          ?.trim()
+          ?.toLowerCase() ||
+        "";
+
+      const currentPassword =
+        ownershipTransferPassword
+          ?.value ||
+        "";
+
+      const previousOwnerAccess =
+        ownershipTransferForm
+          ?.querySelector(
+            "[name='previous_owner_access']:checked"
+          )
+          ?.value ||
+        "member";
+
+      const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+      if (
+        replacementName.length < 2
+      ) {
+
+        showSettingsStatus(
+          ownershipTransferStatus,
+          "Enter the new owner's full name.",
+          "error"
+        );
+
+        ownershipTransferName?.focus();
+
+        return;
+
+      }
+
+
+      if (
+        !emailPattern.test(
+          replacementEmail
+        )
+      ) {
+
+        showSettingsStatus(
+          ownershipTransferStatus,
+          "Enter a valid email address.",
+          "error"
+        );
+
+        ownershipTransferEmail?.focus();
+
+        return;
+
+      }
+
+
+      if (
+        replacementEmail ===
+        currentUser
+          ?.email
+          ?.trim()
+          ?.toLowerCase()
+      ) {
+
+        showSettingsStatus(
+          ownershipTransferStatus,
+          "The new owner must use a different email address.",
+          "error"
+        );
+
+        ownershipTransferEmail?.focus();
+
+        return;
+
+      }
+
+
+      if (!currentPassword) {
+
+        showSettingsStatus(
+          ownershipTransferStatus,
+          "Enter your current password to authorize this transfer.",
+          "error"
+        );
+
+        ownershipTransferPassword?.focus();
+
+        return;
+
+      }
+
+
+      ownershipTransferSubmit.disabled =
+        true;
+
+      ownershipTransferSubmit.textContent =
+        "Sending...";
+
+
+      try {
+
+        /*
+          Reauthenticate the current owner.
+          This gives the Edge Function a fresh
+          access token for this sensitive action.
+        */
+
+        const {
+          data: authData,
+          error: authError,
+        } =
+          await supabaseClient
+            .auth
+            .signInWithPassword({
+              email:
+                currentUser.email,
+
+              password:
+                currentPassword,
+            });
+
+
+        if (
+  authError ||
+  !authData?.user ||
+  !authData?.session
+    ?.access_token
+) {
+
+          throw new Error(
+            "Your current password is incorrect."
+          );
+
+        }
+
+
+        currentUser =
+          authData.user;
+
+
+        const {
+          data,
+          error,
+        } =
+          await supabaseClient
+            .functions
+            .invoke(
+  "request-ownership-transfer",
+  {
+    body: {
+      replacement_name:
+        replacementName,
+
+      replacement_email:
+        replacementEmail,
+
+      previous_owner_access:
+        previousOwnerAccess,
+    },
+
+    headers: {
+      Authorization:
+        `Bearer ${authData.session.access_token}`,
+    },
+  }
+);
+
+
+        if (error) {
+
+          let functionMessage =
+            data?.error ||
+            "";
+
+
+          if (
+            !functionMessage &&
+            error?.context
+          ) {
+
+            try {
+
+              const errorBody =
+                await error.context
+                  .json();
+
+              functionMessage =
+                errorBody?.error ||
+                "";
+
+            } catch {
+              // Use the fallback below.
+            }
+
+          }
+
+
+          throw new Error(
+            functionMessage ||
+            error.message ||
+            "The transfer invitation could not be sent."
+          );
+
+        }
+
+
+        if (
+          !data?.success
+        ) {
+
+          throw new Error(
+            data?.error ||
+            "The transfer invitation could not be sent."
+          );
+
+        }
+
+
+        ownershipTransferPassword.value =
+          "";
+
+        resetPasswordVisibility();
+
+
+        showSettingsStatus(
+          ownershipTransferStatus,
+          data.message ||
+          "The ownership transfer invitation has been sent.",
+          "success"
+        );
+
+
+        ownershipTransferSubmit.textContent =
+          "Invitation Sent";
+
+        ownershipTransferSubmit.disabled =
+          true;
+
+
+        if (
+          ownershipTransferHelp
+        ) {
+
+          ownershipTransferHelp.textContent =
+            `A transfer invitation is pending for ${replacementEmail}.`;
+
+        }
+
+
+      } catch (error) {
+
+        console.error(
+          "Ownership transfer request failed:",
+          error
+        );
+
+
+        showSettingsStatus(
+          ownershipTransferStatus,
+          error?.message ||
+          "The transfer invitation could not be sent.",
+          "error"
+        );
+
+
+      } finally {
+
+        if (
+          ownershipTransferSubmit
+            .textContent !==
+          "Invitation Sent"
+        ) {
+
+          ownershipTransferSubmit.disabled =
+            false;
+
+          ownershipTransferSubmit.textContent =
+            "Send Transfer Invitation";
+
+        }
+
+      }
+
+    }
+  );
+
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key ===
+        "Escape" &&
+      ownershipTransferModal &&
+      !ownershipTransferModal.hidden
+    ) {
+
+      closeOwnershipTransferModal();
+
+    }
+
+  }
+);
+
+// =========================================================
+// UPDATE PASSWORD
+// =========================================================
+
+if (passwordSettingsForm) {
+
+  passwordSettingsForm.addEventListener(
+    "submit",
+    async (event) => {
+
+      event.preventDefault();
+
+      clearSettingsStatus(
+        passwordSettingsStatus
+      );
+
+
+      const currentPassword =
+        settingsCurrentPassword
+          ?.value ||
+        "";
+
+      const newPassword =
+        settingsNewPassword
+          ?.value ||
+        "";
+
+      const confirmPassword =
+        settingsConfirmPassword
+          ?.value ||
+        "";
+
+
+      if (!currentPassword) {
+
+        showSettingsStatus(
+          passwordSettingsStatus,
+          "Please enter your current password.",
+          "error"
+        );
+
+        settingsCurrentPassword?.focus();
+
+        return;
+
+      }
+
+
+      if (
+        newPassword.length < 12
+      ) {
+
+        showSettingsStatus(
+          passwordSettingsStatus,
+          "Your new password must contain at least 12 characters.",
+          "error"
+        );
+
+        settingsNewPassword?.focus();
+
+        return;
+
+      }
+
+
+      if (
+        newPassword !==
+        confirmPassword
+      ) {
+
+        showSettingsStatus(
+          passwordSettingsStatus,
+          "The new passwords do not match.",
+          "error"
+        );
+
+        settingsConfirmPassword?.focus();
+
+        return;
+
+      }
+
+
+      if (
+        newPassword ===
+        currentPassword
+      ) {
+
+        showSettingsStatus(
+          passwordSettingsStatus,
+          "Your new password must be different from your current password.",
+          "error"
+        );
+
+        settingsNewPassword?.focus();
+
+        return;
+
+      }
+
+
+      const accountEmail =
+        currentUser
+          ?.email
+          ?.trim() ||
+        "";
+
+
+      if (!accountEmail) {
+
+        showSettingsStatus(
+          passwordSettingsStatus,
+          "Your account email could not be verified.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      passwordSettingsSubmit.disabled =
+        true;
+
+      passwordSettingsSubmit.textContent =
+        "Updating...";
+
+
+      try {
+
+        const {
+          error: signInError,
+        } =
+          await supabaseClient
+            .auth
+            .signInWithPassword({
+              email:
+                accountEmail,
+
+              password:
+                currentPassword,
+            });
+
+
+        if (signInError) {
+
+          throw new Error(
+            "Your current password is incorrect."
+          );
+
+        }
+
+
+        const {
+          data,
+          error: updateError,
+        } =
+          await supabaseClient
+            .auth
+            .updateUser({
+              password:
+                newPassword,
+            });
+
+
+        if (updateError) {
+          throw updateError;
+        }
+
+
+        if (
+          data?.user
+        ) {
+
+          currentUser =
+            data.user;
+
+        }
+
+
+        passwordSettingsForm.reset();
+
+        resetPasswordVisibility();
+
+
+        showSettingsStatus(
+          passwordSettingsStatus,
+          "Your password has been changed successfully.",
+          "success"
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Password update failed:",
+          error
+        );
+
+
+        showSettingsStatus(
+          passwordSettingsStatus,
+          error?.message ||
+          "We couldn't change your password.",
+          "error"
+        );
+
+      } finally {
+
+        passwordSettingsSubmit.disabled =
+          false;
+
+        passwordSettingsSubmit.textContent =
+          "Change Password";
+
+      }
+
+    }
+  );
+
+}
 
 // =========================================================
 // INITIALS
@@ -4931,7 +6217,7 @@ clientSignOut.addEventListener(
 
 
       window.location.href =
-        "index.html";
+  "client-login.html";
 
 
     } catch (error) {

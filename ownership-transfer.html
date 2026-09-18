@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <meta
+    name="robots"
+    content="noindex, nofollow"
+  />
+
+  <meta
+    name="theme-color"
+    content="#202124"
+  />
+
+  <title>
+    Accept Account Ownership | The Algorithm Forge
+  </title>
+
+
+  <!-- ========================================
+       PWA
+  ======================================== -->
+
+  <link
+    rel="manifest"
+    href="client.webmanifest"
+  />
+
+
+  <!-- ========================================
+       FAVICON
+  ======================================== -->
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="assets/images/favicon-32x32.png"
+  />
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="assets/images/favicon-16x16.png"
+  />
+
+  <link
+    rel="apple-touch-icon"
+    href="assets/images/apple-touch-icon.png"
+  />
+
+
+  <!-- ========================================
+       FONTS
+  ======================================== -->
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+
+  <!-- ========================================
+       STYLES
+  ======================================== -->
+
+  <link
+    rel="stylesheet"
+    href="css/client-setup.css"
+  />
+
+  <link
+    rel="stylesheet"
+    href="css/ownership-transfer.css"
+  />
+
+</head>
+
+
+<body>
+
+  <main class="setup-page">
+
+
+    <!-- ========================================
+         BRAND
+    ======================================== -->
+
+    <header class="setup-header">
+
+      <a
+        href="index.html"
+        class="setup-brand"
+        aria-label="The Algorithm Forge home"
+      >
+
+        <img
+          src="assets/images/af-logo.png"
+          alt=""
+          class="setup-brand-mark"
+        />
+
+        <span class="setup-wordmark">
+
+          <span class="setup-the">
+            THE
+          </span>
+
+          <span class="setup-brand-name">
+            <span class="brand-accent">A</span>LGORITHM
+            <span class="brand-accent">F</span>ORGE
+          </span>
+
+        </span>
+
+      </a>
+
+    </header>
+
+
+    <!-- ========================================
+         OWNERSHIP ACCEPTANCE
+    ======================================== -->
+
+    <section class="setup-shell">
+
+      <div class="setup-card ownership-transfer-card">
+
+        <div class="setup-intro">
+
+          <div class="eyebrow">
+
+            <span class="spark"></span>
+
+            ACCOUNT OWNERSHIP
+
+          </div>
+
+          <h1>
+            TAKE OWNERSHIP
+            <span>OF THE FORGE.</span>
+          </h1>
+
+          <p>
+            Review the account information below and
+            accept the transfer when you are ready.
+          </p>
+
+        </div>
+
+
+        <!-- ========================================
+             LOADING
+        ======================================== -->
+
+        <div
+          class="setup-state"
+          id="transferLoading"
+        >
+
+          <div class="setup-loader"></div>
+
+          <p>
+            Verifying your ownership invitation...
+          </p>
+
+        </div>
+
+
+        <!-- ========================================
+             ACCEPTANCE FORM
+        ======================================== -->
+
+        <form
+          class="setup-form ownership-acceptance-form"
+          id="ownershipAcceptanceForm"
+          novalidate
+          hidden
+        >
+
+          <div class="ownership-summary">
+
+            <div class="ownership-summary-row">
+
+              <span>
+                Business
+              </span>
+
+              <strong id="transferBusinessName">
+                —
+              </strong>
+
+            </div>
+
+            <div class="ownership-summary-row">
+
+              <span>
+                New owner
+              </span>
+
+              <strong id="transferOwnerName">
+                —
+              </strong>
+
+            </div>
+
+            <div class="ownership-summary-row">
+
+              <span>
+                Account email
+              </span>
+
+              <strong id="transferOwnerEmail">
+                —
+              </strong>
+
+            </div>
+
+            <div class="ownership-summary-row">
+
+              <span>
+                Invitation expires
+              </span>
+
+              <strong id="transferExpiration">
+                —
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <!-- ====================================
+               NEW ACCOUNT PASSWORD
+          ===================================== -->
+
+          <div
+            class="ownership-password-section"
+            id="ownershipPasswordSection"
+            hidden
+          >
+
+            <div class="ownership-section-heading">
+
+              <span>
+                Secure your account
+              </span>
+
+              <p>
+                Create a password containing at least
+                12 characters for future portal access.
+              </p>
+
+            </div>
+
+
+            <label class="setup-field">
+
+              <span>
+                CREATE PASSWORD
+              </span>
+
+              <div class="transfer-password-field">
+
+                <input
+                  type="password"
+                  id="ownershipPassword"
+                  autocomplete="new-password"
+                  minlength="12"
+                />
+
+                <button
+                  type="button"
+                  class="transfer-password-toggle"
+                  data-transfer-password-toggle="ownershipPassword"
+                  aria-label="Show password"
+                >
+                  Show
+                </button>
+
+              </div>
+
+            </label>
+
+
+            <label class="setup-field">
+
+              <span>
+                CONFIRM PASSWORD
+              </span>
+
+              <div class="transfer-password-field">
+
+                <input
+                  type="password"
+                  id="ownershipPasswordConfirm"
+                  autocomplete="new-password"
+                  minlength="12"
+                />
+
+                <button
+                  type="button"
+                  class="transfer-password-toggle"
+                  data-transfer-password-toggle="ownershipPasswordConfirm"
+                  aria-label="Show confirmed password"
+                >
+                  Show
+                </button>
+
+              </div>
+
+            </label>
+
+          </div>
+
+
+          <!-- ====================================
+               CONFIRMATION
+          ===================================== -->
+
+          <label class="ownership-confirmation">
+
+            <input
+              type="checkbox"
+              id="ownershipConfirmation"
+            />
+
+            <span>
+              I understand that accepting this transfer
+              will make me the account owner and give me
+              control of this business portal.
+            </span>
+
+          </label>
+
+
+          <div
+            class="setup-status"
+            id="ownershipAcceptanceStatus"
+            role="alert"
+            aria-live="polite"
+            hidden
+          ></div>
+
+
+          <button
+            type="submit"
+            class="setup-button"
+            id="ownershipAcceptanceSubmit"
+          >
+            Accept Account Ownership
+          </button>
+
+        </form>
+
+
+        <!-- ========================================
+             INVALID / EXPIRED TRANSFER
+        ======================================== -->
+
+        <div
+          class="setup-message"
+          id="transferError"
+          hidden
+        >
+
+          <div class="setup-message-icon">
+            !
+          </div>
+
+          <h2>
+            THIS TRANSFER CAN'T BE USED.
+          </h2>
+
+          <p id="transferErrorMessage">
+            The ownership invitation may have expired,
+            been cancelled, or already been accepted.
+          </p>
+
+          <a
+            href="mailto:hello@thealgorithmforge.com"
+            class="setup-link"
+          >
+            Contact The Algorithm Forge
+          </a>
+
+        </div>
+
+
+        <!-- ========================================
+             SUCCESS
+        ======================================== -->
+
+        <div
+          class="setup-message setup-success"
+          id="transferSuccess"
+          hidden
+        >
+
+          <div class="setup-message-icon">
+            ✓
+          </div>
+
+          <h2>
+            OWNERSHIP TRANSFERRED.
+          </h2>
+
+          <p id="transferSuccessMessage">
+            You are now the owner of this client portal.
+          </p>
+
+          <a
+            href="client-portal.html"
+            class="setup-link ownership-portal-link"
+          >
+            Open Client Portal
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================
+         FOOTER
+    ======================================== -->
+
+    <footer class="setup-footer">
+
+      <p>
+        © <span id="currentYear"></span>
+        The Algorithm Forge
+      </p>
+
+      <span class="footer-divider">
+        •
+      </span>
+
+      <a href="index.html">
+        thealgorithmforge.com
+      </a>
+
+    </footer>
+
+  </main>
+
+
+  <!-- ========================================
+       SUPABASE
+  ======================================== -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <!-- ========================================
+       OWNERSHIP TRANSFER
+  ======================================== -->
+
+  <script
+    src="js/ownership-transfer.js"
+  ></script>
+
+</body>
+
+</html>

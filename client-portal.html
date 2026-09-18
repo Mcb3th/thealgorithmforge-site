@@ -181,6 +181,15 @@
           Onboarding
         </button>
 
+        <button
+  class="portal-nav-item"
+  type="button"
+  data-view="settings"
+>
+  <span class="nav-icon">⚙</span>
+  Settings
+</button>
+
       </nav>
 
 
@@ -765,6 +774,411 @@
 
       </section>
 
+      <!-- ======================================
+     SETTINGS VIEW
+======================================= -->
+
+<section
+  class="portal-view"
+  id="view-settings"
+  hidden
+>
+
+  <div class="view-heading">
+
+    <div>
+
+      <div class="eyebrow">
+        YOUR ACCOUNT
+      </div>
+
+      <h2>
+        SETTINGS
+      </h2>
+
+      <p>
+        Manage your personal information,
+        sign-in email, password, and account
+        ownership.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="settings-grid">
+
+    <article class="portal-card settings-card">
+
+      <span class="card-kicker">
+        PROFILE
+      </span>
+
+      <h3>
+        Personal Information
+      </h3>
+
+      <p>
+        Update the name shown throughout your
+        client portal.
+      </p>
+
+      <form
+        class="settings-form"
+        id="profileSettingsForm"
+        novalidate
+      >
+
+        <label class="settings-field">
+
+          <span>
+            Full name
+          </span>
+
+          <input
+            type="text"
+            id="settingsFullName"
+            name="full_name"
+            autocomplete="name"
+            required
+          />
+
+        </label>
+
+        <button
+          class="btn"
+          id="profileSettingsSubmit"
+          type="submit"
+        >
+          Save Name
+        </button>
+
+        <p
+          class="settings-status"
+          id="profileSettingsStatus"
+          role="status"
+          aria-live="polite"
+          hidden
+        ></p>
+
+      </form>
+
+    </article>
+
+
+    <article class="portal-card settings-card">
+
+      <span class="card-kicker">
+        SIGN-IN
+      </span>
+
+      <h3>
+        Email Address
+      </h3>
+
+      <p>
+        Change the email address used to sign in
+        and receive account messages.
+      </p>
+
+      <form
+        class="settings-form"
+        id="emailSettingsForm"
+        novalidate
+      >
+
+        <label class="settings-field">
+
+          <span>
+            Current email
+          </span>
+
+          <input
+            type="email"
+            id="settingsCurrentEmail"
+            readonly
+          />
+
+        </label>
+
+        <label class="settings-field">
+
+          <span>
+            New email
+          </span>
+
+          <input
+            type="email"
+            id="settingsNewEmail"
+            name="new_email"
+            autocomplete="email"
+            required
+          />
+
+        </label>
+
+        <button
+          class="btn"
+          id="emailSettingsSubmit"
+          type="submit"
+        >
+          Change Email
+        </button>
+
+        <p
+          class="settings-status"
+          id="emailSettingsStatus"
+          role="status"
+          aria-live="polite"
+          hidden
+        ></p>
+
+      </form>
+
+    </article>
+
+
+    <article class="portal-card settings-card">
+
+      <span class="card-kicker">
+        SECURITY
+      </span>
+
+      <h3>
+        Password
+      </h3>
+
+      <p>
+        Choose a strong password that you do not
+        use for another account.
+      </p>
+
+      <form
+        class="settings-form"
+        id="passwordSettingsForm"
+        novalidate
+      >
+
+        <label class="settings-field">
+
+          <span>
+            Current password
+          </span>
+
+        <div class="password-input-wrap">
+
+  <input
+    type="password"
+    id="settingsCurrentPassword"
+    autocomplete="current-password"
+    required
+  />
+
+  <button
+    type="button"
+    class="password-visibility-toggle"
+    data-password-toggle="settingsCurrentPassword"
+    aria-label="Show current password"
+    aria-pressed="false"
+  >
+
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+      />
+
+      <circle
+        cx="12"
+        cy="12"
+        r="3"
+      />
+
+      <path
+        class="password-eye-slash"
+        d="M4 4 20 20"
+      />
+    </svg>
+
+  </button>
+
+</div>
+
+        </label>
+
+        <label class="settings-field">
+
+          <span>
+            New password
+          </span>
+
+         <div class="password-input-wrap">
+
+  <input
+    type="password"
+    id="settingsNewPassword"
+    minlength="12"
+    autocomplete="new-password"
+    required
+  />
+
+  <button
+    type="button"
+    class="password-visibility-toggle"
+    data-password-toggle="settingsNewPassword"
+    aria-label="Show new password"
+    aria-pressed="false"
+  >
+
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+      />
+
+      <circle
+        cx="12"
+        cy="12"
+        r="3"
+      />
+
+      <path
+        class="password-eye-slash"
+        d="M4 4 20 20"
+      />
+    </svg>
+
+  </button>
+
+</div>
+
+        </label>
+
+        <label class="settings-field">
+
+          <span>
+            Confirm new password
+          </span>
+
+          <div class="password-input-wrap">
+
+  <input
+    type="password"
+    id="settingsConfirmPassword"
+    minlength="12"
+    autocomplete="new-password"
+    required
+  />
+
+  <button
+    type="button"
+    class="password-visibility-toggle"
+    data-password-toggle="settingsConfirmPassword"
+    aria-label="Show confirmed password"
+    aria-pressed="false"
+  >
+
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+      />
+
+      <circle
+        cx="12"
+        cy="12"
+        r="3"
+      />
+
+      <path
+        class="password-eye-slash"
+        d="M4 4 20 20"
+      />
+    </svg>
+
+  </button>
+
+</div>
+
+        </label>
+
+        <button
+          class="btn"
+          id="passwordSettingsSubmit"
+          type="submit"
+        >
+          Change Password
+        </button>
+
+        <p
+          class="settings-status"
+          id="passwordSettingsStatus"
+          role="status"
+          aria-live="polite"
+          hidden
+        ></p>
+
+      </form>
+
+    </article>
+
+
+    <article class="portal-card settings-card">
+
+      <span class="card-kicker">
+        BUSINESS ACCESS
+      </span>
+
+      <h3>
+        Account Ownership
+      </h3>
+
+      <p>
+        The account owner controls primary access
+        to this business portal.
+      </p>
+
+      <div class="settings-owner-summary">
+
+        <span>
+          Your current role
+        </span>
+
+        <strong id="settingsAccountRole">
+          Loading...
+        </strong>
+
+      </div>
+
+      <button
+        class="btn btn-secondary"
+        id="ownershipTransferButton"
+        type="button"
+      >
+        Transfer Ownership
+      </button>
+
+      <p
+        class="settings-help"
+        id="ownershipTransferHelp"
+      >
+        Ownership can only be transferred to a
+        verified replacement account.
+      </p>
+
+    </article>
+
+  </div>
+
+</section>
+
 
     </main>
 
@@ -1052,6 +1466,212 @@
 
 </div>
 
+<!-- =====================================================
+     ACCOUNT OWNERSHIP TRANSFER MODAL
+====================================================== -->
+
+<div
+  class="revision-modal"
+  id="ownershipTransferModal"
+  hidden
+>
+
+  <div
+    class="revision-modal-backdrop"
+    data-close-ownership-transfer-modal
+  ></div>
+
+  <div
+    class="revision-modal-dialog ownership-transfer-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ownershipTransferTitle"
+  >
+
+    <div class="revision-modal-eyebrow">
+      BUSINESS ACCESS
+    </div>
+
+    <h2 id="ownershipTransferTitle">
+      TRANSFER ACCOUNT OWNERSHIP
+    </h2>
+
+    <p class="revision-modal-copy">
+      The new owner must verify their email and accept
+      this transfer. You will remain the account owner
+      until they accept.
+    </p>
+
+    <form
+  id="ownershipTransferForm"
+  novalidate
+>
+
+      <label class="ownership-transfer-field">
+
+        <span>
+          New owner's full name
+        </span>
+
+        <input
+          type="text"
+          id="ownershipTransferName"
+          autocomplete="off"
+          required
+        />
+
+      </label>
+
+      <label class="ownership-transfer-field">
+
+        <span>
+          New owner's email
+        </span>
+
+        <input
+          type="email"
+          id="ownershipTransferEmail"
+          autocomplete="off"
+          required
+        />
+
+      </label>
+
+      <fieldset class="ownership-transfer-options">
+
+        <legend>
+          After the transfer is accepted
+        </legend>
+
+        <label class="ownership-transfer-option">
+
+          <input
+            type="radio"
+            name="previous_owner_access"
+            value="member"
+            checked
+          />
+
+          <span>
+
+            <strong>
+              Keep my portal access
+            </strong>
+
+            <small>
+              You will remain connected as a regular
+              account member.
+            </small>
+
+          </span>
+
+        </label>
+
+        <label class="ownership-transfer-option">
+
+          <input
+            type="radio"
+            name="previous_owner_access"
+            value="remove"
+          />
+
+          <span>
+
+            <strong>
+              Remove my portal access
+            </strong>
+
+            <small>
+              You will be signed out and will no longer
+              have access after the new owner accepts.
+            </small>
+
+          </span>
+
+        </label>
+
+      </fieldset>
+
+      <label class="ownership-transfer-field">
+
+        <span>
+          Confirm your current password
+        </span>
+
+        <div class="password-input-wrap">
+
+          <input
+            type="password"
+            id="ownershipTransferPassword"
+            autocomplete="current-password"
+            required
+          />
+
+          <button
+            type="button"
+            class="password-visibility-toggle"
+            data-password-toggle="ownershipTransferPassword"
+            aria-label="Show current password"
+            aria-pressed="false"
+          >
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+              />
+
+              <circle
+                cx="12"
+                cy="12"
+                r="3"
+              />
+
+              <path
+                class="password-eye-slash"
+                d="M4 4 20 20"
+              />
+            </svg>
+
+          </button>
+
+        </div>
+
+      </label>
+
+      <p
+        class="settings-status"
+        id="ownershipTransferStatus"
+        hidden
+      ></p>
+
+      <div class="revision-modal-actions">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          id="ownershipTransferCancel"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="btn"
+          id="ownershipTransferSubmit"
+        >
+          Send Transfer Invitation
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
 
 <!-- =====================================================
      CLIENT ACTION MODAL
