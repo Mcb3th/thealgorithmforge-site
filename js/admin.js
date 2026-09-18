@@ -105,6 +105,54 @@ const adminUserEmail =
 const adminPageTitle =
   document.getElementById("adminPageTitle");
 
+const adminNotificationsRoot =
+
+  document.getElementById(
+    "adminNotifications"
+  );
+
+
+const adminNotificationButton =
+
+  document.getElementById(
+    "adminNotificationButton"
+  );
+
+
+const adminNotificationBadge =
+
+  document.getElementById(
+    "adminNotificationBadge"
+  );
+
+
+const adminNotificationPanel =
+
+  document.getElementById(
+    "adminNotificationPanel"
+  );
+
+
+const adminNotificationMarkAll =
+
+  document.getElementById(
+    "adminNotificationMarkAll"
+  );
+
+
+const adminNotificationList =
+
+  document.getElementById(
+    "adminNotificationList"
+  );
+
+
+const adminNotificationEmpty =
+
+  document.getElementById(
+    "adminNotificationEmpty"
+  );
+
 const adminNavItems =
   document.querySelectorAll("[data-admin-view]");
 
@@ -961,6 +1009,12 @@ contentClient.value =
 
 let currentUser = null;
 
+let adminNotificationItems =
+  [];
+
+let adminNotificationSubscription =
+  null;
+
 let currentView =
   "dashboard";
 
@@ -1271,6 +1325,10 @@ function showAdmin() {
 
   adminUserEmail.textContent =
   currentUser?.email || "";
+
+  loadAdminNotifications();
+
+subscribeToAdminNotifications();
 
 
 currentView =
@@ -14896,6 +14954,696 @@ goToViewButtons.forEach(
   }
 );
 
+// =========================================================
+// ADMIN NOTIFICATIONS
+// =========================================================
+
+function formatAdminNotificationTime(
+  createdAt
+) {
+
+  const notificationDate =
+    new Date(
+      createdAt
+    );
+
+
+  if (
+    Number.isNaN(
+      notificationDate.getTime()
+    )
+  ) {
+    return "";
+  }
+
+
+  const elapsedSeconds =
+    Math.max(
+      0,
+      Math.floor(
+        (
+          Date.now() -
+          notificationDate.getTime()
+        ) /
+        1000
+      )
+    );
+
+
+  if (elapsedSeconds < 60) {
+    return "Just now";
+  }
+
+
+  const elapsedMinutes =
+    Math.floor(
+      elapsedSeconds / 60
+    );
+
+
+  if (elapsedMinutes < 60) {
+
+    return (
+      `${elapsedMinutes} minute${
+        elapsedMinutes === 1
+          ? ""
+          : "s"
+      } ago`
+    );
+
+  }
+
+
+  const elapsedHours =
+    Math.floor(
+      elapsedMinutes / 60
+    );
+
+
+  if (elapsedHours < 24) {
+
+    return (
+      `${elapsedHours} hour${
+        elapsedHours === 1
+          ? ""
+          : "s"
+      } ago`
+    );
+
+  }
+
+
+  const elapsedDays =
+    Math.floor(
+      elapsedHours / 24
+    );
+
+
+  if (elapsedDays < 7) {
+
+    return (
+      `${elapsedDays} day${
+        elapsedDays === 1
+          ? ""
+          : "s"
+      } ago`
+    );
+
+  }
+
+
+  return new Intl.DateTimeFormat(
+    undefined,
+    {
+      month: "short",
+      day: "numeric",
+      year:
+        notificationDate.getFullYear() !==
+        new Date().getFullYear()
+          ? "numeric"
+          : undefined,
+    }
+  ).format(
+    notificationDate
+  );
+
+}
+
+
+function closeAdminNotificationPanel() {
+
+  if (
+    !adminNotificationPanel ||
+    !adminNotificationButton
+  ) {
+    return;
+  }
+
+
+  adminNotificationPanel.hidden =
+    true;
+
+
+  adminNotificationButton.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+}
+
+
+function openAdminNotificationPanel() {
+
+  if (
+    !adminNotificationPanel ||
+    !adminNotificationButton
+  ) {
+    return;
+  }
+
+
+  adminNotificationPanel.hidden =
+    false;
+
+
+  adminNotificationButton.setAttribute(
+    "aria-expanded",
+    "true"
+  );
+
+}
+
+
+function renderAdminNotifications() {
+
+  if (
+    !adminNotificationList ||
+    !adminNotificationEmpty ||
+    !adminNotificationBadge ||
+    !adminNotificationMarkAll
+  ) {
+    return;
+  }
+
+
+  const unreadCount =
+    adminNotificationItems.filter(
+      (notification) =>
+        !notification.read_at
+    ).length;
+
+
+  adminNotificationBadge.hidden =
+    unreadCount === 0;
+
+
+  adminNotificationBadge.textContent =
+    unreadCount > 99
+      ? "99+"
+      : String(
+          unreadCount
+        );
+
+
+  adminNotificationMarkAll.hidden =
+    unreadCount === 0;
+
+
+  adminNotificationEmpty.hidden =
+    adminNotificationItems.length >
+    0;
+
+
+  adminNotificationList.replaceChildren();
+
+
+  adminNotificationItems.forEach(
+    (notification) => {
+
+      const notificationButton =
+        document.createElement(
+          "button"
+        );
+
+
+      notificationButton.type =
+        "button";
+
+
+      notificationButton.className =
+        "notification-item";
+
+
+      notificationButton.setAttribute(
+        "role",
+        "listitem"
+      );
+
+
+      if (!notification.read_at) {
+
+        notificationButton.classList.add(
+          "is-unread"
+        );
+
+      }
+
+
+      const title =
+        document.createElement(
+          "span"
+        );
+
+
+      title.className =
+        "notification-item-title";
+
+
+      title.textContent =
+        notification.title;
+
+
+      const message =
+        document.createElement(
+          "span"
+        );
+
+
+      message.className =
+        "notification-item-message";
+
+
+      message.textContent =
+        notification.message;
+
+
+      const time =
+        document.createElement(
+          "span"
+        );
+
+
+      time.className =
+        "notification-item-time";
+
+
+      time.textContent =
+        formatAdminNotificationTime(
+          notification.created_at
+        );
+
+
+      notificationButton.append(
+        title,
+        message,
+        time
+      );
+
+
+      notificationButton.addEventListener(
+        "click",
+        () => {
+
+          handleAdminNotificationClick(
+            notification
+          );
+
+        }
+      );
+
+
+      adminNotificationList.append(
+        notificationButton
+      );
+
+    }
+  );
+
+}
+
+
+async function loadAdminNotifications() {
+
+  const {
+    data,
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "notifications"
+      )
+      .select(`
+        id,
+        client_id,
+        notification_type,
+        title,
+        message,
+        action_url,
+        metadata,
+        read_at,
+        created_at
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: false,
+        }
+      )
+      .limit(
+        30
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Admin notifications failed:",
+      error
+    );
+
+    return;
+
+  }
+
+
+  adminNotificationItems =
+    data || [];
+
+
+  renderAdminNotifications();
+
+}
+
+
+async function markAdminNotificationRead(
+  notificationId
+) {
+
+  const notification =
+    adminNotificationItems.find(
+      (item) =>
+        item.id ===
+        notificationId
+    );
+
+
+  if (
+    !notification ||
+    notification.read_at
+  ) {
+    return true;
+  }
+
+
+  const readAt =
+    new Date()
+      .toISOString();
+
+
+  const {
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "notifications"
+      )
+      .update({
+        read_at: readAt,
+      })
+      .eq(
+        "id",
+        notificationId
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Admin notification read update failed:",
+      error
+    );
+
+    return false;
+
+  }
+
+
+  notification.read_at =
+    readAt;
+
+
+  renderAdminNotifications();
+
+  return true;
+
+}
+
+
+async function handleAdminNotificationClick(
+  notification
+) {
+
+  await markAdminNotificationRead(
+    notification.id
+  );
+
+
+  closeAdminNotificationPanel();
+
+
+  const contentItemId =
+    notification.metadata
+      ?.content_item_id;
+
+
+  if (contentItemId) {
+
+    showAdminView(
+      "content"
+    );
+
+
+    await openContentItem(
+      contentItemId
+    );
+
+    return;
+
+  }
+
+
+  if (notification.client_id) {
+
+    showAdminView(
+      "clients",
+      {
+        skipClientListLoad:
+          true,
+      }
+    );
+
+
+    await openClient(
+      notification.client_id
+    );
+
+    return;
+
+  }
+
+
+  showAdminView(
+    "dashboard"
+  );
+
+}
+
+
+async function markAllAdminNotificationsRead() {
+
+  const unreadNotifications =
+    adminNotificationItems.filter(
+      (notification) =>
+        !notification.read_at
+    );
+
+
+  if (
+    unreadNotifications.length ===
+    0
+  ) {
+    return;
+  }
+
+
+  adminNotificationMarkAll.disabled =
+    true;
+
+
+  const readAt =
+    new Date()
+      .toISOString();
+
+
+  const {
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "notifications"
+      )
+      .update({
+        read_at: readAt,
+      })
+      .is(
+        "read_at",
+        null
+      );
+
+
+  adminNotificationMarkAll.disabled =
+    false;
+
+
+  if (error) {
+
+    console.error(
+      "Mark all admin notifications failed:",
+      error
+    );
+
+    return;
+
+  }
+
+
+  unreadNotifications.forEach(
+    (notification) => {
+
+      notification.read_at =
+        readAt;
+
+    }
+  );
+
+
+  renderAdminNotifications();
+
+}
+
+
+async function subscribeToAdminNotifications() {
+
+  if (
+    !currentUser?.id
+  ) {
+    return;
+  }
+
+
+  if (
+    adminNotificationSubscription
+  ) {
+
+    await supabaseClient
+      .removeChannel(
+        adminNotificationSubscription
+      );
+
+  }
+
+
+  adminNotificationSubscription =
+    supabaseClient
+      .channel(
+        `admin-notifications-${currentUser.id}`
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter:
+            `recipient_user_id=eq.${currentUser.id}`,
+        },
+        () => {
+
+          loadAdminNotifications();
+
+        }
+      )
+      .subscribe(
+        (status) => {
+
+          console.log(
+            "Admin notification realtime status:",
+            status
+          );
+
+        }
+      );
+
+}
+
+
+if (adminNotificationButton) {
+
+  adminNotificationButton.addEventListener(
+    "click",
+    (event) => {
+
+      event.stopPropagation();
+
+
+      if (
+        adminNotificationPanel.hidden
+      ) {
+
+        openAdminNotificationPanel();
+
+      } else {
+
+        closeAdminNotificationPanel();
+
+      }
+
+    }
+  );
+
+}
+
+
+if (adminNotificationPanel) {
+
+  adminNotificationPanel.addEventListener(
+    "click",
+    (event) => {
+
+      event.stopPropagation();
+
+    }
+  );
+
+}
+
+
+if (adminNotificationMarkAll) {
+
+  adminNotificationMarkAll.addEventListener(
+    "click",
+    markAllAdminNotificationsRead
+  );
+
+}
+
+
+document.addEventListener(
+  "click",
+  () => {
+
+    closeAdminNotificationPanel();
+
+  }
+);
+
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key ===
+      "Escape"
+    ) {
+
+      closeAdminNotificationPanel();
+
+    }
+
+  }
+);
+
 
 // =========================================================
 // SHOW ADMIN VIEW
@@ -15250,6 +15998,8 @@ async function restoreSession() {
 
 
     resetAdminData();
+
+  
 
 
     showAdmin();

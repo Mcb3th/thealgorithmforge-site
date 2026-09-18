@@ -157,6 +157,68 @@ const topbarAvatar =
     "topbarAvatar"
   );
 
+  const clientNotificationsRoot =
+
+  document.getElementById(
+
+    "clientNotifications"
+
+  );
+
+
+const clientNotificationButton =
+
+  document.getElementById(
+
+    "clientNotificationButton"
+
+  );
+
+
+const clientNotificationBadge =
+
+  document.getElementById(
+
+    "clientNotificationBadge"
+
+  );
+
+
+const clientNotificationPanel =
+
+  document.getElementById(
+
+    "clientNotificationPanel"
+
+  );
+
+
+const clientNotificationMarkAll =
+
+  document.getElementById(
+
+    "clientNotificationMarkAll"
+
+  );
+
+
+const clientNotificationList =
+
+  document.getElementById(
+
+    "clientNotificationList"
+
+  );
+
+
+const clientNotificationEmpty =
+
+  document.getElementById(
+
+    "clientNotificationEmpty"
+
+  );
+
 const welcomeHeading =
   document.getElementById(
     "welcomeHeading"
@@ -447,6 +509,12 @@ let uploadInProgress =
   false;
 
 let currentContentItems = [];
+
+let clientNotificationItems =
+  [];
+
+let clientNotificationSubscription =
+  null;
 
 // =========================================================
 // ROOT VIEWS
@@ -3939,6 +4007,753 @@ function getInitials(
 
 }
 
+// =========================================================
+// CLIENT NOTIFICATIONS
+// =========================================================
+
+function formatClientNotificationTime(
+  createdAt
+) {
+
+  const notificationDate =
+    new Date(
+      createdAt
+    );
+
+
+  if (
+    Number.isNaN(
+      notificationDate.getTime()
+    )
+  ) {
+    return "";
+  }
+
+
+  const elapsedSeconds =
+    Math.max(
+      0,
+      Math.floor(
+        (
+          Date.now() -
+          notificationDate.getTime()
+        ) /
+        1000
+      )
+    );
+
+
+  if (elapsedSeconds < 60) {
+    return "Just now";
+  }
+
+
+  const elapsedMinutes =
+    Math.floor(
+      elapsedSeconds / 60
+    );
+
+
+  if (elapsedMinutes < 60) {
+
+    return (
+      `${elapsedMinutes} minute${
+        elapsedMinutes === 1
+          ? ""
+          : "s"
+      } ago`
+    );
+
+  }
+
+
+  const elapsedHours =
+    Math.floor(
+      elapsedMinutes / 60
+    );
+
+
+  if (elapsedHours < 24) {
+
+    return (
+      `${elapsedHours} hour${
+        elapsedHours === 1
+          ? ""
+          : "s"
+      } ago`
+    );
+
+  }
+
+
+  const elapsedDays =
+    Math.floor(
+      elapsedHours / 24
+    );
+
+
+  if (elapsedDays < 7) {
+
+    return (
+      `${elapsedDays} day${
+        elapsedDays === 1
+          ? ""
+          : "s"
+      } ago`
+    );
+
+  }
+
+
+  return new Intl.DateTimeFormat(
+    undefined,
+    {
+      month: "short",
+      day: "numeric",
+      year:
+        notificationDate.getFullYear() !==
+        new Date().getFullYear()
+          ? "numeric"
+          : undefined,
+    }
+  ).format(
+    notificationDate
+  );
+
+}
+
+
+function getClientNotificationView(
+  notification
+) {
+
+  const notificationType =
+    notification
+      ?.notification_type ||
+    "";
+
+
+  if (
+    notificationType.startsWith(
+      "content_"
+    )
+  ) {
+    return "content";
+  }
+
+
+  if (
+    notificationType.startsWith(
+      "ownership_"
+    )
+  ) {
+    return "settings";
+  }
+
+
+  if (
+    notificationType.includes(
+      "upload"
+    )
+  ) {
+    return "uploads";
+  }
+
+
+  if (
+    notificationType.includes(
+      "onboarding"
+    )
+  ) {
+    return "onboarding";
+  }
+
+
+  return "dashboard";
+
+}
+
+
+function closeClientNotificationPanel() {
+
+  if (
+    !clientNotificationPanel ||
+    !clientNotificationButton
+  ) {
+    return;
+  }
+
+
+  clientNotificationPanel.hidden =
+    true;
+
+
+  clientNotificationButton.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+}
+
+
+function openClientNotificationPanel() {
+
+  if (
+    !clientNotificationPanel ||
+    !clientNotificationButton
+  ) {
+    return;
+  }
+
+
+  clientNotificationPanel.hidden =
+    false;
+
+
+  clientNotificationButton.setAttribute(
+    "aria-expanded",
+    "true"
+  );
+
+}
+
+
+function renderClientNotifications() {
+
+  if (
+    !clientNotificationList ||
+    !clientNotificationEmpty ||
+    !clientNotificationBadge ||
+    !clientNotificationMarkAll
+  ) {
+    return;
+  }
+
+
+  const unreadCount =
+    clientNotificationItems.filter(
+      (notification) =>
+        !notification.read_at
+    ).length;
+
+
+  clientNotificationBadge.hidden =
+    unreadCount === 0;
+
+
+  clientNotificationBadge.textContent =
+    unreadCount > 99
+      ? "99+"
+      : String(
+          unreadCount
+        );
+
+
+  clientNotificationMarkAll.hidden =
+    unreadCount === 0;
+
+
+  clientNotificationEmpty.hidden =
+    clientNotificationItems.length >
+    0;
+
+
+  clientNotificationList.replaceChildren();
+
+
+  clientNotificationItems.forEach(
+    (notification) => {
+
+      const notificationButton =
+        document.createElement(
+          "button"
+        );
+
+
+      notificationButton.type =
+        "button";
+
+
+      notificationButton.className =
+        "notification-item";
+
+
+      notificationButton.setAttribute(
+        "role",
+        "listitem"
+      );
+
+
+      if (!notification.read_at) {
+
+        notificationButton.classList.add(
+          "is-unread"
+        );
+
+      }
+
+
+      const title =
+        document.createElement(
+          "span"
+        );
+
+
+      title.className =
+        "notification-item-title";
+
+
+      title.textContent =
+        notification.title;
+
+
+      const message =
+        document.createElement(
+          "span"
+        );
+
+
+      message.className =
+        "notification-item-message";
+
+
+      message.textContent =
+        notification.message;
+
+
+      const time =
+        document.createElement(
+          "span"
+        );
+
+
+      time.className =
+        "notification-item-time";
+
+
+      time.textContent =
+        formatClientNotificationTime(
+          notification.created_at
+        );
+
+
+      notificationButton.append(
+        title,
+        message,
+        time
+      );
+
+
+      notificationButton.addEventListener(
+        "click",
+        () => {
+
+          handleClientNotificationClick(
+            notification
+          );
+
+        }
+      );
+
+
+      clientNotificationList.append(
+        notificationButton
+      );
+
+    }
+  );
+
+}
+
+
+async function loadClientNotifications() {
+
+  const {
+    data,
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "notifications"
+      )
+      .select(`
+        id,
+        notification_type,
+        title,
+        message,
+        action_url,
+        metadata,
+        read_at,
+        created_at
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: false,
+        }
+      )
+      .limit(
+        30
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Client notifications failed:",
+      error
+    );
+
+    return;
+
+  }
+
+
+  clientNotificationItems =
+    data || [];
+
+
+  renderClientNotifications();
+
+}
+
+
+async function markClientNotificationRead(
+  notificationId
+) {
+
+  const notification =
+    clientNotificationItems.find(
+      (item) =>
+        item.id ===
+        notificationId
+    );
+
+
+  if (
+    !notification ||
+    notification.read_at
+  ) {
+    return true;
+  }
+
+
+  const readAt =
+    new Date()
+      .toISOString();
+
+
+  const {
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "notifications"
+      )
+      .update({
+        read_at: readAt,
+      })
+      .eq(
+        "id",
+        notificationId
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Notification read update failed:",
+      error
+    );
+
+    return false;
+
+  }
+
+
+  notification.read_at =
+    readAt;
+
+
+  renderClientNotifications();
+
+  return true;
+
+}
+
+
+async function handleClientNotificationClick(
+  notification
+) {
+
+  await markClientNotificationRead(
+    notification.id
+  );
+
+
+  const destinationView =
+    getClientNotificationView(
+      notification
+    );
+
+
+  closeClientNotificationPanel();
+
+  if (
+  destinationView ===
+  "content"
+) {
+
+  await loadClientContent();
+
+}
+
+
+if (
+  destinationView ===
+  "uploads"
+) {
+
+  await loadClientUploads();
+
+}
+
+
+if (
+  destinationView ===
+  "onboarding"
+) {
+
+  await initializeOnboardingState();
+
+}
+
+
+  if (
+    destinationView ===
+      "onboarding" &&
+    !currentOnboardingSubmission
+  ) {
+
+    window.location.href =
+      "onboarding.html";
+
+    return;
+
+  }
+
+
+  showPortalView(
+    destinationView
+  );
+
+}
+
+
+async function markAllClientNotificationsRead() {
+
+  const unreadNotifications =
+    clientNotificationItems.filter(
+      (notification) =>
+        !notification.read_at
+    );
+
+
+  if (
+    unreadNotifications.length ===
+    0
+  ) {
+    return;
+  }
+
+
+  clientNotificationMarkAll.disabled =
+    true;
+
+
+  const readAt =
+    new Date()
+      .toISOString();
+
+
+  const {
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "notifications"
+      )
+      .update({
+        read_at: readAt,
+      })
+      .is(
+        "read_at",
+        null
+      );
+
+
+  clientNotificationMarkAll.disabled =
+    false;
+
+
+  if (error) {
+
+    console.error(
+      "Mark all notifications failed:",
+      error
+    );
+
+    return;
+
+  }
+
+
+  unreadNotifications.forEach(
+    (notification) => {
+
+      notification.read_at =
+        readAt;
+
+    }
+  );
+
+
+  renderClientNotifications();
+
+}
+
+
+async function subscribeToClientNotifications() {
+
+  if (
+    !currentUser?.id
+  ) {
+    return;
+  }
+
+
+  if (
+    clientNotificationSubscription
+  ) {
+
+    await supabaseClient
+      .removeChannel(
+        clientNotificationSubscription
+      );
+
+  }
+
+
+  clientNotificationSubscription =
+    supabaseClient
+      .channel(
+        `client-notifications-${currentUser.id}`
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter:
+            `recipient_user_id=eq.${currentUser.id}`,
+        },
+        () => {
+
+          loadClientNotifications();
+
+        }
+            )
+      .subscribe(
+        (status) => {
+
+          console.log(
+            "Client notification realtime status:",
+            status
+          );
+
+        }
+      );
+
+}
+
+
+if (clientNotificationButton) {
+
+  clientNotificationButton.addEventListener(
+    "click",
+    (event) => {
+
+      event.stopPropagation();
+
+
+      if (
+        clientNotificationPanel.hidden
+      ) {
+
+        openClientNotificationPanel();
+
+      } else {
+
+        closeClientNotificationPanel();
+
+      }
+
+    }
+  );
+
+}
+
+
+if (clientNotificationPanel) {
+
+  clientNotificationPanel.addEventListener(
+    "click",
+    (event) => {
+
+      event.stopPropagation();
+
+    }
+  );
+
+}
+
+
+if (clientNotificationMarkAll) {
+
+  clientNotificationMarkAll.addEventListener(
+    "click",
+    markAllClientNotificationsRead
+  );
+
+}
+
+
+document.addEventListener(
+  "click",
+  () => {
+
+    closeClientNotificationPanel();
+
+  }
+);
+
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key ===
+      "Escape"
+    ) {
+
+      closeClientNotificationPanel();
+
+    }
+
+  }
+);
 
 // =========================================================
 // NAVIGATION
@@ -6625,6 +7440,10 @@ async function initializePortal() {
     await loadClientMembership();
 
     renderClientIdentity();
+
+    await loadClientNotifications();
+
+await subscribeToClientNotifications();
 
     await loadClientContent();
 

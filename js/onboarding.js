@@ -74,6 +74,9 @@ async function initializeClientOnboarding() {
   const user =
     session.user;
 
+    currentUser =
+  user;
+
 
   // Confirm this user belongs to an active client.
  const {
@@ -386,10 +389,13 @@ function setCheckboxValues(
   // PRIMARY CONTACT
   // =======================================================
 
-  setFieldValue(
-    "contact_name",
+setFieldValue(
+  "contact_name",
+  currentUser
+    ?.user_metadata
+    ?.full_name ||
     primaryContact.name
-  );
+);
 
   setFieldValue(
     "contact_role",
@@ -951,6 +957,7 @@ let editingFromReview = false;
 
 let currentClientId = null;
 let currentOnboardingSubmission = null;
+let currentUser = null;
 
 const onboardingUrlParams =
   new URLSearchParams(

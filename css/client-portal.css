@@ -3704,3 +3704,309 @@ document.addEventListener(
 
   }
 );
+
+/* =========================================================
+   PORTAL NOTIFICATIONS
+========================================================= */
+
+.portal-notifications {
+  position: relative;
+}
+
+
+.notification-button {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  padding: 0;
+
+  color: var(--ink);
+  background: #ffffff;
+
+  border: 1px solid
+    rgba(18, 25, 38, 0.14);
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+
+.notification-button:hover {
+  color: var(--ember);
+  border-color:
+    rgba(242, 91, 42, 0.45);
+  background:
+    rgba(242, 91, 42, 0.06);
+  transform: translateY(-1px);
+}
+
+
+.notification-button:focus-visible {
+  outline: 3px solid
+    rgba(242, 91, 42, 0.22);
+  outline-offset: 3px;
+}
+
+
+.notification-button svg {
+  width: 20px;
+  height: 20px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+
+  min-width: 20px;
+  height: 20px;
+
+  padding: 0 5px;
+
+  color: #ffffff;
+  background: var(--ember);
+
+  border: 2px solid var(--ivory);
+  border-radius: 999px;
+
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 16px;
+  text-align: center;
+}
+
+
+.notification-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 120;
+
+  width: min(
+    390px,
+    calc(100vw - 40px)
+  );
+  max-height: min(560px, 75vh);
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid
+    rgba(18, 25, 38, 0.13);
+  border-radius: 18px;
+
+  box-shadow:
+    0 22px 55px
+    rgba(18, 25, 38, 0.18);
+}
+
+
+.notification-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+
+  padding: 20px;
+
+  border-bottom: 1px solid
+    rgba(18, 25, 38, 0.1);
+}
+
+
+.notification-panel-header h2 {
+  margin: 3px 0 0;
+
+  font-size: 1.35rem;
+}
+
+
+.notification-mark-all {
+  flex: 0 0 auto;
+
+  padding: 0;
+
+  color: var(--ember);
+  background: transparent;
+
+  border: 0;
+
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+
+.notification-mark-all:hover {
+  text-decoration: underline;
+}
+
+
+.notification-list {
+  max-height: 430px;
+  overflow-y: auto;
+}
+
+
+.notification-item {
+  position: relative;
+
+  display: block;
+
+  width: 100%;
+  padding: 16px 20px;
+
+  color: var(--ink);
+  background: #ffffff;
+
+  border: 0;
+  border-bottom: 1px solid
+    rgba(18, 25, 38, 0.08);
+
+  text-align: left;
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+
+.notification-item:hover {
+  background:
+    rgba(242, 91, 42, 0.055);
+}
+
+
+.notification-item.is-unread {
+  padding-left: 34px;
+
+  background:
+    rgba(242, 91, 42, 0.075);
+}
+
+
+.notification-item.is-unread::before {
+  content: "";
+
+  position: absolute;
+  top: 22px;
+  left: 18px;
+
+  width: 8px;
+  height: 8px;
+
+  background: var(--ember);
+  border-radius: 50%;
+}
+
+
+.notification-item-title {
+  display: block;
+
+  margin-bottom: 5px;
+
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+
+.notification-item-message {
+  display: block;
+
+  color: var(--muted);
+
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+
+.notification-item-time {
+  display: block;
+
+  margin-top: 8px;
+
+  color:
+    rgba(82, 92, 108, 0.82);
+
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+
+.notification-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  padding: 38px 24px;
+
+  color: var(--muted);
+
+  text-align: center;
+}
+
+
+.notification-empty strong {
+  color: var(--ink);
+}
+
+
+.notification-empty span {
+  max-width: 260px;
+
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+
+@media (max-width: 700px) {
+
+  .notification-panel {
+    position: fixed;
+    top: 82px;
+    right: 14px;
+    left: 14px;
+
+    width: auto;
+    max-height:
+      calc(100vh - 100px);
+  }
+
+
+  .notification-panel-header {
+    padding: 18px;
+  }
+
+
+  .notification-list {
+    max-height:
+      calc(100vh - 215px);
+  }
+
+}
+
+#clientNotifications {
+  position: relative;
+}

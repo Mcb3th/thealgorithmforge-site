@@ -465,15 +465,127 @@
         </div>
 
 
-        <div class="topbar-status">
+       <div class="admin-topbar-actions">
 
-          <span class="status-dot"></span>
+  <!-- ==================================
+       ADMIN NOTIFICATIONS
+  =================================== -->
 
-          <span>
-            System Online
-          </span>
+  <div
+    class="admin-notifications"
+    id="adminNotifications"
+  >
+
+    <button
+      type="button"
+      class="notification-button"
+      id="adminNotificationButton"
+      aria-label="Open notifications"
+      aria-expanded="false"
+      aria-controls="adminNotificationPanel"
+    >
+
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"
+        />
+
+        <path
+          d="M10 21h4"
+        />
+      </svg>
+
+      <span
+        class="notification-badge"
+        id="adminNotificationBadge"
+        hidden
+      >
+        0
+      </span>
+
+    </button>
+
+
+    <section
+      class="notification-panel"
+      id="adminNotificationPanel"
+      aria-label="Admin notifications"
+      hidden
+    >
+
+      <div class="notification-panel-header">
+
+        <div>
+
+          <p class="eyebrow">
+            CLIENT ACTIVITY
+          </p>
+
+          <h2>
+            Notifications
+          </h2>
 
         </div>
+
+
+        <button
+          type="button"
+          class="notification-mark-all"
+          id="adminNotificationMarkAll"
+          hidden
+        >
+          Mark all as read
+        </button>
+
+      </div>
+
+
+      <div
+        class="notification-list"
+        id="adminNotificationList"
+        role="list"
+      ></div>
+
+
+      <div
+        class="notification-empty"
+        id="adminNotificationEmpty"
+      >
+
+        <strong>
+          You're all caught up.
+        </strong>
+
+        <span>
+          New client activity will
+          appear here.
+        </span>
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <!-- ==================================
+       SYSTEM STATUS
+  =================================== -->
+
+  <div class="topbar-status">
+
+    <span class="status-dot"></span>
+
+    <span>
+      System Online
+    </span>
+
+  </div>
+
+</div>
 
       </header>
 
