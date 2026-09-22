@@ -2316,6 +2316,91 @@ a {
 }
 
 /* =========================================================
+   PORTAL UPDATE ANNOUNCEMENT
+========================================================= */
+
+.portal-announcement-dialog {
+  width:
+    min(640px, 100%);
+
+  max-height:
+    calc(100vh - 48px);
+
+  overflow-y:
+    auto;
+}
+
+
+.portal-announcement-list {
+  display:
+    grid;
+
+  gap:
+    12px;
+
+  margin:
+    0;
+
+  padding:
+    0;
+
+  list-style:
+    none;
+}
+
+
+.portal-announcement-list:empty {
+  display:
+    none;
+}
+
+
+.portal-announcement-list li {
+  position:
+    relative;
+
+  padding-left:
+    26px;
+
+  color:
+    var(--charcoal);
+
+  font-size:
+    0.9rem;
+
+  line-height:
+    1.55;
+}
+
+
+.portal-announcement-list li::before {
+  content:
+    "✓";
+
+  position:
+    absolute;
+
+  top:
+    0;
+
+  left:
+    0;
+
+  color:
+    var(--ember);
+
+  font-weight:
+    900;
+}
+
+
+.portal-announcement-dialog
+.settings-status {
+  margin-top:
+    20px;
+}
+
+/* =========================================================
    CLIENT CONTENT APPROVAL RESULTS
    ========================================================= */
 

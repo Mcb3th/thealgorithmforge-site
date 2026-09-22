@@ -351,6 +351,40 @@ const notificationSettingsStatus =
     "notificationSettingsStatus"
   );
 
+  const portalAnnouncementModal =
+  document.getElementById(
+    "portalAnnouncementModal"
+  );
+
+const portalAnnouncementVersion =
+  document.getElementById(
+    "portalAnnouncementVersion"
+  );
+
+const portalAnnouncementTitle =
+  document.getElementById(
+    "portalAnnouncementTitle"
+  );
+
+const portalAnnouncementSummary =
+  document.getElementById(
+    "portalAnnouncementSummary"
+  );
+
+const portalAnnouncementDetails =
+  document.getElementById(
+    "portalAnnouncementDetails"
+  );
+
+const portalAnnouncementStatus =
+  document.getElementById(
+    "portalAnnouncementStatus"
+  );
+
+const portalAnnouncementDismiss =
+  document.getElementById(
+    "portalAnnouncementDismiss"
+  );
 
 // =========================================================
 // ONBOARDING ELEMENTS
@@ -553,6 +587,9 @@ let clientNotificationItems =
   [];
 
 let clientNotificationSubscription =
+  null;
+
+  let currentPortalAnnouncement =
   null;
 
 // =========================================================
@@ -7424,6 +7461,350 @@ supabaseClient
     }
   );
 
+  // =========================================================
+// PORTAL UPDATE ANNOUNCEMENTS
+// =========================================================
+
+function renderPortalAnnouncementDetails(
+  details
+) {
+
+  if (!portalAnnouncementDetails) {
+    return;
+  }
+
+
+  portalAnnouncementDetails
+    .replaceChildren();
+
+
+  const announcementDetails =
+    Array.isArray(details)
+      ? details
+      : [];
+
+
+  announcementDetails.forEach(
+    (detail) => {
+
+      const detailText =
+        typeof detail ===
+          "string"
+          ? detail.trim()
+          : "";
+
+
+      if (!detailText) {
+        return;
+      }
+
+
+      const listItem =
+        document.createElement(
+          "li"
+        );
+
+
+      listItem.textContent =
+        detailText;
+
+
+      portalAnnouncementDetails
+        .appendChild(
+          listItem
+        );
+
+    }
+  );
+
+}
+
+
+function openPortalAnnouncement(
+  announcement
+) {
+
+  if (
+    !portalAnnouncementModal ||
+    !announcement
+  ) {
+    return;
+  }
+
+
+  currentPortalAnnouncement =
+    announcement;
+
+
+  if (portalAnnouncementVersion) {
+
+    portalAnnouncementVersion
+      .textContent =
+        announcement.version
+          ? `PORTAL UPDATE · ${announcement.version}`
+          : "PORTAL UPDATE";
+
+  }
+
+
+  if (portalAnnouncementTitle) {
+
+    portalAnnouncementTitle
+      .textContent =
+        announcement.title ||
+        "What’s New";
+
+  }
+
+
+  if (portalAnnouncementSummary) {
+
+    portalAnnouncementSummary
+      .textContent =
+        announcement.summary ||
+        "";
+
+  }
+
+
+  renderPortalAnnouncementDetails(
+    announcement.details
+  );
+
+
+  clearSettingsStatus(
+    portalAnnouncementStatus
+  );
+
+
+  portalAnnouncementModal.hidden =
+    false;
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  requestAnimationFrame(
+    () => {
+
+      portalAnnouncementDismiss
+        ?.focus();
+
+    }
+  );
+
+}
+
+
+function closePortalAnnouncement() {
+
+  if (!portalAnnouncementModal) {
+    return;
+  }
+
+
+  portalAnnouncementModal.hidden =
+    true;
+
+  document.body.style.overflow =
+    "";
+
+  currentPortalAnnouncement =
+    null;
+
+}
+
+
+async function loadPortalAnnouncement() {
+
+  if (
+    !currentUser?.id ||
+    !portalAnnouncementModal
+  ) {
+    return;
+  }
+
+
+  const {
+    data: announcement,
+    error: announcementError,
+  } =
+    await supabaseClient
+      .from(
+        "portal_announcements"
+      )
+      .select(`
+        id,
+        version,
+        title,
+        summary,
+        details,
+        published_at
+      `)
+      .eq(
+        "is_active",
+        true
+      )
+      .lte(
+        "published_at",
+        new Date()
+          .toISOString()
+      )
+      .order(
+        "published_at",
+        {
+          ascending: false,
+        }
+      )
+      .limit(1)
+      .maybeSingle();
+
+
+  if (announcementError) {
+
+    console.error(
+      "Portal announcement load failed:",
+      announcementError
+    );
+
+    return;
+
+  }
+
+
+  if (!announcement) {
+    return;
+  }
+
+
+  const {
+    data: dismissal,
+    error: dismissalError,
+  } =
+    await supabaseClient
+      .from(
+        "portal_announcement_dismissals"
+      )
+      .select(
+        "announcement_id"
+      )
+      .eq(
+        "announcement_id",
+        announcement.id
+      )
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .maybeSingle();
+
+
+  if (dismissalError) {
+
+    console.error(
+      "Portal announcement dismissal check failed:",
+      dismissalError
+    );
+
+    return;
+
+  }
+
+
+  if (dismissal) {
+    return;
+  }
+
+
+  openPortalAnnouncement(
+    announcement
+  );
+
+}
+
+
+portalAnnouncementDismiss
+  ?.addEventListener(
+    "click",
+    async () => {
+
+      if (
+        !currentPortalAnnouncement?.id ||
+        !currentUser?.id
+      ) {
+        return;
+      }
+
+
+      portalAnnouncementDismiss.disabled =
+        true;
+
+      portalAnnouncementDismiss.textContent =
+        "Saving...";
+
+      clearSettingsStatus(
+        portalAnnouncementStatus
+      );
+
+
+      try {
+
+        const {
+          error,
+        } =
+          await supabaseClient
+            .from(
+              "portal_announcement_dismissals"
+            )
+            .insert({
+              announcement_id:
+                currentPortalAnnouncement.id,
+
+              user_id:
+                currentUser.id,
+            });
+
+
+        if (
+          error &&
+          error.code !==
+            "23505"
+        ) {
+          throw error;
+        }
+
+
+        closePortalAnnouncement();
+
+
+      } catch (error) {
+
+        console.error(
+          "Portal announcement dismissal failed:",
+          error
+        );
+
+
+        showSettingsStatus(
+          portalAnnouncementStatus,
+          "We couldn't save your acknowledgement. Please try again.",
+          "error"
+        );
+
+
+      } finally {
+
+        portalAnnouncementDismiss.disabled =
+          false;
+
+        portalAnnouncementDismiss.textContent =
+          "Got It";
+
+      }
+
+    }
+  );
+
 // =========================================================
 // RECENT ACTIVITY
 // =========================================================
@@ -7816,6 +8197,7 @@ showPortalView(
       currentView
     );
 
+        await loadPortalAnnouncement();
 
   } catch (error) {
 

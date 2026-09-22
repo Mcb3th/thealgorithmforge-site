@@ -1954,6 +1954,71 @@
 </div>
 
 <!-- =====================================================
+     PORTAL UPDATE ANNOUNCEMENT
+====================================================== -->
+
+<div
+  class="revision-modal"
+  id="portalAnnouncementModal"
+  hidden
+>
+
+  <div class="revision-modal-backdrop"></div>
+
+  <div
+    class="revision-modal-dialog portal-announcement-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="portalAnnouncementTitle"
+    aria-describedby="portalAnnouncementSummary"
+  >
+
+    <div
+      class="revision-modal-eyebrow"
+      id="portalAnnouncementVersion"
+    >
+      PORTAL UPDATE
+    </div>
+
+    <h2 id="portalAnnouncementTitle">
+      WHAT’S NEW
+    </h2>
+
+    <p
+      class="revision-modal-copy"
+      id="portalAnnouncementSummary"
+    ></p>
+
+    <ul
+      class="portal-announcement-list"
+      id="portalAnnouncementDetails"
+    ></ul>
+
+    <p
+      class="settings-status"
+      id="portalAnnouncementStatus"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></p>
+
+    <div class="revision-modal-actions">
+
+      <button
+        type="button"
+        class="btn"
+        id="portalAnnouncementDismiss"
+      >
+        Got It
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =====================================================
      CLIENT ACTION MODAL
 ====================================================== -->
 
