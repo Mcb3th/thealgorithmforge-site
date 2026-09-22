@@ -1046,6 +1046,172 @@
 
     </article>
 
+    <article
+  class="portal-card settings-card settings-notification-card"
+>
+
+  <span class="card-kicker">
+    NOTIFICATIONS
+  </span>
+
+  <h3>
+    Email Notifications
+  </h3>
+
+  <p>
+    Choose which portal updates are also sent
+    to your email address.
+  </p>
+
+  <form
+    class="settings-form"
+    id="notificationSettingsForm"
+  >
+
+    <div class="settings-notification-master">
+
+      <div class="settings-notification-copy">
+
+        <strong>
+          Email notifications
+        </strong>
+
+        <span>
+          Receive selected client portal updates
+          by email.
+        </span>
+
+      </div>
+
+      <label class="notification-switch">
+
+        <input
+          type="checkbox"
+          id="emailNotificationsEnabled"
+          role="switch"
+          aria-label="Enable email notifications"
+          checked
+        />
+
+        <span
+          class="notification-switch-track"
+          aria-hidden="true"
+        ></span>
+
+      </label>
+
+    </div>
+
+
+    <fieldset
+      class="settings-notification-options"
+      id="notificationEmailOptions"
+    >
+
+      <legend>
+        Email me when
+      </legend>
+
+
+      <label class="settings-notification-option">
+
+        <input
+          type="checkbox"
+          id="emailContentAwaitingApproval"
+          checked
+        />
+
+        <span class="settings-notification-option-copy">
+
+          <strong>
+            Content is ready for approval
+          </strong>
+
+          <span>
+            A new content item needs your review.
+          </span>
+
+        </span>
+
+      </label>
+
+
+      <label class="settings-notification-option">
+
+        <input
+          type="checkbox"
+          id="emailContentScheduled"
+          checked
+        />
+
+        <span class="settings-notification-option-copy">
+
+          <strong>
+            Content is scheduled
+          </strong>
+
+          <span>
+            An approved content item receives a
+            publishing date.
+          </span>
+
+        </span>
+
+      </label>
+
+
+      <label class="settings-notification-option">
+
+        <input
+          type="checkbox"
+          id="emailContentPosted"
+          checked
+        />
+
+        <span class="settings-notification-option-copy">
+
+          <strong>
+            Content is published
+          </strong>
+
+          <span>
+            A content item has been marked as
+            posted.
+          </span>
+
+        </span>
+
+      </label>
+
+    </fieldset>
+
+
+    <p class="settings-help">
+      In-app portal notifications and essential
+      account-security messages remain enabled.
+    </p>
+
+
+    <button
+      class="btn"
+      id="notificationSettingsSubmit"
+      type="submit"
+    >
+      Save Notifications
+    </button>
+
+
+    <p
+      class="settings-status"
+      id="notificationSettingsStatus"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></p>
+
+  </form>
+
+</article>
 
     <article class="portal-card settings-card">
 

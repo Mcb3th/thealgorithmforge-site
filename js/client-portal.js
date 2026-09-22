@@ -311,6 +311,45 @@ const settingsAccountRole =
     "settingsAccountRole"
   );
 
+  const notificationSettingsForm =
+  document.getElementById(
+    "notificationSettingsForm"
+  );
+
+const emailNotificationsEnabled =
+  document.getElementById(
+    "emailNotificationsEnabled"
+  );
+
+const notificationEmailOptions =
+  document.getElementById(
+    "notificationEmailOptions"
+  );
+
+const emailContentAwaitingApproval =
+  document.getElementById(
+    "emailContentAwaitingApproval"
+  );
+
+const emailContentScheduled =
+  document.getElementById(
+    "emailContentScheduled"
+  );
+
+const emailContentPosted =
+  document.getElementById(
+    "emailContentPosted"
+  );
+
+const notificationSettingsSubmit =
+  document.getElementById(
+    "notificationSettingsSubmit"
+  );
+
+const notificationSettingsStatus =
+  document.getElementById(
+    "notificationSettingsStatus"
+  );
 
 
 // =========================================================
@@ -2883,6 +2922,292 @@ function clearSettingsStatus(
     true;
 
 }
+
+// =========================================================
+// NOTIFICATION PREFERENCES
+// =========================================================
+
+function syncNotificationPreferenceControls() {
+
+  if (
+    !emailNotificationsEnabled ||
+    !notificationEmailOptions
+  ) {
+    return;
+  }
+
+
+  notificationEmailOptions.disabled =
+    !emailNotificationsEnabled.checked;
+
+}
+
+
+function applyNotificationPreferences(
+  preferences
+) {
+
+  const savedPreferences =
+    preferences ||
+    {};
+
+
+  if (emailNotificationsEnabled) {
+
+    emailNotificationsEnabled.checked =
+      savedPreferences.email_enabled !==
+      false;
+
+  }
+
+
+  if (emailContentAwaitingApproval) {
+
+    emailContentAwaitingApproval.checked =
+      savedPreferences
+        .email_content_awaiting_approval !==
+      false;
+
+  }
+
+
+  if (emailContentScheduled) {
+
+    emailContentScheduled.checked =
+      savedPreferences
+        .email_content_scheduled !==
+      false;
+
+  }
+
+
+  if (emailContentPosted) {
+
+    emailContentPosted.checked =
+      savedPreferences
+        .email_content_posted !==
+      false;
+
+  }
+
+
+  syncNotificationPreferenceControls();
+
+}
+
+
+async function loadNotificationPreferences() {
+
+  if (!currentUser?.id) {
+    return;
+  }
+
+
+  const {
+    data,
+    error,
+  } =
+    await supabaseClient
+      .from(
+        "notification_preferences"
+      )
+      .select(`
+        email_enabled,
+        email_content_awaiting_approval,
+        email_content_scheduled,
+        email_content_posted
+      `)
+      .eq(
+        "user_id",
+        currentUser.id
+      )
+      .maybeSingle();
+
+
+  if (error) {
+
+    console.error(
+      "Notification preference load failed:",
+      error
+    );
+
+    applyNotificationPreferences(
+      null
+    );
+
+    showSettingsStatus(
+      notificationSettingsStatus,
+      "We couldn't load your saved notification preferences.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  applyNotificationPreferences(
+    data
+  );
+
+  clearSettingsStatus(
+    notificationSettingsStatus
+  );
+
+}
+
+
+emailNotificationsEnabled
+  ?.addEventListener(
+    "change",
+    () => {
+
+      syncNotificationPreferenceControls();
+
+      clearSettingsStatus(
+        notificationSettingsStatus
+      );
+
+    }
+  );
+
+
+notificationSettingsForm
+  ?.addEventListener(
+    "submit",
+    async (event) => {
+
+      event.preventDefault();
+
+      clearSettingsStatus(
+        notificationSettingsStatus
+      );
+
+
+      if (!currentUser?.id) {
+
+        showSettingsStatus(
+          notificationSettingsStatus,
+          "Your signed-in account could not be verified.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if (notificationSettingsSubmit) {
+
+        notificationSettingsSubmit.disabled =
+          true;
+
+        notificationSettingsSubmit.textContent =
+          "Saving...";
+
+      }
+
+
+      try {
+
+        const preferences = {
+
+          user_id:
+            currentUser.id,
+
+          email_enabled:
+            emailNotificationsEnabled
+              ?.checked ===
+            true,
+
+          email_content_awaiting_approval:
+            emailContentAwaitingApproval
+              ?.checked ===
+            true,
+
+          email_content_scheduled:
+            emailContentScheduled
+              ?.checked ===
+            true,
+
+          email_content_posted:
+            emailContentPosted
+              ?.checked ===
+            true,
+
+        };
+
+
+        const {
+          data,
+          error,
+        } =
+          await supabaseClient
+            .from(
+              "notification_preferences"
+            )
+            .upsert(
+              preferences,
+              {
+                onConflict:
+                  "user_id",
+              }
+            )
+            .select(`
+              email_enabled,
+              email_content_awaiting_approval,
+              email_content_scheduled,
+              email_content_posted
+            `)
+            .single();
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        applyNotificationPreferences(
+          data
+        );
+
+
+        showSettingsStatus(
+          notificationSettingsStatus,
+          "Your notification preferences have been saved.",
+          "success"
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Notification preference save failed:",
+          error
+        );
+
+
+        showSettingsStatus(
+          notificationSettingsStatus,
+          "We couldn't save your notification preferences.",
+          "error"
+        );
+
+      } finally {
+
+        if (notificationSettingsSubmit) {
+
+          notificationSettingsSubmit.disabled =
+            false;
+
+          notificationSettingsSubmit.textContent =
+            "Save Notifications";
+
+        }
+
+      }
+
+    }
+  );
 
 
 // =========================================================
@@ -7436,12 +7761,13 @@ async function initializePortal() {
     currentUser =
       userData.user;
 
+await loadClientMembership();
 
-    await loadClientMembership();
+renderClientIdentity();
 
-    renderClientIdentity();
+await loadNotificationPreferences();
 
-    await loadClientNotifications();
+await loadClientNotifications();
 
 await subscribeToClientNotifications();
 

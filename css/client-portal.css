@@ -3366,6 +3366,333 @@ a {
 }
 
 /* =========================================================
+   NOTIFICATION PREFERENCES
+========================================================= */
+
+.settings-notification-master {
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap: 20px;
+
+  padding:
+    16px;
+
+  background:
+    var(--soft);
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:
+    10px;
+}
+
+
+.settings-notification-copy {
+  display: grid;
+
+  gap: 4px;
+}
+
+
+.settings-notification-copy strong,
+.settings-notification-option-copy strong {
+  color:
+    var(--charcoal);
+
+  font-size:
+    0.88rem;
+
+  line-height:
+    1.35;
+}
+
+
+.settings-notification-copy span,
+.settings-notification-option-copy span {
+  color:
+    var(--muted);
+
+  font-size:
+    0.78rem;
+
+  line-height:
+    1.5;
+}
+
+
+/* Toggle switch */
+
+.notification-switch {
+  position: relative;
+
+  flex:
+    0
+    0
+    auto;
+
+  width:
+    48px;
+
+  height:
+    26px;
+
+  cursor:
+    pointer;
+}
+
+
+.notification-switch input {
+  position:
+    absolute;
+
+  width:
+    1px;
+
+  height:
+    1px;
+
+  opacity:
+    0;
+
+  pointer-events:
+    none;
+}
+
+
+.notification-switch-track {
+  position:
+    absolute;
+
+  inset:
+    0;
+
+  background:
+    #aeb4bc;
+
+  border-radius:
+    999px;
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.notification-switch-track::after {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  top:
+    3px;
+
+  left:
+    3px;
+
+  width:
+    20px;
+
+  height:
+    20px;
+
+  background:
+    var(--white);
+
+  border-radius:
+    50%;
+
+  box-shadow:
+    0
+    2px
+    6px
+    rgba(0, 0, 0, 0.2);
+
+  transition:
+    transform 0.2s ease;
+}
+
+
+.notification-switch input:checked
++ .notification-switch-track {
+  background:
+    var(--ember);
+}
+
+
+.notification-switch input:checked
++ .notification-switch-track::after {
+  transform:
+    translateX(22px);
+}
+
+
+.notification-switch input:focus-visible
++ .notification-switch-track {
+  box-shadow:
+    0
+    0
+    0
+    3px
+    rgba(232, 93, 36, 0.2);
+}
+
+
+/* Individual notification choices */
+
+.settings-notification-options {
+  display: grid;
+
+  gap: 10px;
+
+  margin: 0;
+
+  padding: 0;
+
+  border: 0;
+
+  min-width: 0;
+
+  transition:
+    opacity 0.2s ease;
+}
+
+
+.settings-notification-options legend {
+  margin-bottom:
+    10px;
+
+  padding: 0;
+
+  color:
+    var(--charcoal);
+
+  font-size:
+    0.78rem;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    0.04em;
+
+  text-transform:
+    uppercase;
+}
+
+
+.settings-notification-option {
+  display: grid;
+
+  grid-template-columns:
+    auto
+    minmax(0, 1fr);
+
+  align-items:
+    start;
+
+  gap: 12px;
+
+  padding:
+    14px;
+
+  background:
+    var(--white);
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius:
+    9px;
+
+  cursor:
+    pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+
+.settings-notification-option:hover {
+  background:
+    var(--soft);
+
+  border-color:
+    rgba(232, 93, 36, 0.45);
+}
+
+
+.settings-notification-option input {
+  width:
+    18px;
+
+  height:
+    18px;
+
+  margin:
+    2px
+    0
+    0;
+
+  accent-color:
+    var(--ember);
+
+  cursor:
+    pointer;
+}
+
+
+.settings-notification-option-copy {
+  display: grid;
+
+  gap: 3px;
+}
+
+
+.settings-notification-options:disabled {
+  opacity:
+    0.5;
+}
+
+
+.settings-notification-options:disabled
+.settings-notification-option {
+  cursor:
+    not-allowed;
+}
+
+
+.settings-notification-options:disabled
+.settings-notification-option:hover {
+  background:
+    var(--white);
+
+  border-color:
+    var(--border);
+}
+
+
+@media (max-width: 600px) {
+
+  .settings-notification-master {
+    align-items:
+      flex-start;
+  }
+
+}
+
+/* =========================================================
    OWNERSHIP TRANSFER MODAL
 ========================================================= */
 
@@ -3573,137 +3900,7 @@ a {
   display: none;
 }
 
-// =========================================================
-// OWNERSHIP TRANSFER MODAL
-// =========================================================
 
-function openOwnershipTransferModal() {
-
-  if (
-    !ownershipTransferModal ||
-    currentMembership?.role !==
-      "owner"
-  ) {
-    return;
-  }
-
-
-  ownershipTransferForm?.reset();
-
-  clearSettingsStatus(
-    ownershipTransferStatus
-  );
-
-  resetPasswordVisibility();
-
-
-  ownershipTransferModal.hidden =
-    false;
-
-  document.body.style.overflow =
-    "hidden";
-
-
-  requestAnimationFrame(
-    () => {
-
-      ownershipTransferName?.focus();
-
-    }
-  );
-
-}
-
-
-function closeOwnershipTransferModal() {
-
-  if (!ownershipTransferModal) {
-    return;
-  }
-
-
-  ownershipTransferModal.hidden =
-    true;
-
-  document.body.style.overflow =
-    "";
-
-  ownershipTransferForm?.reset();
-
-  clearSettingsStatus(
-    ownershipTransferStatus
-  );
-
-  resetPasswordVisibility();
-
-  ownershipTransferButton?.focus();
-
-}
-
-
-ownershipTransferButton
-  ?.addEventListener(
-    "click",
-    openOwnershipTransferModal
-  );
-
-
-ownershipTransferCancel
-  ?.addEventListener(
-    "click",
-    closeOwnershipTransferModal
-  );
-
-
-ownershipTransferModal
-  ?.querySelectorAll(
-    "[data-close-ownership-transfer-modal]"
-  )
-  .forEach(
-    (element) => {
-
-      element.addEventListener(
-        "click",
-        closeOwnershipTransferModal
-      );
-
-    }
-  );
-
-
-ownershipTransferForm
-  ?.addEventListener(
-    "submit",
-    (event) => {
-
-      /*
-        The secure Supabase transfer request
-        will replace this temporary handler.
-      */
-
-      event.preventDefault();
-
-    }
-  );
-
-
-document.addEventListener(
-  "keydown",
-  (event) => {
-
-    if (
-      event.key ===
-        "Escape" &&
-      ownershipTransferModal &&
-      !ownershipTransferModal.hidden
-    ) {
-
-      closeOwnershipTransferModal();
-
-    }
-
-  }
-);
 
 /* =========================================================
    PORTAL NOTIFICATIONS
