@@ -366,11 +366,11 @@ resetPasswordForm.addEventListener(
 
 
     if (
-      password.length < 8
+      password.length < 12
     ) {
 
       showResetMessage(
-        "Your new password must be at least 8 characters long."
+        "Your new password must be at least 12 characters long."
       );
 
       newPassword.focus();

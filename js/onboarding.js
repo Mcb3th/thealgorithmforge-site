@@ -116,6 +116,36 @@ async function initializeClientOnboarding() {
     return;
   }
 
+    const portalRole =
+    String(
+      membership.role ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    ![
+      "owner",
+      "manager",
+    ].includes(
+      portalRole
+    )
+  ) {
+
+    console.warn(
+      "This portal role cannot submit or edit onboarding information."
+    );
+
+    window.location.replace(
+      "client-portal.html#onboarding"
+    );
+
+    return;
+
+  }
+
   currentClientId =
   membership.client_id;
 

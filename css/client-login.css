@@ -893,3 +893,10 @@ a {
   }
 
 }
+
+.password-requirements {
+  margin: 8px 0 0;
+  color: #6f7378;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}

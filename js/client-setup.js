@@ -586,13 +586,13 @@ function validatePasswords() {
 
   if (
     password.length <
-      8
+      12
   ) {
 
     return {
       valid: false,
       message:
-        "Your password must contain at least 8 characters.",
+        "Your password must contain at least 12 characters.",
     };
 
   }

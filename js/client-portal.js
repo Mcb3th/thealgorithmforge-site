@@ -495,6 +495,26 @@ let currentUser =
 let currentMembership =
   null;
 
+function canManageClientWorkflow() {
+
+  const role =
+    String(
+      currentMembership?.role ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  return [
+    "owner",
+    "manager",
+  ].includes(
+    role
+  );
+
+}
+
 let currentClient = null;
 
 let currentOnboardingSubmission =
@@ -938,6 +958,24 @@ function renderClientApprovalActions(
     approvalStatus ===
     "awaiting_approval"
   ) {
+        if (
+      !canManageClientWorkflow()
+    ) {
+
+      return `
+        <div class="client-content-approval-result">
+          <span class="client-content-approval-label">
+            AWAITING APPROVAL
+          </span>
+
+          <p>
+            An account Owner or Manager can approve
+            this content or request revisions.
+          </p>
+        </div>
+      `;
+
+    }
 
     return `
       <div class="client-content-approval-actions">
@@ -1201,7 +1239,17 @@ async function submitClientContentApproval(
     return;
   }
 
+  if (
+    !canManageClientWorkflow()
+  ) {
 
+    console.warn(
+      "This portal role cannot submit content approval decisions."
+    );
+
+    return;
+
+  }
 
 
 
@@ -2903,11 +2951,25 @@ function renderAccountSettings() {
   }
 
 
+   const isAccountOwner =
+    currentMembership?.role ===
+    "owner";
+
+
   if (ownershipTransferButton) {
 
     ownershipTransferButton.hidden =
-      currentMembership?.role !==
-      "owner";
+      !isAccountOwner;
+
+  }
+
+
+  if (ownershipTransferHelp) {
+
+    ownershipTransferHelp.textContent =
+      isAccountOwner
+        ? "Ownership can only be transferred to a verified replacement account."
+        : "Only the account Owner can transfer ownership.";
 
   }
 
@@ -4892,9 +4954,10 @@ if (
 
 
   if (
-    destinationView ===
+        destinationView ===
       "onboarding" &&
-    !currentOnboardingSubmission
+    !currentOnboardingSubmission &&
+    canManageClientWorkflow()
   ) {
 
     window.location.href =
@@ -5210,9 +5273,10 @@ window.addEventListener(
 
 
     if (
-      nextView ===
+         nextView ===
         "onboarding" &&
-      !currentOnboardingSubmission
+      !currentOnboardingSubmission &&
+      canManageClientWorkflow()
     ) {
 
       window.location.href =
@@ -5249,29 +5313,16 @@ portalNavItems.forEach(
           button.dataset.view;
 
 
-        if (
-  viewName ===
-  "onboarding"
-) {
+               if (
+          viewName ===
+            "onboarding"
+        ) {
 
-  if (
-    currentOnboardingSubmission
-  ) {
+          openOnboardingRoute();
 
-    showPortalView(
-      "onboarding"
-    );
+          return;
 
-  } else {
-
-    window.location.href =
-      "onboarding.html";
-
-  }
-
-  return;
-
-}
+        }
 
 
         showPortalView(
@@ -5320,8 +5371,17 @@ function renderOnboardingRequired() {
   "Your answers help us represent your business accurately, create content in your voice, follow your requirements, and focus on the goals that matter most.";
 
 
+    const canManage =
+    canManageClientWorkflow();
+
+
   onboardingAction.textContent =
-    "Start Onboarding";
+    canManage
+      ? "Start Onboarding"
+      : "Owner or Manager Required";
+
+  onboardingAction.disabled =
+    !canManage;
 
 
   onboardingPanel.innerHTML = `
@@ -5359,6 +5419,8 @@ function renderOnboardingComplete() {
   onboardingAction.textContent =
     "View Onboarding";
 
+      onboardingAction.disabled =
+    false;
 
   onboardingPanel.innerHTML = `
     <div class="empty-state">
@@ -5653,12 +5715,21 @@ function renderOnboardingSummary() {
     )}
   </p>
 
-  <a
-    href="onboarding.html?mode=edit"
-    class="btn"
-  >
-    Edit Information
-  </a>
+   ${canManageClientWorkflow()
+    ? `
+      <a
+        href="onboarding.html?mode=edit"
+        class="btn"
+      >
+        Edit Information
+      </a>
+    `
+    : `
+      <p>
+        Only an account Owner or Manager can edit
+        this onboarding information.
+      </p>
+    `}
 
 </div>
 
@@ -6044,6 +6115,38 @@ async function initializeOnboardingState() {
 
 }
 
+function openOnboardingRoute() {
+
+  if (
+    currentOnboardingSubmission
+  ) {
+
+    showPortalView(
+      "onboarding"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    canManageClientWorkflow()
+  ) {
+
+    window.location.href =
+      "onboarding.html";
+
+    return;
+
+  }
+
+
+  showPortalView(
+    "onboarding"
+  );
+
+}
 
 // =========================================================
 // ONBOARDING ACTION
@@ -6053,21 +6156,7 @@ onboardingAction.addEventListener(
   "click",
   () => {
 
-    if (
-      currentOnboardingSubmission
-    ) {
-
-      showPortalView(
-        "onboarding"
-      );
-
-      return;
-
-    }
-
-
-    window.location.href =
-      "onboarding.html";
+    openOnboardingRoute();
 
   }
 );
@@ -8168,9 +8257,10 @@ currentView =
 
 
 if (
-  currentView ===
+    currentView ===
     "onboarding" &&
-  !currentOnboardingSubmission
+  !currentOnboardingSubmission &&
+  canManageClientWorkflow()
 ) {
 
   window.location.href =
