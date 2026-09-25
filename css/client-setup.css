@@ -387,6 +387,53 @@ a {
     #f6f6f5;
 }
 
+.setup-password-field {
+  position: relative;
+}
+
+.setup-password-field input {
+  padding-right: 68px;
+}
+
+.setup-password-toggle {
+  position: absolute;
+
+  top: 50%;
+  right: 14px;
+
+  transform:
+    translateY(-50%);
+
+  padding: 4px;
+
+  border: 0;
+
+  color:
+    var(--ember);
+
+  background:
+    transparent;
+
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.setup-password-toggle:hover {
+  color:
+    var(--charcoal);
+}
+
+.setup-password-toggle:focus-visible {
+  outline:
+    2px solid
+    var(--ember);
+
+  outline-offset: 2px;
+}
+
 .password-note {
   margin-top: -6px;
 

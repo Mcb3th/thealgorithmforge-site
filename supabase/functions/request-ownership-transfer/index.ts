@@ -750,7 +750,8 @@ if (
             before reviewing the ownership transfer.
           */
 
-          const {
+                const {
+            data: inviteData,
             error,
           } =
             await ctx.supabaseAdmin
@@ -775,6 +776,52 @@ if (
 
           emailError =
             error;
+
+
+          if (
+            !emailError &&
+            inviteData?.user?.id
+          ) {
+
+            const {
+              error: linkError,
+            } =
+              await ctx.supabaseAdmin
+                .from(
+                  "ownership_transfer_requests"
+                )
+                .update({
+                  replacement_user_id:
+                    inviteData.user.id,
+                })
+                .eq(
+                  "id",
+                  transferRequest.id
+                );
+
+
+            if (linkError) {
+
+              /*
+                Invalidate the invitation if its Auth
+                user could not be securely linked to
+                the pending transfer.
+              */
+
+              await ctx.supabaseAdmin
+                .auth
+                .admin
+                .deleteUser(
+                  inviteData.user.id
+                );
+
+
+              emailError =
+                linkError;
+
+            }
+
+          }
 
         }
 

@@ -134,6 +134,63 @@ if (currentYear) {
 
 }
 
+// =========================================================
+// PASSWORD VISIBILITY
+// =========================================================
+
+document
+  .querySelectorAll(
+    "[data-setup-password-toggle]"
+  )
+  .forEach(
+    (toggleButton) => {
+
+      toggleButton.addEventListener(
+        "click",
+        () => {
+
+          const inputId =
+            toggleButton.dataset
+              .setupPasswordToggle;
+
+          const passwordInput =
+            document.getElementById(
+              inputId
+            );
+
+
+          if (!passwordInput) {
+            return;
+          }
+
+
+          const willShow =
+            passwordInput.type ===
+            "password";
+
+
+          passwordInput.type =
+            willShow
+              ? "text"
+              : "password";
+
+          toggleButton.textContent =
+            willShow
+              ? "Hide"
+              : "Show";
+
+          toggleButton.setAttribute(
+            "aria-label",
+            willShow
+              ? "Hide password"
+              : "Show password"
+          );
+
+        }
+      );
+
+    }
+  );
 
 // =========================================================
 // VIEW HELPERS
