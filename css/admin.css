@@ -6551,6 +6551,9 @@ img {
   display:
     flex;
 
+  flex-wrap:
+  wrap;
+
   align-items:
     center;
 
@@ -6804,7 +6807,8 @@ img {
 }
 
 
-.client-portal-resend-button {
+.client-portal-resend-button,
+.client-portal-remove-button {
   border:
     1px solid
     var(--ember-orange);
@@ -6851,8 +6855,41 @@ img {
     translateY(-1px);
 }
 
+.client-portal-resend-button:hover {
+  color:
+    var(--white);
 
-.client-portal-resend-button:disabled {
+  background:
+    var(--ember-orange);
+
+  transform:
+    translateY(-1px);
+}
+
+
+.client-portal-remove-button {
+  border-color:
+    #a33c3c;
+
+  color:
+    #a33c3c;
+}
+
+
+.client-portal-remove-button:hover {
+  color:
+    var(--white);
+
+  background:
+    #a33c3c;
+
+  transform:
+    translateY(-1px);
+}
+
+
+.client-portal-resend-button:disabled,
+.client-portal-remove-button:disabled {
   opacity:
     0.55;
 
@@ -6862,6 +6899,7 @@ img {
   transform:
     none;
 }
+
 
 /* =========================================================
    ADMIN NOTIFICATIONS

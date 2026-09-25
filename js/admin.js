@@ -5912,6 +5912,201 @@ async function resendClientPortalInvitation(
 
 }
 
+// =========================================================
+// REMOVE CLIENT PORTAL ACCESS
+// =========================================================
+
+async function removeClientPortalAccess(
+  clientId,
+  user,
+  container,
+  button
+) {
+
+  if (
+    !clientId ||
+    !user?.user_id ||
+    !container ||
+    !button
+  ) {
+    return;
+  }
+
+
+  const userLabel =
+    user.contact_name ||
+    user.email ||
+    "this portal user";
+
+
+  const confirmed =
+    await showAdminConfirm({
+      eyebrow:
+        "PORTAL ACCESS",
+
+      title:
+        "REMOVE ACCESS?",
+
+      message:
+        `Remove ${userLabel}'s access to this client portal? Their account will remain available if access needs to be restored later.`,
+
+      confirmText:
+        "Remove Access",
+    });
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "Removing...";
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient
+        .functions
+        .invoke(
+          "manage-client-access",
+          {
+            body: {
+              action:
+                "deactivate",
+
+              client_id:
+                clientId,
+
+              target_user_id:
+                user.user_id,
+            },
+          }
+        );
+
+
+    if (error) {
+
+      let functionMessage =
+        "";
+
+
+      if (
+        error.context &&
+        typeof error.context.json ===
+          "function"
+      ) {
+
+        try {
+
+          const errorBody =
+            await error.context.json();
+
+
+          functionMessage =
+            errorBody?.diagnostic
+              ?.message ||
+            errorBody?.error ||
+            "";
+
+        } catch (parseError) {
+
+          console.error(
+            "Remove access error response could not be parsed:",
+            parseError
+          );
+
+        }
+
+      }
+
+
+      throw new Error(
+        functionMessage ||
+        error.message ||
+        "Portal access could not be removed."
+      );
+
+    }
+
+
+    if (!data?.success) {
+
+      throw new Error(
+        data?.error ||
+        "Portal access could not be removed."
+      );
+
+    }
+
+
+    await loadClientPortalUsers(
+      clientId,
+      container
+    );
+
+
+    await showAdminMessage({
+      eyebrow:
+        "PORTAL ACCESS",
+
+      title:
+        "ACCESS REMOVED",
+
+      message:
+        data.message ||
+        `${userLabel} no longer has access to this client portal.`,
+
+      confirmText:
+        "Got It",
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "Portal access removal failed:",
+      error
+    );
+
+
+    await showAdminMessage({
+      eyebrow:
+        "PORTAL ACCESS",
+
+      title:
+        "ACCESS NOT REMOVED",
+
+      message:
+        error?.message ||
+        "Portal access could not be removed.",
+
+      confirmText:
+        "Got It",
+    });
+
+
+    if (button.isConnected) {
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        "Remove Access";
+
+    }
+
+  }
+
+}
+
 async function loadClientPortalUsers(
   clientId,
   container
@@ -6196,6 +6391,49 @@ if (invitationPending) {
 
   details.appendChild(
     resendButton
+  );
+
+}
+
+if (
+  user.is_active &&
+  user.portal_role !==
+    "owner"
+) {
+
+  const removeButton =
+    document.createElement(
+      "button"
+    );
+
+
+  removeButton.type =
+    "button";
+
+  removeButton.className =
+    "client-portal-remove-button";
+
+  removeButton.textContent =
+    "Remove Access";
+
+
+  removeButton.addEventListener(
+    "click",
+    async () => {
+
+      await removeClientPortalAccess(
+        clientId,
+        user,
+        container,
+        removeButton
+      );
+
+    }
+  );
+
+
+  details.appendChild(
+    removeButton
   );
 
 }

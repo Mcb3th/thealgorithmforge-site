@@ -311,6 +311,16 @@ const settingsAccountRole =
     "settingsAccountRole"
   );
 
+const settingsTeamAccessCard =
+  document.getElementById(
+    "settingsTeamAccessCard"
+  );
+
+const settingsTeamUsers =
+  document.getElementById(
+    "settingsTeamUsers"
+  );
+
   const notificationSettingsForm =
   document.getElementById(
     "notificationSettingsForm"
@@ -2970,6 +2980,673 @@ function renderAccountSettings() {
       isAccountOwner
         ? "Ownership can only be transferred to a verified replacement account."
         : "Only the account Owner can transfer ownership.";
+
+  }
+
+
+  void loadSettingsTeamUsers();
+
+}
+
+// =========================================================
+// SETTINGS TEAM ACCESS
+// =========================================================
+
+function formatSettingsTeamRole(
+  value
+) {
+
+  return String(
+    value ||
+    "member"
+  )
+    .replaceAll(
+      "_",
+      " "
+    )
+    .replace(
+      /\b\w/g,
+      (letter) =>
+        letter.toUpperCase()
+    );
+
+}
+
+
+function renderSettingsTeamUsers(
+  users
+) {
+
+  if (!settingsTeamUsers) {
+    return;
+  }
+
+
+  settingsTeamUsers.innerHTML =
+    "";
+
+
+  if (
+    !Array.isArray(users) ||
+    !users.length
+  ) {
+
+    const empty =
+      document.createElement(
+        "p"
+      );
+
+    empty.className =
+      "settings-team-message";
+
+    empty.textContent =
+      "No portal users are connected to this business.";
+
+
+    settingsTeamUsers.appendChild(
+      empty
+    );
+
+    return;
+
+  }
+
+
+  const roleOrder = {
+    owner:
+      0,
+
+    manager:
+      1,
+
+    member:
+      2,
+  };
+
+
+  const sortedUsers =
+    [...users]
+      .sort(
+        (
+          firstUser,
+          secondUser
+        ) => {
+
+          const firstRoleOrder =
+            roleOrder[
+              firstUser.portal_role
+            ] ?? 99;
+
+          const secondRoleOrder =
+            roleOrder[
+              secondUser.portal_role
+            ] ?? 99;
+
+
+          return (
+            firstRoleOrder -
+              secondRoleOrder ||
+            String(
+              firstUser.contact_name ||
+              firstUser.email ||
+              ""
+            )
+              .localeCompare(
+                String(
+                  secondUser.contact_name ||
+                  secondUser.email ||
+                  ""
+                )
+              )
+          );
+
+        }
+      );
+
+
+  const list =
+    document.createElement(
+      "div"
+    );
+
+  list.className =
+    "settings-team-list";
+
+
+  sortedUsers.forEach(
+    (user) => {
+
+      const row =
+        document.createElement(
+          "article"
+        );
+
+      row.className =
+        "settings-team-row";
+
+
+      const identity =
+        document.createElement(
+          "div"
+        );
+
+      identity.className =
+        "settings-team-identity";
+
+
+      const name =
+        document.createElement(
+          "strong"
+        );
+
+      name.textContent =
+        user.contact_name ||
+        user.email ||
+        "Portal User";
+
+
+      identity.appendChild(
+        name
+      );
+
+
+      if (
+        user.contact_name &&
+        user.email
+      ) {
+
+        const email =
+          document.createElement(
+            "span"
+          );
+
+        email.textContent =
+          user.email;
+
+
+        identity.appendChild(
+          email
+        );
+
+      }
+
+
+      const details =
+        document.createElement(
+          "div"
+        );
+
+      details.className =
+        "settings-team-details";
+
+
+      const role =
+        document.createElement(
+          "span"
+        );
+
+      role.className =
+        "settings-team-role";
+
+      role.textContent =
+        formatSettingsTeamRole(
+          user.portal_role
+        );
+
+
+      const status =
+        document.createElement(
+          "span"
+        );
+
+      status.className =
+        user.is_active
+          ? "settings-team-status is-active"
+          : "settings-team-status is-inactive";
+
+      status.textContent =
+        user.is_active
+          ? "Active"
+          : "Inactive";
+
+
+      details.appendChild(
+        role
+      );
+
+      details.appendChild(
+        status
+      );
+
+
+      if (
+        user.is_active &&
+        user.portal_role !==
+          "owner"
+      ) {
+
+        const removeButton =
+          document.createElement(
+            "button"
+          );
+
+        removeButton.type =
+          "button";
+
+        removeButton.className =
+          "settings-team-remove";
+
+        removeButton.textContent =
+          "Remove Access";
+
+
+        removeButton.addEventListener(
+          "click",
+          async () => {
+
+            await removeSettingsTeamAccess(
+              user,
+              removeButton
+            );
+
+          }
+        );
+
+
+        details.appendChild(
+          removeButton
+        );
+
+      }
+
+
+      row.appendChild(
+        identity
+      );
+
+      row.appendChild(
+        details
+      );
+
+      list.appendChild(
+        row
+      );
+
+    }
+  );
+
+
+  settingsTeamUsers.appendChild(
+    list
+  );
+
+}
+
+
+async function loadSettingsTeamUsers() {
+
+  if (
+    !settingsTeamAccessCard ||
+    !settingsTeamUsers
+  ) {
+    return;
+  }
+
+
+  const isAccountOwner =
+    currentMembership?.role ===
+    "owner";
+
+
+  settingsTeamAccessCard.hidden =
+    !isAccountOwner;
+
+
+  if (!isAccountOwner) {
+
+    settingsTeamUsers.innerHTML =
+      "";
+
+    return;
+
+  }
+
+
+  if (
+    !currentMembership?.client_id
+  ) {
+
+    settingsTeamUsers.innerHTML =
+      "";
+
+    const unavailable =
+      document.createElement(
+        "p"
+      );
+
+    unavailable.className =
+      "settings-team-message is-error";
+
+    unavailable.textContent =
+      "Team access information is unavailable.";
+
+
+    settingsTeamUsers.appendChild(
+      unavailable
+    );
+
+    return;
+
+  }
+
+
+  settingsTeamUsers.innerHTML =
+    "";
+
+
+  const loading =
+    document.createElement(
+      "p"
+    );
+
+  loading.className =
+    "settings-team-message";
+
+  loading.textContent =
+    "Loading portal users...";
+
+
+  settingsTeamUsers.appendChild(
+    loading
+  );
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient
+        .functions
+        .invoke(
+          "manage-client-access",
+          {
+            body: {
+              action:
+                "list",
+
+              client_id:
+                currentMembership
+                  .client_id,
+            },
+          }
+        );
+
+
+    if (error) {
+
+      let functionMessage =
+        data?.error ||
+        "";
+
+
+      if (
+        !functionMessage &&
+        error?.context
+      ) {
+
+        try {
+
+          const errorBody =
+            await error.context
+              .json();
+
+          functionMessage =
+            errorBody?.error ||
+            "";
+
+        } catch {
+          // Use the fallback below.
+        }
+
+      }
+
+
+      throw new Error(
+        functionMessage ||
+        error.message ||
+        "Portal users could not be loaded."
+      );
+
+    }
+
+
+    if (!data?.success) {
+
+      throw new Error(
+        data?.error ||
+        "Portal users could not be loaded."
+      );
+
+    }
+
+
+    renderSettingsTeamUsers(
+      data.users
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Settings team users could not be loaded:",
+      error
+    );
+
+
+    settingsTeamUsers.innerHTML =
+      "";
+
+
+    const errorMessage =
+      document.createElement(
+        "p"
+      );
+
+    errorMessage.className =
+      "settings-team-message is-error";
+
+    errorMessage.textContent =
+      error?.message ||
+      "Portal users could not be loaded.";
+
+
+    settingsTeamUsers.appendChild(
+      errorMessage
+    );
+
+  }
+
+}
+
+
+async function removeSettingsTeamAccess(
+  user,
+  button
+) {
+
+  if (
+    !user?.user_id ||
+    !button ||
+    currentMembership?.role !==
+      "owner" ||
+    !currentMembership?.client_id
+  ) {
+    return;
+  }
+
+
+  const userLabel =
+    user.contact_name ||
+    user.email ||
+    "this portal user";
+
+
+  const confirmed =
+    await showClientConfirm({
+      eyebrow:
+        "TEAM ACCESS",
+
+      title:
+        "REMOVE ACCESS?",
+
+      message:
+        `Remove ${userLabel}'s access to this business portal? Their account can be restored with a future invitation.`,
+
+      confirmText:
+        "Remove Access",
+    });
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "Removing...";
+
+
+  try {
+
+    const {
+      data,
+      error,
+    } =
+      await supabaseClient
+        .functions
+        .invoke(
+          "manage-client-access",
+          {
+            body: {
+              action:
+                "deactivate",
+
+              client_id:
+                currentMembership
+                  .client_id,
+
+              target_user_id:
+                user.user_id,
+            },
+          }
+        );
+
+
+    if (error) {
+
+      let functionMessage =
+        data?.error ||
+        "";
+
+
+      if (
+        !functionMessage &&
+        error?.context
+      ) {
+
+        try {
+
+          const errorBody =
+            await error.context
+              .json();
+
+          functionMessage =
+            errorBody?.error ||
+            "";
+
+        } catch {
+          // Use the fallback below.
+        }
+
+      }
+
+
+      throw new Error(
+        functionMessage ||
+        error.message ||
+        "Portal access could not be removed."
+      );
+
+    }
+
+
+    if (!data?.success) {
+
+      throw new Error(
+        data?.error ||
+        "Portal access could not be removed."
+      );
+
+    }
+
+
+    await loadSettingsTeamUsers();
+
+
+    await showClientMessage({
+      eyebrow:
+        "TEAM ACCESS",
+
+      title:
+        "ACCESS REMOVED",
+
+      message:
+        data.message ||
+        `${userLabel} no longer has access to this business portal.`,
+
+      confirmText:
+        "Got It",
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "Settings portal access removal failed:",
+      error
+    );
+
+
+    await showClientMessage({
+      eyebrow:
+        "TEAM ACCESS",
+
+      title:
+        "ACCESS NOT REMOVED",
+
+      message:
+        error?.message ||
+        "Portal access could not be removed.",
+
+      confirmText:
+        "Got It",
+    });
+
+
+    if (button.isConnected) {
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        "Remove Access";
+
+    }
 
   }
 
