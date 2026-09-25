@@ -249,6 +249,20 @@ a {
     rgba(240, 100, 43, 0.18);
 }
 
+
+
+
+.sidebar-settings-button {
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+
+.sidebar-settings-button .nav-icon {
+  width: auto;
+}
+
 .nav-icon {
   width: 24px;
 
@@ -1665,9 +1679,36 @@ a {
     width: 18px;
   }
 
+   .mobile-settings-nav {
+    display: flex;
+  }
 
-  .sidebar-bottom {
+
+
+    .sidebar-bottom {
+    display: grid;
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 8px;
+
+    margin-top: 0;
+    padding-top: 18px;
+  }
+
+
+  .sidebar-account {
     display: none;
+  }
+
+
+  .portal-nav-item.sidebar-settings-button {
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 0;
   }
 
 

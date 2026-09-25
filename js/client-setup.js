@@ -87,6 +87,16 @@ const setupSuccess =
     "setupSuccess"
   );
 
+const setupSuccessMessage =
+  document.getElementById(
+    "setupSuccessMessage"
+  );
+
+const setupSuccessNote =
+  document.getElementById(
+    "setupSuccessNote"
+  );
+
 const currentYear =
   document.getElementById(
     "currentYear"
@@ -105,6 +115,9 @@ let setupBusy =
 
 let setupInitialized =
   false;
+
+let ownershipTransferRequestId =
+  null;
 
 
 // =========================================================
@@ -182,6 +195,29 @@ function showSetupError(
 function showSetupSuccess() {
 
   hideSetupViews();
+
+  if (
+    setupSuccessMessage
+  ) {
+
+    setupSuccessMessage.textContent =
+      ownershipTransferRequestId
+        ? "Your password has been created. Your account is ready to review the ownership transfer."
+        : "Your password has been created and your client portal account is ready.";
+
+  }
+
+
+  if (
+    setupSuccessNote
+  ) {
+
+    setupSuccessNote.textContent =
+      ownershipTransferRequestId
+        ? "Taking you to the ownership transfer..."
+        : "Taking you to your portal...";
+
+  }
 
   setupSuccess.hidden =
     false;
@@ -432,12 +468,33 @@ async function initializeClientSetup() {
       userData.user;
 
 
+    const invitedOwnershipTransferRequestId =
+      String(
+        currentUser.user_metadata
+          ?.ownership_transfer_request_id ||
+        ""
+      )
+        .trim();
+
+
     /*
-      Verify that the invited Auth user is actually
-      linked to an active Algorithm Forge client.
+      Standard portal invitations require active
+      membership. Ownership-transfer recipients
+      receive membership only after acceptance.
     */
 
-    await verifyClientMembership();
+    if (
+      invitedOwnershipTransferRequestId
+    ) {
+
+      ownershipTransferRequestId =
+        invitedOwnershipTransferRequestId;
+
+    } else {
+
+      await verifyClientMembership();
+
+    }
 
 
     clientEmail.value =
@@ -664,15 +721,41 @@ clientSetupForm.addEventListener(
     try {
 
       /*
-        Re-check portal membership immediately
-        before changing the password.
+        Standard invitees must still have active portal
+        access immediately before password creation.
+        Ownership recipients are verified when they
+        accept the pending transfer.
       */
 
-      await verifyClientMembership();
+      if (
+        !ownershipTransferRequestId
+      ) {
+
+        await verifyClientMembership();
+
+      }
 
 
       const newPassword =
         clientPassword.value;
+
+
+      const accountUpdates = {
+        password:
+          newPassword,
+      };
+
+
+      if (
+        ownershipTransferRequestId
+      ) {
+
+        accountUpdates.data = {
+          ownership_transfer_request_id:
+            null,
+        };
+
+      }
 
 
       const {
@@ -681,10 +764,9 @@ clientSetupForm.addEventListener(
       } =
         await supabaseClient
           .auth
-          .updateUser({
-            password:
-              newPassword,
-          });
+          .updateUser(
+            accountUpdates
+          );
 
 
       if (error) {
@@ -725,18 +807,20 @@ clientSetupForm.addEventListener(
 
 
       /*
-        Client portal page will be created next.
-
-        For now this route is deliberately explicit
-        so we have one place to update once the
-        portal shell exists.
+        Ownership-transfer recipients continue to the
+        secure acceptance page after creating their
+        password. Standard invitees enter the portal.
       */
 
       window.setTimeout(
         () => {
 
           window.location.href =
-            "client-portal.html";
+            ownershipTransferRequestId
+              ? `ownership-transfer.html?request=${encodeURIComponent(
+                  ownershipTransferRequestId
+                )}`
+              : "client-portal.html";
 
         },
         1800
