@@ -18,6 +18,8 @@ const messageInput = document.querySelector("#message");
 ======================================== */
 
 window.addEventListener("scroll", () => {
+  if (!header) return;
+
   if (window.scrollY > 40) {
     header.classList.add("scrolled");
   } else {
@@ -29,14 +31,16 @@ window.addEventListener("scroll", () => {
    MOBILE NAVIGATION
 ======================================== */
 
-menuToggle.addEventListener("click", () => {
-  menuToggle.classList.toggle("active");
-  mainNav.classList.toggle("active");
+if (menuToggle && mainNav) {
+  menuToggle.addEventListener("click", () => {
+    menuToggle.classList.toggle("active");
+    mainNav.classList.toggle("active");
 
-  const isOpen = menuToggle.classList.contains("active");
+    const isOpen = menuToggle.classList.contains("active");
 
-  menuToggle.setAttribute("aria-expanded", isOpen);
-});
+    menuToggle.setAttribute("aria-expanded", isOpen);
+  });
+}
 
 navLinks.forEach((link) => {
   link.addEventListener("click", () => {
@@ -104,25 +108,29 @@ function isValidEmail(email) {
    CLEAR ERRORS WHILE TYPING
 ======================================== */
 
-[nameInput, emailInput, serviceInput, messageInput].forEach(
-  (input) => {
+[nameInput, emailInput, serviceInput, messageInput]
+  .filter(Boolean)
+  .forEach((input) => {
     input.addEventListener("input", () => {
       clearError(input);
-      formStatus.className = "form-status";
-      formStatus.textContent = "";
+
+      if (formStatus) {
+        formStatus.className = "form-status";
+        formStatus.textContent = "";
+      }
     });
 
     input.addEventListener("change", () => {
       clearError(input);
     });
-  }
-);
+  });
 
 /* ========================================
    CONTACT FORM SUBMIT
 ======================================== */
 
-contactForm.addEventListener("submit", async (event) => {
+if (contactForm) {
+  contactForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   let isValid = true;
@@ -214,3 +222,4 @@ contactForm.addEventListener("submit", async (event) => {
 
 }
 });
+}
