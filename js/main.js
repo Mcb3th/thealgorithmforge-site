@@ -232,11 +232,20 @@ if (window.location.hash) {
   const target = document.querySelector(window.location.hash);
 
   if (target) {
-    setTimeout(() => {
-      target.scrollIntoView({
-        behavior: "auto",
-        block: "start"
-      });
-    }, 100);
+    const waitForAnchorPosition = () => {
+      const targetTop = target.getBoundingClientRect().top;
+
+      if (targetTop > 100) {
+        target.scrollIntoView({
+          behavior: "auto",
+          block: "start"
+        });
+        return;
+      }
+
+      requestAnimationFrame(waitForAnchorPosition);
+    };
+
+    requestAnimationFrame(waitForAnchorPosition);
   }
 }
