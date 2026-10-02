@@ -622,18 +622,20 @@ textarea {
   width: 100%;
 }
 
-.service-number {
+.services-grid .service-number {
   display: block;
 
-  margin-bottom: 50px;
+  margin-bottom: 18px;
 
-  color: var(--ember);
+  color: rgba(32, 33, 36, 0.055);
 
-  font-family: var(--font-body);
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: 7rem;
+  font-weight: 400;
+  line-height: 0.85;
 
-  letter-spacing: 0.12em;
+  letter-spacing: 0;
+  user-select: none;
 }
 
 .service-card h3 {

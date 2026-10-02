@@ -223,3 +223,20 @@ if (contactForm) {
 }
 });
 }
+
+/* ========================================
+   CROSS-PAGE ANCHOR NAVIGATION
+======================================== */
+
+if (window.location.hash) {
+  const target = document.querySelector(window.location.hash);
+
+  if (target) {
+    setTimeout(() => {
+      target.scrollIntoView({
+        behavior: "auto",
+        block: "start"
+      });
+    }, 100);
+  }
+}
